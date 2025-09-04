@@ -4,7 +4,12 @@
 Endpoints:
   GET  /health -> {status: ok}
   GET  /       -> métadonnées
-  POST /anonymize {text, level?, scope_id?, secret_salt?, ner_results?, openrouter_models?}
+  POST /anonymize {text, level?, scope_id?, secret_salt?, ner_results?, openrouter_models?, overrides?}
+
+Mise à jour:
+ - Support champ JSON `overrides` passé directement à l'orchestrateur.
+ - Par défaut (si aucun override explicite) active le preset GLiNER "best" (ensemble pondéré)
+   en injectant la liste des modèles si `GLINER_PRESET` n'est pas déjà défini.
 """
 from __future__ import annotations
 
@@ -15,6 +20,13 @@ from importlib import import_module
 from flask import Flask, request, jsonify
 
 _ANON_FN: t.Callable[..., dict] | None = None
+# Liste des modèles du preset "best" (doit rester alignée avec src/ner_ensemble.py)
+BEST_GLINER_MODELS = [
+    "EmergentMethods/gliner_medium_news-v2.1",
+    "numind/NuNER_Zero-span",
+    "urchade/gliner_large-v2.1",
+    "urchade/gliner_multi-v2.1",
+]
 
 
 def _load() -> t.Callable[..., dict]:
@@ -40,6 +52,7 @@ def anonymize_call(
     secret_salt: str = "default_secret",
     ner_results: t.List[dict] | None = None,
     openrouter_models: t.Dict[str, str] | None = None,
+    overrides: t.Dict[str, t.Any] | None = None,
 ) -> dict:
     fn = _load()
     scope = scope_id or f"SCOPE-{int(time.time()*1000)%1_000_000}"
@@ -50,7 +63,26 @@ def anonymize_call(
         level=level,
         openrouter_models=openrouter_models,
         ner_results=ner_results or [],
+        overrides=overrides,
     )
+
+
+def _inject_default_gliner_best(overrides: dict | None) -> dict | None:
+    """Ajoute les modèles GLiNER "best" si aucun override gliner fourni et que
+    GLINER_PRESET n'est pas défini (on ne force pas si l'utilisateur configure via env).
+    """
+    if overrides is None:
+        overrides = {}
+    # Ne rien faire si l'utilisateur a déjà précisé des modèles ou a explicitement désactivé GLiNER
+    if any(k in overrides for k in ("gliner_models",)) or overrides.get("ner_use_gliner") is False:
+        return overrides or None
+    if os.getenv("GLINER_PRESET"):
+        return overrides or None  # Respecte config externe
+    # Injection liste best (run_gliner utilisera le weighting via env GLINER_WEIGHTING=1 par défaut)
+    overrides.setdefault("ner_use_gliner", True)
+    overrides.setdefault("gliner_models", BEST_GLINER_MODELS)
+    # On peut laisser d'autres sources actives; possibilité d'ajouter DeepPavlov via overrides si besoin
+    return overrides or None
 
 
 def create_app() -> Flask:
@@ -64,9 +96,10 @@ def create_app() -> Flask:
     def root():  # type: ignore
         return jsonify({
             "service": "anonymization-api",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "endpoints": ["GET /health", "POST /anonymize"],
             "default_level": "L2",
+            "gliner_default_preset": "best (auto-injecté si non configuré)",
         })
 
     @app.post("/anonymize")
@@ -87,6 +120,10 @@ def create_app() -> Flask:
         models = data.get("openrouter_models")
         if models is not None and not isinstance(models, dict):
             return jsonify({"error": "'openrouter_models' doit être un objet"}), 400
+        overrides = data.get("overrides")
+        if overrides is not None and not isinstance(overrides, dict):
+            return jsonify({"error": "'overrides' doit être un objet"}), 400
+        overrides = _inject_default_gliner_best(overrides)
         try:
             res = anonymize_call(
                 text=text,
@@ -95,11 +132,12 @@ def create_app() -> Flask:
                 secret_salt=secret_salt,
                 ner_results=ner_results,
                 openrouter_models=models,
+                overrides=overrides,
             )
         except Exception as e:
             return jsonify({"error": f"Echec anonymisation: {e}"}), 500
         dt = int((time.time() - t0) * 1000)
-        return jsonify({**res, "timings_ms": {"total": dt}})
+        return jsonify({**res, "timings_ms": {"total": dt}, "applied_overrides": overrides or {}})
 
     return app
 

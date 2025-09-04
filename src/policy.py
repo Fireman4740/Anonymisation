@@ -23,7 +23,7 @@ PlaceholderStyle = Literal["typed", "generic", "redacted"]
 
 @dataclass
 class AnonymizationPolicy:
-    level: Literal["L0", "L1", "L2", "L3", "L4"]  # on conserve les labels historiques
+    level: Literal["L0", "L1"]  # on conserve les labels historiques
     placeholder_style: PlaceholderStyle = "typed"
     scope: Literal["ticket", "batch", "none"] = "ticket"
     mapping_retention: Literal["session", "discard"] = "session"

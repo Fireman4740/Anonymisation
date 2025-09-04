@@ -1,1 +1,7 @@
 /.env
+/Dataset/text-anonymization-benchmark/*
+/debug_dump/*
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/

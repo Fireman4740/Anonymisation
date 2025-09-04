@@ -276,3 +276,202 @@ Ajouter un nouveau pattern:
 ---
 
 git clone https://github.com/NorskRegnesentral/text-anonymization-benchmark
+python -m spacy download en_core_web_md
+
+python eval_tab.py \
+ --tab_repo Dataset/text-anonymization-benchmark \
+ --gold_json Dataset/text-anonymization-benchmark/echr_test.json \
+ --level L0 \
+ --split test \
+ --no_paraphrase \
+ --save_preds ./debug_dump/preds_tab_L0_test.json \
+ --dump_dir ./debug_dump/tab_test_L0 \
+ --dump_k 30 \
+ --dump_strategy errors
+
+## 18. Ensemble NER (Transformers, DeepPavlov, GLiNER)
+
+Le projet supporte jusqu'à trois sources d'entités nommées combinables :
+
+1. HF Transformers (par défaut) : modèle multilingue `Davlan/bert-base-multilingual-cased-ner-hrl`.
+2. DeepPavlov (configurations Ontonotes / autres) : ex. `ner_ontonotes_bert`.
+3. GLiNER (zero-shot / multi-label) : ex. `urchade/gliner_large-v2.1`, `urchade/gliner_multi-v2.1`.
+
+L'agrégation permet d'augmenter rappel et robustesse multi‑langue avant pseudonymisation.
+
+### 18.1 Installation des dépendances optionnelles
+
+Par défaut seules les dépendances de base sont installées. Pour activer toutes les variantes NER :
+
+```bash
+# (Dans votre venv déjà activé)
+# HF est déjà couvert par transformers dans requirements.txt (vérifier).
+
+pip install deeppavlov
+python -m deeppavlov install ner_ontonotes_bert  # télécharge poids + dépendances spécifiques
+
+pip install gliner
+```
+
+Notes DeepPavlov : l'appel à `build_model(..., download=True, install=True)` dans le code gère aussi l'installation si vous ne lancez pas la commande explicite `python -m deeppavlov install ...`.
+
+### 18.2 Variables d'environnement de performance
+
+| Variable             | Effet                                                                  |
+| -------------------- | ---------------------------------------------------------------------- |
+| `NER_FORCE_DEVICE`   | Forcer `cuda`, `mps` ou `cpu` (auto-détection sinon).                  |
+| `NER_HALF_PRECISION` | `1/true` : tente le float16 sur GPU pour HF/GLiNER.                    |
+| `NER_FAST`           | `1/true` : active un mode accéléré (moins de vérifications, batching). |
+| `NER_DEBUG`          | `1/true` : logs internes de `src/ner_ensemble.py`.                     |
+
+Exemple (PowerShell Windows) :
+
+```powershell
+$env:NER_FORCE_DEVICE = "cuda"
+$env:NER_HALF_PRECISION = "1"
+$env:NER_FAST = "1"
+```
+
+### 18.3 API interne (fonctions disponibles)
+
+Les fonctions principales (dans `src/ner_ensemble.py`) :
+
+- `run_hf_ner_chunked(text, max_tokens=384, stride=64, min_conf=0.55)`
+- `run_deeppavlov_ner_ensemble(text, dp_config_names=[...], mode='union'|'consensus', min_votes=1)`
+- `run_gliner(text, model_names=[...], labels=[...], threshold=0.35)`
+- `merge_ner_lists(*lists)` pour fusionner sans doublons.
+
+### 18.4 Exemple minimal (script)
+
+```python
+from src.ner_ensemble import (
+    run_hf_ner_chunked,
+    run_deeppavlov_ner_ensemble,
+    run_gliner,
+    merge_ner_lists,
+)
+
+text = "Bob Ross lived in Florida. Elon Musk founded Tesla."
+
+# 1. HF Transformers
+hf_ents = run_hf_ner_chunked(text)
+
+# 2. DeepPavlov (installer préalablement: pip install deeppavlov ; python -m deeppavlov install ner_ontonotes_bert)
+#    On peut passer plusieurs configs ex: ['ner_ontonotes_bert','ner_ontonotes_bert_mult'] si existantes
+try:
+    dp_ents = run_deeppavlov_ner_ensemble(text, dp_config_names=['ner_ontonotes_bert'], mode='union')
+except Exception:
+    dp_ents = []  # lib non installée → silencieux
+
+# 3. GLiNER (pip install gliner)
+try:
+    gln_ents = run_gliner(text, labels=["Person","Organization","Location"], threshold=0.35)
+except Exception:
+    gln_ents = []
+
+all_ents = merge_ner_lists(hf_ents, dp_ents, gln_ents)
+print(all_ents)
+```
+
+### 18.5 Modes d'agrégation
+
+- `union` : conserve toute entité atteignant `min_votes` (>=1 par défaut) dans une source.
+- `consensus` : exige que l'entité soit validée par toutes les sources chargées (votes == nombre de modèles). Utile pour augmenter la précision quand rappel ≈ suffisant.
+
+Les fonctions DeepPavlov et GLiNER ajoutent un champ `votes` par entité.
+
+### 18.6 Sélection / normalisation des labels
+
+- DeepPavlov : conversion BIO → spans, normalisation (PERSON, ORGANIZATION, LOCATION, GPE, etc.) + quelques PII dérivés (EMAIL→MAIL...).
+- GLiNER : labels textuels adaptés vers le même espace (PERSON, ORGANIZATION, LOCATION...).
+- HF : `entity_group` déjà agrégé via `aggregation_strategy="simple"`.
+
+### 18.7 Bonnes pratiques
+
+1. Activer `NER_FAST=1` pour lots volumineux (réduction overhead Python) après validation qualité.
+2. Utiliser `consensus` si vous observez trop de faux positifs sur données internes.
+3. Limiter le nombre de modèles GLiNER (grands checkpoints → RAM GPU) ou réduire `labels`.
+4. Sur GPU mémoire limitée : commencer par HF seul, puis ajouter GLiNER; DeepPavlov peut être CPU.
+5. Journaliser temps d'inférence par composant pour guider l'arbitrage performance/qualité.
+
+### 18.8 Dépannage rapide
+
+| Problème                 | Cause probable               | Action                                                       |
+| ------------------------ | ---------------------------- | ------------------------------------------------------------ |
+| OOM CUDA HF              | fenêtre trop large           | Réduire `max_tokens` (ex 256) ou désactiver half si instable |
+| Pas d'entités DeepPavlov | Modèle non installé          | `python -m deeppavlov install ner_ontonotes_bert`            |
+| ImportError gliner       | Dépendance manquante         | `pip install gliner`                                         |
+| Lenteur extrême          | Empilement 3 sources sur CPU | Désactiver une source ou activer GPU                         |
+| Labels incohérents       | Variantes label GLiNER       | Vérifier normalisation / compléter `_normalize_gliner_label` |
+
+### 18.9 Preset GLiNER "best" & Pondération des modèles
+
+Nouveauté : un preset `best` combine plusieurs checkpoints GLiNER récents et complémentaires pour maximiser le rappel tout en conservant une bonne précision.
+
+Modèles utilisés (ordre = priorité / confiance décroissante) :
+
+1. `EmergentMethods/gliner_medium_news-v2.1`
+2. `numind/NuNER_Zero-span`
+3. `urchade/gliner_large-v2.1`
+4. `urchade/gliner_multi-v2.1`
+
+Une pondération de vote (somme des poids) est appliquée si la variable d'environnement suivante est active :
+
+- `GLINER_WEIGHTING=1` (activé par défaut dans le code si non précisé explicitement)
+
+Poids (peuvent évoluer) :
+
+- EmergentMethods/gliner_medium_news-v2.1 → 1.25
+- numind/NuNER_Zero-span → 1.20
+- urchade/gliner_large-v2.1 → 1.10
+- urchade/gliner_multi-v2.1 → 1.05
+- (Autres modèles non listés → 1.0 par défaut)
+
+Activation du preset :
+
+- Via variable d'env : `GLINER_PRESET=best`
+- Ou automatiquement injecté par `main_eval.py` (API Flask) et `eval_tab.py` (script d'évaluation) si :
+  - Aucune configuration `GLINER_PRESET` n'est déjà définie dans l'environnement
+  - Aucun override `gliner_models` explicite n'est fourni dans la requête / CLI
+
+Désactivation de la pondération :
+
+```powershell
+# Windows PowerShell
+$env:GLINER_WEIGHTING = "0"
+```
+
+Ou bash :
+
+```bash
+export GLINER_WEIGHTING=0
+```
+
+Override manuel dans un appel API :
+
+```json
+{
+	"text": "Alice et Bob travaillent chez SpaceZ à Paris.",
+	"level": "L2",
+	"overrides": {
+		"gliner_models": ["urchade/gliner_medium-v2.1"],
+		"ner_use_gliner": true
+	}
+}
+```
+
+CLI (évaluation TAB) pour désactiver le preset auto :
+
+```bash
+python eval_tab.py --tab_repo Dataset/text-anonymization-benchmark \
+  --gold_json Dataset/text-anonymization-benchmark/echr_test.json \
+  --level L0 --no_gliner_best
+```
+
+Cas d'usage recommandés :
+
+- Données hétérogènes multi‑domaines : laisser `best` + pondération activée.
+- Contrainte GPU mémoire stricte : réduire à 1–2 modèles (`gliner_medium` ou `gliner_large`).
+- Latence critique : utiliser preset `fast` ou désactiver GLiNER (`overrides: {"ner_use_gliner": false}`).
+
+---

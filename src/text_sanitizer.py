@@ -173,8 +173,12 @@ PII_PATTERNS.extend([
     (re.compile(r"\b\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b", re.IGNORECASE), "<DATE>", NoValidator()),
     # EN: September 1, 1998
     (re.compile(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}\b", re.IGNORECASE), "<DATE>", NoValidator()),
+    # EN: Month Year (December 2004)
+    (re.compile(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b", re.IGNORECASE), "<DATE>", NoValidator()),
     # FR: 13 septembre 1988 / 1er janvier 2000 / sept. 1999
     (re.compile(r"\b(\d{1,2}|1er)\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv\.?,?|févr\.?,?|fevr\.?,?|avr\.?,?|juil\.?,?|sept\.?,?|oct\.?,?|nov\.?,?|déc\.?,?|dec\.?)\s+\d{4}\b", re.IGNORECASE), "<DATE>", NoValidator()),
+    # FR: mois + année (septembre 1999, déc. 2001)
+    (re.compile(r"\b(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv\.?|févr\.?|fevr\.?|avr\.?|juil\.?|sept\.?|oct\.?|nov\.?|déc\.?|dec\.?)\s+\d{4}\b", re.IGNORECASE), "<DATE>", NoValidator()),
     # Numériques FR/EN: 13/09/1988, 13-09-1988, 13.09.1988, 13/9/88
     (re.compile(r"\b\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}\b"), "<DATE>", NoValidator()),
 ])
@@ -276,15 +280,32 @@ OTHER_PATTERNS = [
     ),
     # Username dans logs Linux: uid=123(name)
     (
-        re.compile(r"\buid=\d+\(([^)]+)\)"),
+        re.compile(r"\\buid=\\d+\\(([^)]+)\\)"),
         "<USERNAME>",
         GroupSpanValidator(1),
     ),
 ]
 
-# -- Extensions codes juridiques / articles / applications --
+# Ajout montants (devise avant/après, symboles)
 OTHER_PATTERNS.extend([
-    # Application / case numbers (ECHR-style): "no. 36110/97", "application no. 12345/99"
+    # Code devise avant montant: EUR 736,000 ; SEK 6 850 000 ; USD 15,800.50
+    (
+        re.compile(r"\\b(?:EUR|USD|SEK|GBP|CHF|CAD|AUD|JPY|CNY)\\s+\\d{1,3}(?:[.,\\s\u202f]\\d{3})*(?:[.,]\\d{2})?\\b"),
+        "<MONTANT>",
+        NoValidator(),
+    ),
+    # Symbole avant: €736,000 ; $ 1,200,000.00 ; £15 800
+    (
+        re.compile(r"(?<![\\w<])(?:€|\\$|£)\\s?\\d{1,3}(?:[.,\\s\u202f]\\d{3})*(?:[.,]\\d{2})?\\b"),
+        "<MONTANT>",
+        NoValidator(),
+    ),
+    # Montant avant devise ou mot: 15,800 euros ; 3.500 EUR ; 2 000 dollars ; 1 200 €
+    (
+        re.compile(r"\\b\\d{1,3}(?:[.,\\s\u202f]\\d{3})*(?:[.,]\\d{2})?\\s?(?:€|euros?|EUR|USD|dollars?|SEK|GBP|pounds?|livres|CHF|CAD|AUD|JPY|CNY)\\b", re.IGNORECASE),
+        "<MONTANT>",
+        NoValidator(),
+    ),
     (
         re.compile(r"\b(?:application\s+)?no\.?\s*\d{2,8}/\d{2,4}\b", re.IGNORECASE),
         "<CODE>",
