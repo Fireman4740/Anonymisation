@@ -1,0 +1,133 @@
+{
+    "examples": [
+        {
+            "id": "ticket_001",
+            "langue": "FR",
+            "original_text": "Bonjour, je suis Jean Dupont de Paris. Mon email est jean.dupont@example.com. Erreur API sur le serveur 192.168.1.1 avec ticket JIRA-1234. Il m'a dit que c'était urgent.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 15,
+                    "end": 26,
+                    "text": "Jean Dupont",
+                    "replacement": "[ENTITY_REDACTED]",
+                    "coref_id": "entity_1",
+                    "risk_note": "Nom direct"
+                },
+                {
+                    "type": "LOC",
+                    "start": 30,
+                    "end": 35,
+                    "text": "Paris",
+                    "replacement": "[LOC_REDACTED]",
+                    "coref_id": null,
+                    "risk_note": "Ville rare avec PER"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 48,
+                    "end": 71,
+                    "text": "jean.dupont@example.com",
+                    "replacement": "[EMAIL_REDACTED]",
+                    "coref_id": "entity_1",
+                    "risk_note": ""
+                },
+                {
+                    "type": "IP",
+                    "start": 102,
+                    "end": 114,
+                    "text": "192.168.1.1",
+                    "replacement": "[REDACTED]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "TICKET",
+                    "start": 126,
+                    "end": 135,
+                    "text": "JIRA-1234",
+                    "replacement": "[TICKET_REDACTED]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "COREF",
+                    "start": 137,
+                    "end": 139,
+                    "text": "Il",
+                    "replacement": "[ENTITY_REDACTED]",
+                    "coref_id": "entity_1",
+                    "risk_note": "Co-référence"
+                }
+            ],
+            "anonymized_text": "Bonjour, je suis [ENTITY_REDACTED] de [LOC_REDACTED]. Mon email est [EMAIL_REDACTED]. Erreur API sur le serveur [REDACTED] avec ticket [TICKET_REDACTED]. [ENTITY_REDACTED] m'a dit que c'était urgent. (Paraphrase appliquée pour normaliser le style.)",
+            "niveau_anonymisation": "L4 Max destructif",
+            "risk_score": 15,
+            "audit_findings": [
+                {
+                    "finding": "Risque résiduel minimal après redact massif et paraphrase",
+                    "suggestion": "N/A"
+                }
+            ],
+            "export_animation": {
+                "agents": [
+                    {
+                        "id": "[ENTITY_REDACTED]",
+                        "role": "client"
+                    }
+                ],
+                "turns": [
+                    {
+                        "speaker": "[ENTITY_REDACTED]",
+                        "content": "Erreur API"
+                    }
+                ],
+                "events": [
+                    "erreur API"
+                ]
+            },
+            "metadata": {
+                "domain": "support_tech",
+                "date_creation": "2025-09-03"
+            },
+            "adaptations_par_niveau": {
+                "L0": {
+                    "anonymized_text_sample": "Bonjour, je suis Jean Dupont de Paris. ... (minimal changes)",
+                    "risk_score_estimated": 90,
+                    "audit_findings_sample": [
+                        {
+                            "finding": "Aucun anonymisation, risque élevé"
+                        }
+                    ]
+                },
+                "L1": {
+                    "anonymized_text_sample": "Bonjour, je suis [PER_A] de [LOC_FRANCE]. ...",
+                    "risk_score_estimated": 60,
+                    "audit_findings_sample": [
+                        {
+                            "finding": "Généralisation légère, risque modéré"
+                        }
+                    ]
+                },
+                "L2": {
+                    "anonymized_text_sample": "Bonjour, je suis [PER_A] de [LOC_REGION]. ...",
+                    "risk_score_estimated": 40,
+                    "audit_findings_sample": [
+                        {
+                            "finding": "Standard, bon équilibre"
+                        }
+                    ]
+                },
+                "L3": {
+                    "anonymized_text_sample": "Bonjour, je suis [ENTITY] de [LOC_PAYS]. ...",
+                    "risk_score_estimated": 25,
+                    "audit_findings_sample": [
+                        {
+                            "finding": "Fort, risque bas mais utilité réduite"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

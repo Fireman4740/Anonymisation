@@ -1,0 +1,16 @@
+flask>=3.0.0
+requests>=2.31.0
+geonamescache
+schwifty
+scikit-learn
+python-dotenv
+deeppavlov
+gliner
+sentence-transformers 
+transformers 
+torch 
+langdetect
+spacy
+datasets 
+tqdm
+intervaltree

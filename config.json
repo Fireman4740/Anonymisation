@@ -1,0 +1,25 @@
+{
+	"openrouter": {
+		"base_url": "https://openrouter.ai/api/v1",
+		"retry_count": 2,
+		"fallback_model": "openai/gpt-4o-mini",
+		"models": {
+			"detect": "openai/gpt-4.1-mini",
+			"paraphrase": "openai/gpt-4.1-mini",
+			"audit": "openai/gpt-4.1-mini"
+		}
+	},
+	"features": {
+		"llm_detection": true,
+		"llm_paraphrase": true,
+		"llm_audit": true
+	},
+	"policy_defaults": {
+		"paraphrase_intensity": 1,
+		"risk_threshold": 45
+	},
+	"runtime": {
+		"log_level": "INFO",
+		"timeout_seconds": 60
+	}
+}
