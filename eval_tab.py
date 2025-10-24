@@ -10,8 +10,8 @@ from difflib import SequenceMatcher
 from typing import List, Tuple, Dict, Any
 
 # NOTE: Ancienne implémentation locale HF NER supprimée.
-# L'évaluation s'appuie désormais sur l'ensemble NER (GLiNER + DeepPavlov + HF fallback)
-# géré par l'orchestrateur via overrides (gliner_models, ner_use_deeppavlov...).
+# L'évaluation s'appuie désormais sur l'ensemble NER (GLiNER + HF fallback)
+# géré par l'orchestrateur via overrides (gliner_models, etc.).
 
 from dotenv import load_dotenv
 from tqdm import tqdm

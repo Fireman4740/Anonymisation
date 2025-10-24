@@ -2,7 +2,7 @@
 """
 NER ensemble utilities extracted from orchestrator.
 
-Provides optional DeepPavlov, GLiNER and HF (transformers) pipelines plus
+Provides optional GLiNER and HF (transformers) pipelines plus
 helpers for sentence splitting and entity list merging.
 
 All dependencies are optional; if a library is missing the corresponding
@@ -18,6 +18,7 @@ from __future__ import annotations
 from typing import List, Tuple, Dict, Any, Optional, Union
 import os
 import traceback
+import warnings
 from contextlib import nullcontext as _nullcontext
 
 # ---------------- Logging ----------------
@@ -31,16 +32,6 @@ def _log(msg: str) -> None:
 
 # ---------------- Optional imports (guarded) ----------------
 try:  # pragma: no cover
-    from deeppavlov import configs as dp_configs  # type: ignore
-    from deeppavlov import build_model as dp_build_model  # type: ignore
-
-    _DP_AVAILABLE = True
-except Exception:  # pragma: no cover
-    _DP_AVAILABLE = False  # type: ignore
-    dp_configs = None  # type: ignore
-    dp_build_model = None  # type: ignore
-
-try:  # pragma: no cover
     from gliner import GLiNER  # type: ignore
 
     _GLINER_AVAILABLE = True
@@ -49,13 +40,23 @@ except Exception:  # pragma: no cover
     GLiNER = None  # type: ignore
 
 try:  # pragma: no cover
-    from transformers import (  # type: ignore
-        pipeline as hf_pipeline,
+    from transformers.pipelines import pipeline as hf_pipeline  # type: ignore
+    from transformers.models.auto.tokenization_auto import (  # type: ignore
         AutoTokenizer as HFTokenizer,
+    )
+    from transformers.models.auto.modeling_auto import (  # type: ignore
         AutoModelForTokenClassification as HFModel,
     )
+    try:  # pragma: no cover - best effort to silence verbose warnings
+        from transformers.utils import logging as hf_logging  # type: ignore
+
+        hf_logging.set_verbosity_error()
+    except Exception:  # pragma: no cover
+        pass
 except Exception:  # pragma: no cover
     hf_pipeline = HFTokenizer = HFModel = None  # type: ignore
+
+warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
 
 # Optional torch import for device / dtype selection
 try:  # pragma: no cover
@@ -442,7 +443,7 @@ def run_hf_ner_chunked(
         for cs, ce in wins:
             chunk = text[cs:ce]
             try:
-                out = nlp(chunk)
+                out = nlp(chunk, truncation=True, max_length=max_tokens)
             except Exception as e:
                 _log(f"HF inference error on chunk: {e}")
                 out = []
@@ -477,271 +478,6 @@ def run_hf_ner_chunked(
                 return []
             return _process()
         return []
-
-
-# ---------------- DeepPavlov ----------------
-_DP_MODELS = None
-
-# DeepPavlov standard tags (plus extended PII used in merges).
-# Ref: http://docs.deeppavlov.ai/en/master/features/models/NER.html#7.-ner-tags-list
-DEEPPAVLOV_ENTITY_TAGS = [
-    "PERSON",
-    "NORP",
-    "FACILITY",
-    "ORGANIZATION",
-    "GPE",
-    "LOCATION",
-    "PRODUCT",
-    "EVENT",
-    "WORK_OF_ART",
-    "LAW",
-    "LANGUAGE",
-    "DATE",
-    "TIME",
-    "PERCENT",
-    "MONEY",
-    "QUANTITY",
-    "ORDINAL",
-    "CARDINAL",
-    # Additional PII we may merge-in from other detectors
-    "MAIL",
-    "URL",
-    "IP",
-    "TELEPHONE",
-    "USERNAME",
-]
-
-
-def _maybe_move_deeppavlov_model(mdl) -> None:  # pragma: no cover - best effort
-    if torch is None:
-        return
-    try:
-        if _GLN_DEVICE in {"cuda", "mps"}:
-            if hasattr(mdl, "to"):
-                try:
-                    mdl.to(_GLN_DEVICE)
-                except Exception as e:
-                    _log(f"DeepPavlov main .to() failed: {e} -> staying on CPU")
-            for attr in dir(mdl):
-                comp = getattr(mdl, attr, None)
-                if hasattr(comp, "to"):
-                    try:
-                        comp.to(_GLN_DEVICE)
-                    except Exception:
-                        continue
-    except Exception as e:
-        _log(f"DeepPavlov move error: {e}")
-
-
-def _load_dp_models(config_names: List[str]):
-    global _DP_MODELS
-    if not _DP_AVAILABLE:
-        return []
-
-    if _DP_MODELS is None:
-        _DP_MODELS = []
-
-    loaded = {n for n, _ in _DP_MODELS}
-    models = list(_DP_MODELS)
-
-    for cname in config_names:
-        if cname in loaded:
-            continue
-        try:
-            if not hasattr(dp_configs, "ner"):
-                continue
-            cfg = getattr(dp_configs.ner, cname)
-            # install=True per docs (download + install deps)
-            mdl = dp_build_model(cfg, download=True, install=True)
-            _maybe_move_deeppavlov_model(mdl)
-            models.append((cname, mdl))
-        except Exception:
-            continue
-
-    _DP_MODELS = models
-    return models
-
-
-def _normalize_dp_label(label: str) -> Optional[str]:
-    lab = label
-    if not lab:
-        return None
-    if "-" in lab:
-        try:
-            _, lab = lab.split("-", 1)
-        except ValueError:
-            pass
-    lab = lab.strip().upper()
-
-    # Normalize synonyms
-    if lab in {"PER", "PERSON"}:
-        lab = "PERSON"
-    if lab in {"ORG", "ORGANIZATION", "ORGANISATION"}:
-        lab = "ORGANIZATION"
-    if lab in {"LOC", "LOCATION"}:
-        lab = "LOCATION"
-    if lab in {"GPE"}:
-        lab = "GPE"
-    if lab in {"FAC", "FACILITY"}:
-        lab = "FACILITY"
-    if lab in {"WORK_OF_ART", "WORKOFART"}:
-        lab = "WORK_OF_ART"
-    if lab in {"PCT", "PERCENT"}:
-        lab = "PERCENT"
-    if lab in {"MONEY"}:
-        lab = "MONEY"
-    if lab in {"QUANTITY", "QUANT"}:
-        lab = "QUANTITY"
-    if lab in {"ORD", "ORDINAL"}:
-        lab = "ORDINAL"
-    if lab in {"CARD", "CARDINAL"}:
-        lab = "CARDINAL"
-    if lab in {"EVENT"}:
-        lab = "EVENT"
-    if lab in {"LAW"}:
-        lab = "LAW"
-    if lab in {"LANG", "LANGUAGE"}:
-        lab = "LANGUAGE"
-    if lab in {"PRODUCT"}:
-        lab = "PRODUCT"
-    if lab in {"NORP"}:
-        lab = "NORP"
-
-    # PII aliases we may map (for merging)
-    if lab in {"EMAIL", "MAIL", "E-MAIL"}:
-        lab = "MAIL"
-    if lab == "URL":
-        lab = "URL"
-    if lab in {"IP", "IP_ADDRESS", "IPV4", "IPV6"}:
-        lab = "IP"
-    if lab in {"PHONE", "TELEPHONE", "PHONE_NUMBER", "MOBILE"}:
-        lab = "TELEPHONE"
-    if lab in {"USERNAME", "USER", "HANDLE", "ACCOUNT"}:
-        lab = "USERNAME"
-    if lab in {"DATE"}:
-        lab = "DATE"
-    if lab in {"TIME"}:
-        lab = "TIME"
-
-    return lab if lab in set(DEEPPAVLOV_ENTITY_TAGS) else None
-
-
-def _decode_bio_to_spans(sentence: str, tokens: list, tags: list, sent_start: int):
-    ents: List[Tuple[int, int, str]] = []
-    pos = 0
-
-    def align(tok: str, p: int) -> int:
-        return sentence.find(tok, p)
-
-    cur_label: Optional[str] = None
-    cur_s = cur_e = None
-
-    for tok, tag in zip(tokens, tags):
-        label = "O" if not tag or tag == "O" else tag
-        if label == "O":
-            if cur_label is not None:
-                ents.append((cur_s, cur_e, cur_label))  # type: ignore[arg-type]
-                cur_label = cur_s = cur_e = None
-            i = align(tok, pos)
-            if i != -1:
-                pos = i + len(tok)
-            continue
-
-        bio, typ = label.split("-", 1)
-        norm = _normalize_dp_label(typ)
-        i = align(tok, pos)
-        if i == -1:
-            continue
-        tok_s, tok_e = i, i + len(tok)
-        pos = tok_e
-
-        if norm is None:
-            if cur_label is not None:
-                ents.append((cur_s, cur_e, cur_label))  # type: ignore[arg-type]
-            cur_label = cur_s = cur_e = None
-            continue
-
-        if bio == "B" or (cur_label is not None and norm != cur_label):
-            if cur_label is not None:
-                ents.append((cur_s, cur_e, cur_label))  # type: ignore[arg-type]
-            cur_label, cur_s, cur_e = norm, tok_s, tok_e
-        else:
-            if cur_label is None:
-                cur_label, cur_s, cur_e = norm, tok_s, tok_e
-            else:
-                cur_e = tok_e
-
-    if cur_label is not None:
-        ents.append((cur_s, cur_e, cur_label))  # type: ignore[arg-type]
-
-    return [
-        {"start": sent_start + s, "end": sent_start + e, "entity_group": lab}
-        for s, e, lab in ents
-        if e > s
-    ]
-
-
-def _dp_predict(model, sentences: list):
-    try:
-        out = model(sentences)
-    except Exception:
-        return []
-    if isinstance(out, (list, tuple)) and len(out) == 2:
-        toks_batch, tags_batch = out[0], out[1]
-        res = []
-        for tks, tgs in zip(toks_batch, tags_batch):
-            res.append((tks, tgs))
-        return res
-    return []
-
-
-def run_deeppavlov_ner_ensemble(
-    text: str, dp_config_names: List[str], mode: str = "union", min_votes: int = 1, use_gpu: bool = True
-):
-    """
-    Run multiple DeepPavlov NER configs and vote.
-    mode: "union" (>=min_votes) or "consensus" (>=all models)
-    """
-    if not _DP_AVAILABLE:
-        return []
-
-    try:
-        if use_gpu and torch is not None and _GLN_DEVICE in {"cuda", "mps"}:
-            models = _load_dp_models(dp_config_names)
-        else:
-            models = _load_dp_models(dp_config_names)
-    except Exception as e:
-        _log(f"DeepPavlov GPU load failed -> CPU fallback: {e}")
-        models = _load_dp_models(dp_config_names)
-
-    sent_spans = split_sentences(text)
-    if not models:
-        return []
-
-    votes: Dict[Tuple[int, int, str], int] = {}
-    for _name, model in models:
-        for s, e in sent_spans:
-            sent = text[s:e]
-            preds = _dp_predict(model, [sent])
-            if not preds:
-                continue
-            toks, tags = preds[0]
-            spans = _decode_bio_to_spans(sent, toks, tags, s)
-            for ent in spans:
-                key = (ent["start"], ent["end"], ent["entity_group"])
-                votes[key] = votes.get(key, 0) + 1
-
-    total_models = len(models)
-    results = []
-    for (s, e, lab), v in votes.items():
-        if mode == "consensus":
-            if v >= max(min_votes, total_models):
-                results.append({"start": s, "end": e, "entity_group": lab, "votes": v})
-        else:
-            if v >= max(1, min_votes):
-                results.append({"start": s, "end": e, "entity_group": lab, "votes": v})
-    results.sort(key=lambda x: (x["start"], x["end"]))
-    return results
 
 
 # ---------------- GLiNER ----------------
@@ -916,7 +652,6 @@ def merge_ner_lists(*ner_lists):
 # ---------------- Warm-up helper ----------------
 def warm_up_models(
     gliner_preset: Optional[str] = None,
-    dp_configs: Optional[List[str]] = None,
     load_hf: bool = True,
     gliner_labels: Optional[List[str]] = None,
     gliner_threshold: float = 0.35,
@@ -925,7 +660,6 @@ def warm_up_models(
     Preload models to reduce cold-start latency.
 
     gliner_preset: one of _GLINER_PRESETS keys (e.g. "balanced", "pii")
-    dp_configs: list of DeepPavlov config names (e.g. ["ner_ontonotes_bert"])
     load_hf: if True, build HF NER pipeline
     gliner_labels: labels to use for a small GLiNER warm-up call
     gliner_threshold: threshold for the warm-up call
@@ -936,13 +670,6 @@ def warm_up_models(
             get_hf_ner()
         except Exception as e:
             _log(f"Warm-up HF NER failed: {e}")
-
-    # DeepPavlov
-    if dp_configs:
-        try:
-            _load_dp_models(dp_configs)
-        except Exception as e:
-            _log(f"Warm-up DeepPavlov failed: {e}")
 
     # GLiNER
     try:
@@ -1049,65 +776,6 @@ if os.getenv("NER_FAST", "0").lower() in {"1", "true", "yes"}:
         ents.sort(key=lambda x: (x["start"], x["end"]))
         return ents
 
-    # ---- DeepPavlov (simple loop) ----
-    def _load_dp_models(config_names: List[str]):  # type: ignore
-        global _DP_MODELS
-        if not _DP_AVAILABLE:
-            return []
-        if _DP_MODELS is None:
-            _DP_MODELS = []
-        loaded = {n for n, _ in _DP_MODELS}
-        for cname in config_names:
-            if cname in loaded:
-                continue
-            if not hasattr(dp_configs, "ner"):
-                continue
-            cfg = getattr(dp_configs.ner, cname)
-            mdl = dp_build_model(cfg, download=True, install=True)
-            if torch is not None and _FAST_DEVICE in {"cuda", "mps"}:
-                try:
-                    for attr in [mdl] + [getattr(mdl, a) for a in dir(mdl) if not a.startswith("_")]:
-                        if hasattr(attr, "to"):
-                            try:
-                                attr.to(_FAST_DEVICE)
-                            except Exception:
-                                pass
-                except Exception:
-                    pass
-            _DP_MODELS.append((cname, mdl))
-        return _DP_MODELS
-
-    def run_deeppavlov_ner_ensemble(  # type: ignore
-        text: str, dp_config_names: List[str], mode: str = "union", min_votes: int = 1, use_gpu: bool = True
-    ):
-        if not _DP_AVAILABLE:
-            return []
-        models = _load_dp_models(dp_config_names)
-        if not models:
-            return []
-        sent_spans = split_sentences(text)
-        votes: Dict[Tuple[int, int, str], int] = {}
-        for _name, model in models:
-            for s, e in sent_spans:
-                toks_tags = _dp_predict(model, [text[s:e]])
-                if not toks_tags:
-                    continue
-                toks, tags = toks_tags[0]
-                for ent in _decode_bio_to_spans(text[s:e], toks, tags, s):
-                    key = (ent["start"], ent["end"], ent["entity_group"])
-                    votes[key] = votes.get(key, 0) + 1
-        total = len(models)
-        out = []
-        for (s, e, lab), v in votes.items():
-            if mode == "consensus":
-                if v >= max(min_votes, total):
-                    out.append({"start": s, "end": e, "entity_group": lab, "votes": v})
-            else:
-                if v >= max(1, min_votes):
-                    out.append({"start": s, "end": e, "entity_group": lab, "votes": v})
-        out.sort(key=lambda x: (x["start"], x["end"]))
-        return out
-
     # ---- GLiNER simplified ----
     def _load_gliner_models(model_names: List[str]):  # type: ignore
         global _GLINER_MODELS
@@ -1196,11 +864,9 @@ if os.getenv("NER_FAST", "0").lower() in {"1", "true", "yes"}:
 
 
 __all__ = [
-    "run_deeppavlov_ner_ensemble",
     "run_gliner",
     "run_hf_ner_chunked",
     "merge_ner_lists",
     "warm_up_models",
     "GLINER_ALL_LABELS",
-    "DEEPPAVLOV_ENTITY_TAGS",
 ]

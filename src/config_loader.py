@@ -33,7 +33,7 @@ def load_config(path: Optional[str] = None, force_reload: bool = False) -> Dict[
         "openrouter": {
             "base_url": "https://openrouter.ai/api/v1",
             "retry_count": 1,
-            "fallback_model": "openai/gpt-4o-mini",
+            "fallback_model": "qwen/qwen3-30b-a3b-instruct-2507",
             "models": {}
         }
     }
@@ -54,5 +54,5 @@ def openrouter_client_kwargs(cfg: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "base_url": o.get("base_url", "https://openrouter.ai/api/v1"),
         "retry_count": int(o.get("retry_count", 1) or 1),
-        "fallback_model": o.get("fallback_model", "openai/gpt-4o-mini"),
+        "fallback_model": o.get("fallback_model", "qwen/qwen3-30b-a3b-instruct-2507"),
     }

@@ -1,6 +1,48 @@
-/.env
-/Dataset/text-anonymization-benchmark/*
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyc
-.DS_Store
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+anno/
+
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Environment variables
+/.env
+.env.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datasets (volumineux)
+/Dataset/text-anonymization-benchmark/*
+Dataset/evaluation/DB-Bio/*.tar.gz
+Dataset/evaluation/PersonalReddit/*.tar.gz
+
+# Résultats temporaires
+results/*.json
+!results/old/.gitkeep
+debug_dump/
+*.log
+
+# Scripts temporaires
+cleanup.sh
+
+# Fichiers de test
+test_*.json
+preds_*.json

@@ -4,7 +4,6 @@ geonamescache
 schwifty
 scikit-learn
 python-dotenv
-deeppavlov
 gliner
 sentence-transformers 
 transformers 

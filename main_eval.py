@@ -81,7 +81,7 @@ def _inject_default_gliner_best(overrides: dict | None) -> dict | None:
     # Injection liste best (run_gliner utilisera le weighting via env GLINER_WEIGHTING=1 par défaut)
     overrides.setdefault("ner_use_gliner", True)
     overrides.setdefault("gliner_models", BEST_GLINER_MODELS)
-    # On peut laisser d'autres sources actives; possibilité d'ajouter DeepPavlov via overrides si besoin
+    # On peut laisser d'autres sources actives; possibilité d'ajouter des modèles via overrides si besoin
     return overrides or None
 
 

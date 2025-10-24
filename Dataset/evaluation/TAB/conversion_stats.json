@@ -1,0 +1,14 @@
+{
+  "train": {
+    "samples": 1014,
+    "output_file": "/Users/mathiscarlesso/Documents/AI/Anonymisation/Dataset/evaluation/TAB/train.jsonl"
+  },
+  "dev": {
+    "samples": 127,
+    "output_file": "/Users/mathiscarlesso/Documents/AI/Anonymisation/Dataset/evaluation/TAB/dev.jsonl"
+  },
+  "test": {
+    "samples": 127,
+    "output_file": "/Users/mathiscarlesso/Documents/AI/Anonymisation/Dataset/evaluation/TAB/test.jsonl"
+  }
+}

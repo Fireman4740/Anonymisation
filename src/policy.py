@@ -41,6 +41,13 @@ class AnonymizationPolicy:
     llm_paraphrase: bool = False
     llm_audit: bool = False
 
+    # RUPTA - Privacy-Utility optimization
+    rupta_enabled: bool = False
+    rupta_p_threshold: int = 10
+    rupta_max_iterations: int = 3
+    rupta_privacy_threshold: int | None = None
+    rupta_utility_threshold: int = 80
+
     # Seuil de risque (si audit actif) et tours de durcissement (désactivés ici)
     risk_threshold: int = 100
     max_hardening_rounds: int = 0
@@ -97,6 +104,12 @@ def preset(level: str) -> AnonymizationPolicy:
         llm_detection=True,   # seule fonctionnalité LLM active
         llm_paraphrase=True,
         llm_audit=True,
+        # RUPTA activation for privacy-utility optimization
+        rupta_enabled=True,
+        rupta_p_threshold=10,  # Nombre de candidats pour privacy evaluation
+        rupta_max_iterations=3,  # Optimisation rapide (3 itérations max)
+        rupta_privacy_threshold=None,  # Pas de seuil strict (cherche non-identifié)
+        rupta_utility_threshold=80,  # Maintenir au moins 80% d'utilité
         paraphrase_intensity=0,
         risk_threshold=45,
         max_hardening_rounds=0,

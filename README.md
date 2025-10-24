@@ -59,11 +59,100 @@ LLM "auditeur" produit: score 0–100, findings (combinaisons rares, fuites impl
 ✔ Pseudonymisation HMAC stable (`src/utils_pseudo.py`).  
 ✔ Orchestrateur (fusion spans, hooks généralisation).  
 ✔ Validator Guardrails (`sanitize_pii`).  
+✔ **RUPTA Integration**: Privacy-Utility Tradeoff Optimization (L1).  
+✔ **Multilingual Support**: Toutes langues européennes (FR/EN/DE/ES/IT/PT/NL...).  
+✔ **Evaluation Framework**: Scripts pour DB-Bio et PersonalReddit datasets.  
 ✖ Couverture regex incomplète (IPs, URLs, hostnames internes, UUID, tickets, secrets…).  
 ✖ Généralisation fine partielle.  
 ✖ Co‑référence avancée manquante.  
 ✖ Métriques formelles (k‑anonymity, l‑diversity) absentes.  
 ✖ Export structuré "animation" non finalisé.
+
+## 9.1. RUPTA (Privacy-Utility Tradeoff)
+
+**RUPTA** (Risk-Utility Privacy Tradeoff Analysis) est maintenant intégré au niveau **L1** pour optimiser l'équilibre entre protection de la vie privée et préservation de l'utilité.
+
+### Fonctionnement
+
+1. **Privacy Evaluation**: Évalue le risque de ré-identification en générant une liste de candidats et en vérifiant si la vraie identité est identifiable.
+2. **Utility Evaluation**: Mesure la préservation de l'information utile (ex: occupation) via un score de confiance de classification.
+3. **Iterative Optimization**: Améliore le texte anonymisé par itérations successives en masquant les entités sensibles et en paraphrasant.
+4. **Combined Reward**: Optimise une récompense combinée (50% privacy, 50% utility) pour atteindre le meilleur tradeoff.
+
+### Configuration
+
+```python
+from src.policy import AnonymizationPolicy
+
+# L0: Baseline (sans RUPTA)
+policy_l0 = AnonymizationPolicy.preset("L0")
+
+# L1: Avec RUPTA (défaut)
+policy_l1 = AnonymizationPolicy.preset("L1")
+# rupta_enabled=True
+# rupta_p_threshold=10 (10 candidats pour privacy)
+# rupta_max_iterations=3 (optimisation en 3 étapes max)
+# rupta_utility_threshold=80 (maintenir ≥80% d'utilité)
+```
+
+### Utilisation
+
+```python
+from src.orchestrator import anonymize_text
+
+result = anonymize_text(
+    value="Marie Curie, physicienne française, a reçu deux prix Nobel.",
+    scope_id="example_001",
+    secret_salt="my_secret",
+    level="L1",  # Active RUPTA
+    overrides={
+        "rupta_ground_truth_people": "Marie Curie",
+        "rupta_ground_truth_label": "physicist"
+    }
+)
+
+# Résultat
+print(result["anonymized_text"])
+# "Une physicienne européenne renommée a reçu plusieurs prix Nobel."
+
+print(result["rupta_metrics"])
+# {
+#   "privacy": {"rank": 999, "non_identified": True},
+#   "utility": {"confidence_score": 85, "correct_prediction": True},
+#   "iterations": 2,
+#   "final_reward": 0.92
+# }
+```
+
+### Langues Supportées
+
+RUPTA fonctionne avec **toutes les langues européennes** via des prompts multilingues en anglais universel :
+- 🇫🇷 Français
+- 🇬🇧 Anglais  
+- 🇩🇪 Allemand
+- 🇪🇸 Espagnol
+- 🇮🇹 Italien
+- 🇵🇹 Portugais
+- 🇳🇱 Néerlandais
+- Et plus...
+
+### Évaluation
+
+```bash
+# Test rapide (3 cas multilingues)
+python scripts/test_rupta_integration.py
+
+# Évaluation pilote (50 échantillons)
+./scripts/run_rupta_eval.sh pilot
+
+# Évaluation complète
+./scripts/run_rupta_eval.sh all
+
+# Générer rapport de comparaison
+./scripts/run_rupta_eval.sh compare
+```
+
+**Documentation complète**: [docs/RUPTA_INTEGRATION.md](docs/RUPTA_INTEGRATION.md)
 
 ## 10. Roadmap Courte
 
@@ -289,13 +378,16 @@ python eval_tab.py \
  --dump_k 30 \
  --dump_strategy errors
 
-## 18. Ensemble NER (Transformers, DeepPavlov, GLiNER)
+## 18. Ensemble NER (Transformers & GLiNER)
 
-Le projet supporte jusqu'à trois sources d'entités nommées combinables :
+> ℹ️ Depuis la migration Python 3.11, le support DeepPavlov a été **retiré** afin d'éviter
+> l'installation forcée de `torch<1.14`. Le pipeline repose désormais sur Transformers (HF)
+> et GLiNER uniquement.
+
+Le projet supporte deux sources d'entités nommées combinables :
 
 1. HF Transformers (par défaut) : modèle multilingue `Davlan/bert-base-multilingual-cased-ner-hrl`.
-2. DeepPavlov (configurations Ontonotes / autres) : ex. `ner_ontonotes_bert`.
-3. GLiNER (zero-shot / multi-label) : ex. `urchade/gliner_large-v2.1`, `urchade/gliner_multi-v2.1`.
+2. GLiNER (zero-shot / multi-label) : ex. `urchade/gliner_large-v2.1`, `urchade/gliner_multi-v2.1`.
 
 L'agrégation permet d'augmenter rappel et robustesse multi‑langue avant pseudonymisation.
 
@@ -307,13 +399,10 @@ Par défaut seules les dépendances de base sont installées. Pour activer toute
 # (Dans votre venv déjà activé)
 # HF est déjà couvert par transformers dans requirements.txt (vérifier).
 
-pip install deeppavlov
-python -m deeppavlov install ner_ontonotes_bert  # télécharge poids + dépendances spécifiques
-
 pip install gliner
 ```
 
-Notes DeepPavlov : l'appel à `build_model(..., download=True, install=True)` dans le code gère aussi l'installation si vous ne lancez pas la commande explicite `python -m deeppavlov install ...`.
+> Conseil : GLiNER requiert PyTorch >= 2.0 (disponible pour Python 3.11).
 
 ### 18.2 Variables d'environnement de performance
 
@@ -337,7 +426,6 @@ $env:NER_FAST = "1"
 Les fonctions principales (dans `src/ner_ensemble.py`) :
 
 - `run_hf_ner_chunked(text, max_tokens=384, stride=64, min_conf=0.55)`
-- `run_deeppavlov_ner_ensemble(text, dp_config_names=[...], mode='union'|'consensus', min_votes=1)`
 - `run_gliner(text, model_names=[...], labels=[...], threshold=0.35)`
 - `merge_ner_lists(*lists)` pour fusionner sans doublons.
 
@@ -345,10 +433,9 @@ Les fonctions principales (dans `src/ner_ensemble.py`) :
 
 ```python
 from src.ner_ensemble import (
-    run_hf_ner_chunked,
-    run_deeppavlov_ner_ensemble,
-    run_gliner,
-    merge_ner_lists,
+  run_hf_ner_chunked,
+  run_gliner,
+  merge_ner_lists,
 )
 
 text = "Bob Ross lived in Florida. Elon Musk founded Tesla."
@@ -356,20 +443,13 @@ text = "Bob Ross lived in Florida. Elon Musk founded Tesla."
 # 1. HF Transformers
 hf_ents = run_hf_ner_chunked(text)
 
-# 2. DeepPavlov (installer préalablement: pip install deeppavlov ; python -m deeppavlov install ner_ontonotes_bert)
-#    On peut passer plusieurs configs ex: ['ner_ontonotes_bert','ner_ontonotes_bert_mult'] si existantes
-try:
-    dp_ents = run_deeppavlov_ner_ensemble(text, dp_config_names=['ner_ontonotes_bert'], mode='union')
-except Exception:
-    dp_ents = []  # lib non installée → silencieux
-
-# 3. GLiNER (pip install gliner)
+# 2. GLiNER (pip install gliner)
 try:
     gln_ents = run_gliner(text, labels=["Person","Organization","Location"], threshold=0.35)
 except Exception:
     gln_ents = []
 
-all_ents = merge_ner_lists(hf_ents, dp_ents, gln_ents)
+all_ents = merge_ner_lists(hf_ents, gln_ents)
 print(all_ents)
 ```
 
@@ -378,11 +458,10 @@ print(all_ents)
 - `union` : conserve toute entité atteignant `min_votes` (>=1 par défaut) dans une source.
 - `consensus` : exige que l'entité soit validée par toutes les sources chargées (votes == nombre de modèles). Utile pour augmenter la précision quand rappel ≈ suffisant.
 
-Les fonctions DeepPavlov et GLiNER ajoutent un champ `votes` par entité.
+Les sorties GLiNER ajoutent un champ `votes` par entité.
 
 ### 18.6 Sélection / normalisation des labels
 
-- DeepPavlov : conversion BIO → spans, normalisation (PERSON, ORGANIZATION, LOCATION, GPE, etc.) + quelques PII dérivés (EMAIL→MAIL...).
 - GLiNER : labels textuels adaptés vers le même espace (PERSON, ORGANIZATION, LOCATION...).
 - HF : `entity_group` déjà agrégé via `aggregation_strategy="simple"`.
 
@@ -391,7 +470,7 @@ Les fonctions DeepPavlov et GLiNER ajoutent un champ `votes` par entité.
 1. Activer `NER_FAST=1` pour lots volumineux (réduction overhead Python) après validation qualité.
 2. Utiliser `consensus` si vous observez trop de faux positifs sur données internes.
 3. Limiter le nombre de modèles GLiNER (grands checkpoints → RAM GPU) ou réduire `labels`.
-4. Sur GPU mémoire limitée : commencer par HF seul, puis ajouter GLiNER; DeepPavlov peut être CPU.
+4. Sur GPU mémoire limitée : commencer par HF seul, puis ajouter GLiNER.
 5. Journaliser temps d'inférence par composant pour guider l'arbitrage performance/qualité.
 
 ### 18.8 Dépannage rapide
@@ -399,7 +478,6 @@ Les fonctions DeepPavlov et GLiNER ajoutent un champ `votes` par entité.
 | Problème                 | Cause probable               | Action                                                       |
 | ------------------------ | ---------------------------- | ------------------------------------------------------------ |
 | OOM CUDA HF              | fenêtre trop large           | Réduire `max_tokens` (ex 256) ou désactiver half si instable |
-| Pas d'entités DeepPavlov | Modèle non installé          | `python -m deeppavlov install ner_ontonotes_bert`            |
 | ImportError gliner       | Dépendance manquante         | `pip install gliner`                                         |
 | Lenteur extrême          | Empilement 3 sources sur CPU | Désactiver une source ou activer GPU                         |
 | Labels incohérents       | Variantes label GLiNER       | Vérifier normalisation / compléter `_normalize_gliner_label` |

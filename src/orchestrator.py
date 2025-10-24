@@ -12,12 +12,13 @@ try:
     from .utils_pseudo import PseudoMapper  # type: ignore
     from .text_sanitizer import regexes_based_replacements  # type: ignore
     from .ner_ensemble import (
-        run_deeppavlov_ner_ensemble,
         run_gliner,
         run_hf_ner_chunked,
         merge_ner_lists,
         GLINER_ALL_LABELS,
     )  # type: ignore
+    from .rupta.privacy_evaluator import evaluate_reidentification_risk  # type: ignore
+    from .rupta.utility_evaluator import evaluate_utility_preservation  # type: ignore
 except Exception:  # fallback exécution directe
     from policy import preset, AnonymizationPolicy  # type: ignore
     from llm_reasoner_openrouter import LLMReasoner, SeedSpan, DetectionPlan  # type: ignore
@@ -25,12 +26,13 @@ except Exception:  # fallback exécution directe
     from utils_pseudo import PseudoMapper  # type: ignore
     from text_sanitizer import regexes_based_replacements  # type: ignore
     from ner_ensemble import (
-        run_deeppavlov_ner_ensemble,
         run_gliner,
         run_hf_ner_chunked,
         merge_ner_lists,
         GLINER_ALL_LABELS,
     )  # type: ignore
+    from rupta.privacy_evaluator import evaluate_reidentification_risk  # type: ignore
+    from rupta.utility_evaluator import evaluate_utility_preservation  # type: ignore
 
 
 """Ajout NER ensemble extrait vers ner_ensemble et amélioration dates FR/EN."""
@@ -275,9 +277,7 @@ def anonymize_text(
         ph = placeholder_from_policy(policy, etype, surface, mapper)
         base_reps.append((s, e, ph, {"etype": etype, "surface": surface, "source": "regex"}))
 
-    # Step 1bis: NER — fusion externe (ner_results) + interne (DP + GLiNER + HF)
-    use_dp = True
-    dp_cfgs = ["ner_conll2003_bert", "ner_ontonotes_bert", "ner_ontonotes_bert_mult"]
+    # Step 1bis: NER — fusion externe (ner_results) + interne (GLiNER + HF)
     use_gliner = True
     gl_models = ["urchade/gliner_large-v2.1", "urchade/gliner_multi-v2.1"]
     gl_labels = GLINER_ALL_LABELS
@@ -287,8 +287,6 @@ def anonymize_text(
     disable_internal = False
 
     if overrides:
-        use_dp = bool(overrides.get("ner_use_deeppavlov", use_dp))
-        dp_cfgs = list(overrides.get("ner_dp_configs", dp_cfgs))
         use_gliner = bool(overrides.get("ner_use_gliner", use_gliner))
         gl_models = list(overrides.get("gliner_models", gl_models))
         gl_labels = list(overrides.get("gliner_labels", gl_labels))
@@ -299,10 +297,9 @@ def anonymize_text(
 
     local_ner = ner_results or []
     if not disable_internal:
-        dp_ents = run_deeppavlov_ner_ensemble(value, dp_cfgs, mode=ner_mode, min_votes=ner_min_votes) if use_dp else []
         gl_ents = run_gliner(value, model_names=gl_models, labels=gl_labels, threshold=gl_thresh) if use_gliner else []
-        hf_ents = run_hf_ner_chunked(value) if (not dp_ents and not gl_ents) else []
-        local_ner = merge_ner_lists(local_ner, dp_ents, gl_ents, hf_ents)
+        hf_ents = run_hf_ner_chunked(value) if not gl_ents else []
+        local_ner = merge_ner_lists(local_ner, gl_ents, hf_ents)
 
     def _map_label(lab: str) -> str:
         L = lab.upper()
@@ -464,8 +461,103 @@ def anonymize_text(
     if policy.mapping_retention == "discard":
         mapper.cache.clear()
 
+    # Step 7: RUPTA Privacy-Utility Optimization (si activé en L1)
+    rupta_metrics = {}
+    if policy.rupta_enabled and reasoner:
+        ground_truth_people = overrides.get("rupta_ground_truth_people") if overrides else None
+        ground_truth_label = overrides.get("rupta_ground_truth_label") if overrides else None
+        
+        if ground_truth_people and ground_truth_label:
+            try:
+                # Optimisation RUPTA itérative
+                best_text = text
+                best_reward = 0.0
+                iterations_done = 0
+                
+                for iteration in range(policy.rupta_max_iterations):
+                    iterations_done += 1
+                    
+                    # Évaluer privacy
+                    privacy_eval = evaluate_reidentification_risk(
+                        client=OpenRouterClient(),
+                        anonymized_text=text,
+                        ground_truth_people=ground_truth_people,
+                        p_threshold=policy.rupta_p_threshold,
+                        model=reasoner.model_detect if hasattr(reasoner, 'model_detect') else "qwen/qwen3-30b-a3b-instruct-2507"
+                    )
+                    
+                    # Évaluer utility
+                    utility_eval = evaluate_utility_preservation(
+                        client=OpenRouterClient(),
+                        anonymized_text=text,
+                        ground_truth_label=ground_truth_label,
+                        model=reasoner.model_detect if hasattr(reasoner, 'model_detect') else "qwen/qwen3-30b-a3b-instruct-2507"
+                    )
+                    
+                    # Calculer la récompense combinée
+                    privacy_rank = privacy_eval.get("rank", 1)
+                    privacy_reward = 1.0 if privacy_rank == 999 else min(privacy_rank / policy.rupta_p_threshold, 1.0)
+                    
+                    utility_score = utility_eval.get("confidence_score", 0)
+                    utility_correct = utility_eval.get("correct_prediction", False)
+                    utility_reward = (utility_score / 100.0) if utility_correct else 0.0
+                    
+                    # Récompense combinée (50% privacy, 50% utility)
+                    combined_reward = 0.5 * privacy_reward + 0.5 * utility_reward
+                    
+                    # Vérifier si on a atteint les objectifs
+                    privacy_ok = privacy_rank == 999 or (policy.rupta_privacy_threshold and privacy_rank >= policy.rupta_privacy_threshold)
+                    utility_ok = utility_correct and utility_score >= policy.rupta_utility_threshold
+                    
+                    # Si meilleur résultat, on le garde
+                    if combined_reward > best_reward:
+                        best_reward = combined_reward
+                        best_text = text
+                        rupta_metrics = {
+                            "privacy": privacy_eval,
+                            "utility": utility_eval,
+                            "iterations": iterations_done,
+                            "final_reward": best_reward,
+                            "privacy_reward": privacy_reward,
+                            "utility_reward": utility_reward
+                        }
+                    
+                    # Si objectifs atteints, on arrête
+                    if privacy_ok and utility_ok:
+                        break
+                    
+                    # Sinon, on continue l'optimisation (paraphrase + ajustements)
+                    if iteration < policy.rupta_max_iterations - 1:
+                        # Identifier les problèmes
+                        if not privacy_ok and privacy_eval.get("sensitive_entities"):
+                            # Il y a des entités sensibles, on les masque davantage
+                            sensitive = privacy_eval.get("sensitive_entities", [])
+                            for entity in sensitive[:3]:  # Max 3 entités à traiter
+                                if entity in text:
+                                    # Remplacer par un placeholder plus générique
+                                    text = text.replace(entity, "[REDACTED]")
+                        
+                        # Paraphraser légèrement pour améliorer le tradeoff
+                        if reasoner and policy.llm_paraphrase:
+                            try:
+                                temp = 0.3 + 0.1 * iteration  # Température croissante
+                                text = reasoner.paraphrase(
+                                    text, 
+                                    temperature=temp, 
+                                    ensure_placeholders_preserved=True
+                                )
+                            except Exception:
+                                pass  # Si paraphrase échoue, on continue
+                
+                # Utiliser le meilleur texte trouvé
+                text = best_text
+                
+            except Exception as e:
+                llm_error = (llm_error or "") + f"; rupta_failed: {type(e).__name__}: {e}" if llm_error else f"rupta_failed: {type(e).__name__}: {e}"
+                rupta_metrics = {"error": str(e)}
+
     return {
-        "text": text,
+        "anonymized_text": text,
         "audit": {
             "entities": applied_meta,
             "risk": risk_report,
@@ -473,5 +565,6 @@ def anonymize_text(
             "llm_used": llm_used,
             "models": models_used,
         },
+        "rupta_metrics": rupta_metrics,
         "policy": policy.to_dict(),
     }

@@ -24,7 +24,7 @@ class OpenRouterClient:
 
     Stratégie robustesse:
       - Jusqu'à `retry_count` tentatives sur le modèle principal en cas d'erreur de parsing.
-      - Puis 1 tentative sur `fallback_model` (par défaut openai/gpt-4o-mini) si activé et différent.
+      - Puis 1 tentative sur `fallback_model` (par défaut qwen/qwen3-30b-a3b-instruct-2507) si activé et différent.
       - Lève JSONParseError si aucune tentative ne retourne un JSON valide.
     """
 
@@ -33,7 +33,7 @@ class OpenRouterClient:
         api_key: Optional[str] = None,
         base_url: str = "https://openrouter.ai/api/v1",
         retry_count: int = 1,
-        fallback_model: str = "openai/gpt-4o-mini",
+        fallback_model: str = "qwen/qwen3-30b-a3b-instruct-2507",
     ):
         self._explicit_key = api_key
         self.base_url = base_url.rstrip("/")
