@@ -127,8 +127,9 @@ print(result["rupta_metrics"])
 ### Langues Supportées
 
 RUPTA fonctionne avec **toutes les langues européennes** via des prompts multilingues en anglais universel :
+
 - 🇫🇷 Français
-- 🇬🇧 Anglais  
+- 🇬🇧 Anglais
 - 🇩🇪 Allemand
 - 🇪🇸 Espagnol
 - 🇮🇹 Italien
@@ -475,12 +476,12 @@ Les sorties GLiNER ajoutent un champ `votes` par entité.
 
 ### 18.8 Dépannage rapide
 
-| Problème                 | Cause probable               | Action                                                       |
-| ------------------------ | ---------------------------- | ------------------------------------------------------------ |
-| OOM CUDA HF              | fenêtre trop large           | Réduire `max_tokens` (ex 256) ou désactiver half si instable |
-| ImportError gliner       | Dépendance manquante         | `pip install gliner`                                         |
-| Lenteur extrême          | Empilement 3 sources sur CPU | Désactiver une source ou activer GPU                         |
-| Labels incohérents       | Variantes label GLiNER       | Vérifier normalisation / compléter `_normalize_gliner_label` |
+| Problème           | Cause probable               | Action                                                       |
+| ------------------ | ---------------------------- | ------------------------------------------------------------ |
+| OOM CUDA HF        | fenêtre trop large           | Réduire `max_tokens` (ex 256) ou désactiver half si instable |
+| ImportError gliner | Dépendance manquante         | `pip install gliner`                                         |
+| Lenteur extrême    | Empilement 3 sources sur CPU | Désactiver une source ou activer GPU                         |
+| Labels incohérents | Variantes label GLiNER       | Vérifier normalisation / compléter `_normalize_gliner_label` |
 
 ### 18.9 Preset GLiNER "best" & Pondération des modèles
 

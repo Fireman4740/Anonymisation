@@ -3,12 +3,14 @@
 ## ✅ Travaux Complétés
 
 ### 1. Multilingual Support ✅
+
 - **Fichier**: `src/rupta/prompts_multilang.py` (renommé depuis `prompts_fr.py`)
 - **Changement**: Tous les prompts convertis de français vers anglais universel
 - **Langues supportées**: Toutes les langues européennes (FR, EN, DE, ES, IT, PT, NL, etc.)
 - **Approche**: Anglais simple et clair, sans idiomes, universel pour tous les LLMs
 
 **Prompts convertis** (9 au total):
+
 1. `PRIVACY_REFLECTION_FR_1` - Génération de candidats pour ré-identification
 2. `PRIVACY_REFLECTION_FR_2` - Identification d'entités sensibles
 3. `PRIVACY_CONFIDENCE_FR` - Score de confiance (0-100)
@@ -20,19 +22,21 @@
 9. `GENERAL_SYSTEM_FR` - Prompt système pour réponses JSON
 
 ### 2. Policy Integration ✅
+
 - **Fichier**: `src/policy.py`
 - **Changements**:
   - Ajout de 5 nouveaux paramètres RUPTA à `AnonymizationPolicy`:
-    * `rupta_enabled: bool = False`
-    * `rupta_p_threshold: int = 10`
-    * `rupta_max_iterations: int = 3`
-    * `rupta_privacy_threshold: int | None = None`
-    * `rupta_utility_threshold: int = 80`
+    - `rupta_enabled: bool = False`
+    - `rupta_p_threshold: int = 10`
+    - `rupta_max_iterations: int = 3`
+    - `rupta_privacy_threshold: int | None = None`
+    - `rupta_utility_threshold: int = 80`
   - Activation RUPTA dans preset L1:
-    * `rupta_enabled=True` (activé par défaut en L1)
-    * Configuration optimale: 10 candidats, 3 itérations, utilité ≥80%
+    - `rupta_enabled=True` (activé par défaut en L1)
+    - Configuration optimale: 10 candidats, 3 itérations, utilité ≥80%
 
 ### 3. Orchestrator Integration ✅
+
 - **Fichier**: `src/orchestrator.py`
 - **Changements**:
   - Imports RUPTA ajoutés: `privacy_evaluator`, `utility_evaluator`
@@ -44,11 +48,12 @@
     4. Optimise par paraphrase et masquage d'entités sensibles
     5. Converge vers meilleur tradeoff privacy-utility
   - Paramètres passés via `overrides`:
-    * `rupta_ground_truth_people`
-    * `rupta_ground_truth_label`
+    - `rupta_ground_truth_people`
+    - `rupta_ground_truth_label`
   - Retourne `rupta_metrics` dans le résultat
 
 ### 4. Utility Evaluator Update ✅
+
 - **Fichier**: `src/rupta/utility_evaluator.py`
 - **Changements**:
   - Import mis à jour: `prompts_fr` → `prompts_multilang`
@@ -56,6 +61,7 @@
   - Fonction existante `evaluate_classification_utility()` préservée
 
 ### 5. Privacy Evaluator Update ✅
+
 - **Fichier**: `src/rupta/privacy_evaluator.py`
 - **Changements**:
   - Import mis à jour: `prompts_fr` → `prompts_multilang`
@@ -65,13 +71,16 @@
 ### 6. Evaluation Scripts ✅
 
 #### a. `scripts/eval_rupta_pipeline.py`
+
 **Fonctionnalités**:
+
 - Évaluation sur DB-Bio et PersonalReddit
 - Support baseline (L0) et RUPTA (L1)
 - Métriques complètes: privacy rank, utility score, iterations, reward
 - Sauvegarde JSON avec résumé statistique
 
 **Usage**:
+
 ```bash
 python scripts/eval_rupta_pipeline.py \
     --dataset dbbio \
@@ -81,13 +90,16 @@ python scripts/eval_rupta_pipeline.py \
 ```
 
 #### b. `scripts/compare_baseline_rupta.py`
+
 **Fonctionnalités**:
+
 - Comparaison Baseline vs RUPTA
 - Génération de rapport Markdown
 - Analyse du tradeoff privacy-utility
 - Recommandations d'optimisation
 
 **Usage**:
+
 ```bash
 python scripts/compare_baseline_rupta.py \
     --results results/eval_dbbio.json \
@@ -95,12 +107,15 @@ python scripts/compare_baseline_rupta.py \
 ```
 
 #### c. `scripts/test_rupta_integration.py`
+
 **Fonctionnalités**:
+
 - Test rapide multilingue (FR/EN/ES)
 - Validation de l'intégration complète
 - Comparaison baseline vs RUPTA
 
 **Usage**:
+
 ```bash
 python scripts/test_rupta_integration.py
 ```
@@ -108,7 +123,9 @@ python scripts/test_rupta_integration.py
 ### 7. Documentation ✅
 
 #### a. `docs/RUPTA_INTEGRATION.md`
+
 **Contenu**:
+
 - Guide complet d'utilisation
 - Configuration des paramètres
 - Exemples de code
@@ -117,7 +134,9 @@ python scripts/test_rupta_integration.py
 - Workflow recommandé
 
 #### b. `scripts/README.md`
+
 **Contenu**:
+
 - Documentation des scripts
 - Exemples d'usage
 - Options avancées
@@ -174,6 +193,7 @@ combined_reward = 0.5 * privacy_reward + 0.5 * utility_reward
 ## 🎯 Configuration par Défaut
 
 ### L0 (Baseline)
+
 ```python
 AnonymizationPolicy.preset("L0")
 # - level_llm=False
@@ -182,6 +202,7 @@ AnonymizationPolicy.preset("L0")
 ```
 
 ### L1 (RUPTA)
+
 ```python
 AnonymizationPolicy.preset("L1")
 # - level_llm=True
@@ -197,23 +218,29 @@ AnonymizationPolicy.preset("L1")
 ## 📈 Métriques Attendues
 
 ### DB-Bio (1000 test samples)
+
 **Baseline (L0)**:
+
 - Privacy: ~30-40% non-identifiés
 - Utility: ~70-75% score moyen
 - Temps: ~10 min
 
 **RUPTA (L1)**:
+
 - Privacy: ~70-85% non-identifiés (+40-50%)
 - Utility: ~80-85% score moyen (+5-10%)
 - Temps: ~30-45 min (3x plus lent)
 
 ### PersonalReddit (~1000 test samples)
+
 **Baseline (L0)**:
+
 - Privacy: ~25-35% non-identifiés
 - Utility: ~65-70% score moyen
 - Temps: ~8 min
 
 **RUPTA (L1)**:
+
 - Privacy: ~65-80% non-identifiés (+40-45%)
 - Utility: ~75-80% score moyen (+10-15%)
 - Temps: ~25-40 min (3x plus lent)
@@ -223,12 +250,15 @@ AnonymizationPolicy.preset("L1")
 ## 🚀 Next Steps
 
 ### Immédiat (Priorité 1)
+
 1. ✅ **Tester l'intégration**
+
    ```bash
    python scripts/test_rupta_integration.py
    ```
 
 2. ⏳ **Évaluation pilote** (10 min)
+
    ```bash
    python scripts/eval_rupta_pipeline.py \
        --dataset dbbio \
@@ -246,7 +276,9 @@ AnonymizationPolicy.preset("L1")
    ```
 
 ### Court Terme (Priorité 2)
+
 4. ⏳ **Évaluation complète** (1-2h)
+
    ```bash
    python scripts/eval_rupta_pipeline.py \
        --all \
@@ -262,12 +294,15 @@ AnonymizationPolicy.preset("L1")
    - Ajuster `rupta_utility_threshold` (80 → 85)
 
 ### Moyen Terme (Priorité 3)
+
 6. ⏳ **Créer rupta_optimizer.py**
+
    - Module dédié pour l'optimisation
    - Stratégies d'optimisation avancées
    - Support pour d'autres métriques
 
 7. ⏳ **Améliorer les prompts**
+
    - Tester différentes formulations
    - Optimiser pour langues spécifiques
    - A/B testing sur les performances
@@ -281,6 +316,7 @@ AnonymizationPolicy.preset("L1")
 ## 📝 Checklist de Validation
 
 ### Fonctionnalités ✅
+
 - [x] Support multilingual (toutes langues européennes)
 - [x] Intégration dans policy (L0/L1)
 - [x] Intégration dans orchestrator
@@ -292,6 +328,7 @@ AnonymizationPolicy.preset("L1")
 - [x] Documentation complète
 
 ### Tests à Effectuer ⏳
+
 - [ ] Test unitaire de chaque composant
 - [ ] Test d'intégration end-to-end
 - [ ] Évaluation sur DB-Bio (50 samples)
@@ -302,6 +339,7 @@ AnonymizationPolicy.preset("L1")
 - [ ] Test de robustesse (edge cases)
 
 ### Documentation ⏳
+
 - [x] Guide d'intégration RUPTA
 - [x] README des scripts
 - [ ] Rapport d'évaluation
@@ -339,10 +377,10 @@ pylance src/rupta/
 
 - **RUPTA Paper**: Privacy-Utility Tradeoff for Text Anonymization
 - **GitHub**: https://github.com/RUPTA-anonymization/RUPTA
-- **Datasets**: 
+- **Datasets**:
   - DB-Bio: 10k celebrity biographies (24 occupations)
   - PersonalReddit: 8k synthetic Reddit comments (35 occupations, 7 attributes)
 
 ---
 
-*RUPTA Integration v1.0 - Complété le 2024*
+_RUPTA Integration v1.0 - Complété le 2024_

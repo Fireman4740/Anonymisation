@@ -11,6 +11,7 @@ Supprimer la dépendance à DeepPavlov qui nécessitait Python 3.9 et causait de
 ### 1. **src/ner_ensemble.py**
 
 #### Suppressions :
+
 - ❌ Import DeepPavlov (`from deeppavlov import ...`)
 - ❌ Variable `_DP_AVAILABLE`
 - ❌ Variable `_DP_MODELS`
@@ -25,6 +26,7 @@ Supprimer la dépendance à DeepPavlov qui nécessitait Python 3.9 et causait de
 - ❌ Section entière "DeepPavlov" (~300 lignes)
 
 #### Modifications :
+
 - ✅ Docstring mise à jour (suppression mention DeepPavlov)
 - ✅ `__all__` mis à jour (suppression de `run_deeppavlov_ner_ensemble` et `DEEPPAVLOV_ENTITY_TAGS`)
 - ✅ Fonction `warm_up_models()` : suppression du paramètre `dp_configs`
@@ -32,12 +34,14 @@ Supprimer la dépendance à DeepPavlov qui nécessitait Python 3.9 et causait de
 ### 2. **src/orchestrator.py**
 
 #### Suppressions :
+
 - ❌ Import `run_deeppavlov_ner_ensemble` (2 endroits : import principal + fallback)
 - ❌ Variables `use_dp` et `dp_cfgs`
 - ❌ Overrides `ner_use_deeppavlov` et `ner_dp_configs`
 - ❌ Appel `run_deeppavlov_ner_ensemble()`
 
 #### Modifications :
+
 - ✅ Commentaire Step 1bis : "NER — fusion externe + interne (GLiNER + HF)" au lieu de "DP + GLiNER + HF"
 - ✅ Logique NER simplifiée : GLiNER en priorité, HF en fallback si pas de résultats GLiNER
 - ✅ `merge_ner_lists()` : uniquement `gl_ents` et `hf_ents` au lieu de `dp_ents, gl_ents, hf_ents`
@@ -56,12 +60,14 @@ Supprimer la dépendance à DeepPavlov qui nécessitait Python 3.9 et causait de
 ## 📊 Impact
 
 ### Avantages ✅
+
 1. **Compatibilité Python 3.11** : Plus de problèmes avec torch<1.14.0
 2. **Simplification** : Moins de dépendances, code plus maintenable
 3. **Performance** : GLiNER est plus rapide et précis que DeepPavlov
 4. **GPU Support** : Meilleure utilisation du GPU avec GLiNER
 
 ### Tests ✅
+
 ```bash
 # Test avec 2 échantillons TAB
 python scripts/eval_rupta_pipeline.py --dataset tab --split test --n_samples 2 --use_rupta --policy L1
@@ -72,7 +78,8 @@ Résultat : ✅ **Fonctionnel** - Les modèles GLiNER se chargent correctement e
 ## 🔧 Configuration NER Actuelle
 
 ### GLiNER (Principal)
-- **Modèles par défaut** : 
+
+- **Modèles par défaut** :
   - `urchade/gliner_large-v2.1`
   - `urchade/gliner_multi-v2.1`
 - **Labels** : `GLINER_ALL_LABELS` (60+ entités incluant PII)
@@ -80,6 +87,7 @@ Résultat : ✅ **Fonctionnel** - Les modèles GLiNER se chargent correctement e
 - **GPU** : Auto-détection CUDA/MPS
 
 ### HuggingFace NER (Fallback)
+
 - **Modèle** : `Davlan/bert-base-multilingual-cased-ner-hrl`
 - **Usage** : Uniquement si GLiNER ne trouve rien
 - **Mode** : Chunked avec stride pour textes longs
@@ -103,7 +111,7 @@ python scripts/eval_rupta_pipeline.py --dataset tab --n_samples 10 --policy L1
 ## 🎯 Prochaines Étapes
 
 1. ✅ Tester l'évaluation complète sur DB-Bio
-2. ✅ Tester l'évaluation complète sur PersonalReddit  
+2. ✅ Tester l'évaluation complète sur PersonalReddit
 3. ✅ Tester l'évaluation complète sur TAB
 4. ✅ Comparer les métriques L0 vs L1
 5. ✅ Mettre à jour la documentation principale (README.md)

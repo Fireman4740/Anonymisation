@@ -18,7 +18,9 @@ results/
 ## 📝 Format des Fichiers
 
 ### baseline.json / rupta.json
+
 Résultats d'évaluation RUPTA au format :
+
 ```json
 {
   "config": {
@@ -41,22 +43,26 @@ Résultats d'évaluation RUPTA au format :
 ### Métriques Importantes
 
 **Privacy Metrics**
+
 - `avg_privacy_rank` : Position moyenne de la vraie personne (>10 = non identifié)
 - `privacy_not_identified_rate` : % de cas où rank > p_threshold
 
 **Utility Metrics**
+
 - `avg_utility_confidence` : Confiance moyenne dans la prédiction (%)
 - `utility_preserved_rate` : % de cas où l'utilité est préservée
 
 ## 🎯 Objectifs RUPTA
 
 Un bon compromis privacy-utility montre :
+
 - **Privacy** : avg_privacy_rank > 10 ou non-identified > 60%
 - **Utility** : confidence > 80%, preserved > 75%
 
 ## 📂 Anciens Résultats (old/)
 
 Les anciens résultats sont archivés pour :
+
 - Comparaison avec nouvelles versions
 - Analyse de l'évolution
 - Validation des améliorations
@@ -73,6 +79,7 @@ Les anciens résultats sont archivés pour :
 ## 🔄 Générer de Nouveaux Résultats
 
 ### Baseline
+
 ```bash
 python eval_rupta_dbbio.py \
   --split test \
@@ -82,6 +89,7 @@ python eval_rupta_dbbio.py \
 ```
 
 ### RUPTA
+
 ```bash
 python eval_rupta_dbbio.py \
   --split test \
@@ -90,6 +98,7 @@ python eval_rupta_dbbio.py \
 ```
 
 ### Comparaison
+
 ```bash
 python scripts/compare_baseline_rupta.py \
   --baseline results/baseline_new.json \
@@ -100,6 +109,7 @@ python scripts/compare_baseline_rupta.py \
 ## 📈 Analyse
 
 Les résultats permettent de :
+
 1. Mesurer l'amélioration RUPTA vs Baseline
 2. Valider le compromis privacy-utility
 3. Identifier les cas problématiques
@@ -108,6 +118,7 @@ Les résultats permettent de :
 ## 🔒 Confidentialité
 
 Les résultats contiennent :
+
 - Textes anonymisés (pas d'infos sensibles)
 - Métriques agrégées
 - Pas de données personnelles brutes

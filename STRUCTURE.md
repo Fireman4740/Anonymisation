@@ -3,6 +3,7 @@
 ## 🎯 Vue d'ensemble
 
 Le projet a été nettoyé et organisé pour ne garder que **l'essentiel** :
+
 - Code source fonctionnel
 - Documentation principale
 - Scripts d'évaluation
@@ -100,6 +101,7 @@ Anonymisation/
 ## 📋 Fichiers Essentiels à la Racine
 
 ### Documentation (6 fichiers)
+
 1. **README.md** - Vue générale du système d'anonymisation
 2. **README_RUPTA.md** - Documentation complète RUPTA
 3. **START_HERE.md** - Guide ultra-rapide (3 commandes)
@@ -108,16 +110,19 @@ Anonymisation/
 6. **BASELINE_FIX.md** - Fix critique du baseline (privacy_rank 1.0→10.0)
 
 ### Configuration (2 fichiers)
+
 7. **config.json** - Configuration système et RUPTA
 8. **requirements.txt** - Dépendances Python
 
 ### Scripts Principaux (4 fichiers)
+
 9. **eval_rupta_dbbio.py** - Évaluation RUPTA sur DB-Bio
 10. **eval_tab.py** - Évaluation TAB benchmark
 11. **main_eval.py** - API Flask d'anonymisation
 12. **notebook_eval.ipynb** - Notebook de démonstration
 
 ### Rapports (1 fichier)
+
 13. **comparison_report.md** - Dernier rapport de comparaison
 
 ## 🗑️ Fichiers Supprimés
@@ -130,6 +135,7 @@ Anonymisation/
 ## 📦 Organisation Améliorée
 
 ### Avant (désorganisé)
+
 ```
 Racine avec 25+ fichiers mélangés
 Documentation, scripts, résultats tout ensemble
@@ -137,6 +143,7 @@ Fichiers cache et debug visibles
 ```
 
 ### Après (organisé)
+
 ```
 ✅ Racine : 13 fichiers essentiels
 ✅ docs/ : Documentation technique archivée
@@ -148,6 +155,7 @@ Fichiers cache et debug visibles
 ## 🚀 Commandes Rapides
 
 ### Démarrage
+
 ```bash
 # Guide ultra-rapide
 cat START_HERE.md
@@ -160,6 +168,7 @@ cat START_HERE.md
 ```
 
 ### Développement
+
 ```bash
 # Tests
 python scripts/test_python311_compat.py
@@ -172,6 +181,7 @@ python eval_rupta_dbbio.py --split test --n_samples 10
 ```
 
 ### Documentation
+
 ```bash
 # Général
 cat README.md
@@ -205,17 +215,21 @@ cat BASELINE_FIX.md
 ## 🎯 Points d'Entrée
 
 ### Pour commencer
+
 👉 `START_HERE.md` - 3 commandes pour démarrer
 
 ### Pour comprendre
+
 👉 `README.md` - Architecture générale
 👉 `README_RUPTA.md` - Méthodologie RUPTA
 
 ### Pour évaluer
+
 👉 `eval_rupta_dbbio.py` - Script principal
 👉 `scripts/run_eval.sh` - Évaluation automatique
 
 ### Pour développer
+
 👉 `src/` - Code source
 👉 `config.json` - Configuration
 👉 `TODO_RUPTA.md` - Roadmap

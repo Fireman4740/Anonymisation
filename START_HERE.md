@@ -29,7 +29,7 @@ python eval_rupta_dbbio.py --split test --n_samples 1 --use_baseline
 # Baseline
 python eval_rupta_dbbio.py --split test --n_samples 10 --use_baseline --output baseline.json
 
-# RUPTA  
+# RUPTA
 python eval_rupta_dbbio.py --split test --n_samples 10 --output rupta.json
 
 # Comparaison
@@ -43,6 +43,7 @@ python test_python311_compat.py
 ```
 
 Doit afficher :
+
 ```
 ✅ Python 3.11: Supporté
 ✅ Imports RUPTA: OK
@@ -61,42 +62,48 @@ Doit afficher :
 ## ⚠️ Important
 
 ### Python 3.11
+
 - ✅ Regex anonymization
 - ✅ RUPTA (privacy + utility)
 - ❌ NER complexe (DeepPavlov/GLiNER)
 
 ### Clé API requise
+
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
 Ou créez `.env` :
+
 ```bash
 echo "OPENROUTER_API_KEY=sk-or-v1-..." > .env
 ```
 
 ## 💰 Coûts estimés
 
-| Évaluation | Exemples | Coût (gpt-4o-mini) |
-|------------|----------|-------------------|
-| Test rapide | 1 | ~$0.01 |
-| Moyenne | 10 | ~$0.10 |
-| Complète | 100 | ~$1.00 |
+| Évaluation  | Exemples | Coût (gpt-4o-mini) |
+| ----------- | -------- | ------------------ |
+| Test rapide | 1        | ~$0.01             |
+| Moyenne     | 10       | ~$0.10             |
+| Complète    | 100      | ~$1.00             |
 
 ## 🐛 Problèmes ?
 
 ### Dataset manquant
+
 ```bash
 python scripts/download_datasets.py
 # Option 1 : DB-Bio
 ```
 
 ### Import errors
+
 ```bash
 pip install geonamescache schwifty tqdm
 ```
 
 ### Clé API invalide
+
 ```bash
 echo $OPENROUTER_API_KEY  # Vérifier
 ```

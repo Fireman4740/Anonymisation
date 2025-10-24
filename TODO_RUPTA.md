@@ -5,6 +5,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ## ✅ Terminé (Phase 1 + Adaptation Python 3.11)
 
 ### Implémentation Core
+
 - [x] Analyse du repository RUPTA original
 - [x] Création du plan d'intégration détaillé
 - [x] Création de l'architecture des modules (`src/rupta/`)
@@ -24,6 +25,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 - [x] Guide de démarrage rapide (QUICKSTART_RUPTA.md)
 
 ### Adaptation Python 3.11 ✨ NOUVEAU
+
 - [x] Identification problème dépendances NER
 - [x] Correction signature `anonymize_text()` dans `eval_rupta_dbbio.py`
 - [x] Désactivation NER incompatibles (DeepPavlov/GLiNER)
@@ -39,11 +41,13 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Datasets
 
 - [ ] **Télécharger DB-Bio** depuis Google Drive
+
   - Fichier : https://drive.google.com/file/d/1oXWI2mh_mkrs2bZs4riGgbYbQoA9RNzD/view
   - Destination : `Dataset/evaluation/DB-Bio/`
   - Commande : `python download_datasets.py` → Option 1
 
 - [ ] **Télécharger PersonalReddit** depuis Google Drive
+
   - Fichier : https://drive.google.com/file/d/1Z6Xs6zgsn7tkdcW5SElRzbSqUhZFLjwX/view
   - Destination : `Dataset/evaluation/PersonalReddit/`
   - Commande : `python download_datasets.py` → Option 2
@@ -55,17 +59,20 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Évaluation
 
 - [ ] **Test initial sur 5 exemples DB-Bio**
+
   ```bash
   python eval_rupta_dbbio.py --split test --n_samples 5 --use_baseline
   python eval_rupta_dbbio.py --split test --n_samples 5
   ```
 
 - [ ] **Évaluation Baseline (10 exemples)**
+
   ```bash
   python eval_rupta_dbbio.py --split test --n_samples 10 --use_baseline --output results_baseline_10.json
   ```
 
 - [ ] **Évaluation RUPTA (10 exemples)**
+
   ```bash
   python eval_rupta_dbbio.py --split test --n_samples 10 --output results_rupta_10.json
   ```
@@ -80,12 +87,14 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Intégration dans le Pipeline Principal
 
 - [ ] **Modifier `src/orchestrator.py`**
+
   - Ajouter fonction `anonymize_with_rupta()`
   - Intégrer appel conditionnel basé sur `config.json`
   - Gérer les paramètres ground_truth (optionnels)
   - Retourner métriques RUPTA dans le résultat
 
 - [ ] **Créer wrapper haut niveau**
+
   ```python
   # Dans src/orchestrator.py
   def anonymize_text_with_evaluation(
@@ -108,6 +117,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Script PersonalReddit
 
 - [ ] **Créer `eval_rupta_reddit.py`**
+
   - Adapter à la structure PersonalReddit
   - Gérer les 7 attributs (age, sex, location, etc.)
   - Évaluation multi-attributs
@@ -122,6 +132,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Optimisation des Prompts
 
 - [ ] **Affiner les prompts français**
+
   - Tester variantes de `PRIVACY_REFLECTION_FR_1`
   - Optimiser `UTILITY_REFLECTION_FR_1` pour mieux préserver contexte
   - Améliorer `REINFORCEMENT_FR` pour guidage plus précis
@@ -134,6 +145,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Optimisation des Hyperparamètres
 
 - [ ] **Grid Search**
+
   - Tester `p_threshold`: [5, 10, 15, 20, 25]
   - Tester `max_iterations`: [2, 3, 4, 5, 7]
   - Tester `utility_threshold`: [70, 75, 80, 85, 90]
@@ -149,11 +161,13 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Performance
 
 - [ ] **Cache LLM**
+
   - Implémenter cache des réponses LLM identiques
   - Réduire coûts pour évaluations répétées
   - Stocker dans SQLite ou Redis
 
 - [ ] **Parallélisation**
+
   - Évaluer plusieurs textes en parallèle
   - Utiliser `asyncio` pour appels API concurrents
   - Limiter rate limiting OpenRouter
@@ -165,11 +179,13 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Fonctionnalités
 
 - [ ] **Support multi-personnes**
+
   - Gérer listes de personnes (pas seulement une)
   - Évaluation privacy pour chaque personne
   - Agrégation des scores
 
 - [ ] **Multi-label classification**
+
   - Supporter plusieurs labels par texte
   - Utility evaluation pour chaque label
   - Métriques micro/macro
@@ -182,6 +198,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Visualisation
 
 - [ ] **Dashboard de résultats**
+
   - Graphiques privacy vs utility
   - Courbes ROC
   - Distribution des rangs
@@ -195,12 +212,14 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Tests
 
 - [ ] **Tests unitaires**
+
   - `tests/test_privacy_evaluator.py`
   - `tests/test_utility_evaluator.py`
   - `tests/test_optimizer.py`
   - Coverage > 80%
 
 - [ ] **Tests d'intégration**
+
   - `tests/test_rupta_pipeline.py`
   - Tester scenarios réels
   - Mock des appels LLM pour CI/CD
@@ -215,6 +234,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Benchmarks Complets
 
 - [ ] **DB-Bio full evaluation**
+
   - Test set complet (~1000 exemples)
   - Baseline vs RUPTA
   - Rapport détaillé
@@ -227,6 +247,7 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ### Comparaison avec State-of-the-Art
 
 - [ ] **Implémenter baselines**
+
   - Presidio (Microsoft)
   - NER simple (spaCy)
   - Regex-based
@@ -240,11 +261,13 @@ Liste des tâches restantes pour finaliser l'intégration RUPTA.
 ## 📝 Documentation
 
 - [ ] **Tutoriel vidéo**
+
   - Démo de l'installation
   - Exemple d'utilisation
   - Interprétation des résultats
 
 - [ ] **Paper technique**
+
   - Méthodologie d'intégration
   - Résultats sur datasets français
   - Adaptation cross-linguale
@@ -261,14 +284,17 @@ Aucun pour l'instant. À documenter lors des tests.
 ## 💡 Idées Futures
 
 - [ ] **Fine-tuning des prompts avec GPT-4**
+
   - Génération automatique de variantes
   - Sélection par performance
 
 - [ ] **Active Learning**
+
   - Sélectionner exemples les plus informatifs
   - Réduire nombre d'évaluations nécessaires
 
 - [ ] **Transfer Learning**
+
   - Adapter modèle privacy/utility sur données françaises
   - Améliorer performance cross-linguale
 
@@ -279,24 +305,28 @@ Aucun pour l'instant. À documenter lors des tests.
 ## 📅 Timeline Recommandée
 
 ### Semaine 1
+
 - ✅ Implémentation des modules core (FAIT)
 - ✅ Documentation (FAIT)
 - 🔄 Téléchargement datasets
 - 🔄 Tests initiaux (5-10 exemples)
 
 ### Semaine 2
+
 - Évaluation moyenne échelle (50-100 exemples)
 - Optimisation hyperparamètres
 - Intégration dans orchestrator
 - Tests de régression
 
 ### Semaine 3
+
 - PersonalReddit evaluation
 - Optimisation prompts français
 - Implémentation cache LLM
 - Visualisations
 
 ### Semaine 4
+
 - Évaluation grande échelle (full datasets)
 - Benchmarking vs baselines
 - Documentation finale
@@ -305,24 +335,28 @@ Aucun pour l'instant. À documenter lors des tests.
 ## 🎯 Critères de Succès
 
 ### Phase 2 (MVP)
+
 - [x] Code fonctionnel et testé
 - [ ] Datasets téléchargés et validés
 - [ ] Évaluation sur ≥10 exemples
 - [ ] Comparaison baseline vs RUPTA documentée
 
 ### Phase 3 (Production)
+
 - [ ] Intégration dans pipeline principal
 - [ ] Tests automatisés (coverage >80%)
 - [ ] Documentation complète
 - [ ] Performance acceptable (<30s par texte)
 
 ### Phase 4 (Optimisé)
+
 - [ ] Hyperparamètres optimisés
 - [ ] Cache LLM implémenté
 - [ ] Coût réduit de 50%
 - [ ] Visualisations disponibles
 
 ### Phase 5 (Research)
+
 - [ ] Évaluation full datasets
 - [ ] Comparaison state-of-the-art
 - [ ] Publication des résultats
