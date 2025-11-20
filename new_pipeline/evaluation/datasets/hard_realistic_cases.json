@@ -1,0 +1,263 @@
+{
+	"metadata": {
+		"name": "Jeu de tests réaliste - haute difficulté",
+		"description": "Longs rapports narratifs avec entités indirectes et références croisées",
+		"case_count": 12,
+		"version": "1.0"
+	},
+	"defaults": {
+		"scope_prefix": "hard",
+		"secret_salt": "production-secret-987",
+		"level": "L1"
+	},
+	"global_overrides": {
+		"llm_paraphrase": true,
+		"llm_audit": true,
+		"rupta_enabled": true,
+		"paraphrase_intensity": 1,
+		"paraphrase_preserve_multiplicity": true,
+		"rupta_preserve_entity_counts": true,
+		"date_granularity": "month",
+		"org_policy": "generalize",
+		"mapping_retention": "discard"
+	},
+	"cases": [
+		{
+			"id": "case_long_b2b_investigation",
+			"description": "Rapport d'enquête financier reliant des dirigeants via emails et comptes bancaires",
+			"text": "Le 4 février 2024, la filiale Helios North a câblé 450 000 EUR vers FR76 1020 7000 5201 2345 6789 014 (BIC: BARBFRPP). Le directeur financier Paul Ménard, joignable via paul.menard@helios-north.eu et +33 7 81 23 45 67, mentionne dans son mémo que \"le conseiller de Mme Vasseur\" recevra les codes dans un document séparé. Trois jours plus tard, le même IBAN est réutilisé par \"P. Ménard\" pour solder un contrat signé initialement par sa collègue Ana Vasseur (ana.vasseur@helios.eu).",
+			"overrides": {
+				"rupta_ground_truth_people": "Paul Ménard",
+				"rupta_ground_truth_label": "Chief Financial Officer"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[IBAN_",
+				"[BIC_",
+				"[MAIL_",
+				"[TELEPHONE_"
+			],
+			"expected_pattern_counts": {
+				"[MAIL_": 2
+			},
+			"verify_placeholder_consistency": true
+		},
+		{
+			"id": "case_healthcare_chain",
+			"description": "Dossier hospitalier narratif où les identités du patient et de la personne de confiance sont reliées par pronoms",
+			"text": "Dossier n° CHU-2024-7788: Mme Nora Aït-Lounis, née le 12 septembre 1982, est admise pour suivi post-opératoire. Son frère Samy reste l'interlocuteur principal; il répond au 06 45 12 98 34 et à samy.ait@proton.me. Dans les notes du 18/10/2024, le chirurgien indique que \"le contact masculin cité plus haut\" doit approuver la libération des comptes rendus. Les analyses sont partagées via https://intra.chu-paris.fr/secure/CHU-2024-7788.pdf protégée par un jeton communiqué verbalement.",
+			"overrides": {
+				"date_granularity": "week",
+				"location_granularity": "region",
+				"rupta_ground_truth_people": "Nora Aït-Lounis",
+				"rupta_ground_truth_label": "Patient"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[TELEPHONE_",
+				"[MAIL_",
+				"[URL_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 2
+			}
+		},
+		{
+			"id": "case_contract_multilingual",
+			"description": "Contrat bilingue reprenant les mêmes identités sous plusieurs formes",
+			"text": "Between Atlas Shipping GmbH and Groupe Rivière SA, represented by Chief Counsel Clara Rivière (clara.riviere@riviere.eu), the parties agree that \"la directrice juridique susnommée\" peut parapher au nom de la société. The vendor reference INV-2024-556 includes payment via FR14 2004 1010 0505 0001 3M02 606 and backup card 4532 9876 5432 1098. For escalation call +44 20 7946 0123 or the Paris office at +33 1 42 68 00 11.",
+			"overrides": {
+				"rupta_ground_truth_people": "Clara Rivière",
+				"rupta_ground_truth_label": "Chief Counsel"
+			},
+			"expected_patterns": [
+				"[MAIL_",
+				"[IBAN_",
+				"[CARD_",
+				"[TELEPHONE_"
+			],
+			"expected_pattern_counts": {
+				"[TELEPHONE_": 2
+			},
+			"verify_placeholder_consistency": true
+		},
+		{
+			"id": "case_cloud_logs_indirect",
+			"description": "Chronologie DevSecOps liant des identités via identifiants techniques",
+			"text": "[2024-10-12 07:33] Access granted to user ida@orbital.dev depuis 2001:0db8:85a3:0000:0000:8a2e:0370:7334. La même session transfère les dumps sur sftp://backup.orbital.dev/clients/IDA_20241012.tar. Dans le playbook, on mentionne que \"l'ingénieure ayant ouvert l'incident\" partage son badge B-2045 avec son binôme. Ticket 458822 liste aussi la clé API sk-adm-9a8b7c6d5e4f qui devait rester dans Hashicorp Vault.",
+			"overrides": {
+				"ip_policy": "redact",
+				"llm_paraphrase": true,
+				"rupta_ground_truth_people": "Ida (DevSecOps Engineer)",
+				"rupta_ground_truth_label": "DevSecOps Engineer"
+			},
+			"expected_patterns": ["[MAIL_", "[IP_", "[URL_", "[API_KEY_"],
+			"forbidden_patterns": ["ida@orbital.dev", "sk-adm-9a8b7c6d5e4f"]
+		},
+		{
+			"id": "case_global_expansion",
+			"description": "Compte-rendu stratégique mélangeant dates, montants et références croisées",
+			"text": "Le comité d'investissement du 27 novembre 2024 valide l'acquisition de Horizon Analytics LLC. La PDG Eva Marques, jointe en visioconférence depuis São Paulo, signe la lettre d'intention déjà paraphrasée par son équipe LLM. La note évoque aussi le consultant \"celui qui a audité la filiale brésilienne en 2022\" (marques.audit@consulting.lat) ainsi que la transaction précédente avec IBAN FR98 3000 4000 5000 6000 7000 800 et le site https://dataroom.horizon-analytics.com. Un acompte de 1,850,000 EUR est réglé par carte 5301 2200 3344 5566.",
+			"overrides": {
+				"rupta_ground_truth_people": "Eva Marques",
+				"rupta_ground_truth_label": "Chief Executive Officer"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MAIL_",
+				"[IBAN_",
+				"[URL_",
+				"[CARD_",
+				"[MONTANT_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 2
+			}
+		},
+		{
+			"id": "case_diplomatic_cable",
+			"description": "Câble diplomatique reliant plusieurs intermédiaires et instructions implicites",
+			"text": "Note 2025-04-03/DEL-MAG: l'ambassadrice Leïla Haddad transmet au cabinet européen que la cellule logistique restera ouverte jusqu'au 7 avril 2025. Toute coordination doit passer par le canal leila.haddad@mfa-magreb.org ou via la ligne chiffrée +32 2 555 17 09. Le mémo rappelle que \"l'émissaire mentionné dans le paragraphe 2\" remettra les codes aux personnes citées dans la liste confidentielle jointe à briefing@consilium.europa.eu. Les documents annexes sont déposés sur https://intra.consilium.europa.eu/secure/briefings/2025-04-03.",
+			"overrides": {
+				"location_granularity": "country",
+				"rupta_ground_truth_people": "Leïla Haddad",
+				"rupta_ground_truth_label": "Diplomatic Liaison"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MAIL_",
+				"[TELEPHONE_",
+				"[URL_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 2
+			}
+		},
+		{
+			"id": "case_energy_supply_chain",
+			"description": "Chaîne d'approvisionnement énergétique mêlant paiements multiples et comptes miroirs",
+			"text": "Le plan de continuité AZ-447 prévoit un virement exceptionnel de 2 750 000 EUR vers NL91 ABNA 0417 1643 00 pour bloquer les turbines louées par PolarGrid. Victor Eng, joignable via victor.eng@polargrid.io ou +1 415 555 7002, confirme qu'une carte de réserve 5512 3411 6677 8899 servira si l'IBAN néerlandais chute. Le rapport interne précise aussi que \"le consultant cité au point 5\" déposera les journaux de livraison sur https://supply.polargrid.io/reports/Q2-2025.pdf.",
+			"overrides": {
+				"amount_binning": "range10",
+				"rupta_ground_truth_people": "Victor Eng",
+				"rupta_ground_truth_label": "Procurement Director"
+			},
+			"expected_patterns": [
+				"[MONTANT_",
+				"[IBAN_",
+				"[MAIL_",
+				"[TELEPHONE_",
+				"[CARD_",
+				"[URL_"
+			],
+			"expected_pattern_counts": {
+				"[MONTANT_": 1
+			},
+			"verify_placeholder_consistency": true
+		},
+		{
+			"id": "case_academic_dataset_release",
+			"description": "Publication scientifique contenant des chemins S3 et des clés d'accès",
+			"text": "Le 14 janvier 2025, l'équipe CC-Bio a publié une pré-analyse des échantillons sensibles. Dr Inès Roy (dr.ines.roy@univ-lyon.fr) a partagé le jeu de données via https://datasets.univ-lyon.fr/secure/cc-bio-2025.zip et un miroir s3://bio-lab/backups/RAW/2025/01/14/subject-07.csv. Pour recroiser les mesures, la note indique que \"l'assistant cité annexe B\" conserve la clé AWS AKIAZXCVMNB123456789 pour signer les requêtes. Les comités d'éthique exigent un retrait complet dès qu'une version datée du 20 février 2025 sera validée.",
+			"overrides": {
+				"rupta_ground_truth_people": "Inès Roy",
+				"rupta_ground_truth_label": "Research Lead"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MAIL_",
+				"[URL_",
+				"[PATH_",
+				"[AWS_KEY_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 2
+			},
+			"forbidden_patterns": [
+				"AKIAZXCVMNB123456789",
+				"s3://bio-lab/backups/RAW/2025/01/14/subject-07.csv"
+			]
+		},
+		{
+			"id": "case_public_sector_audit",
+			"description": "Audit préfectoral reliant élus, budgets et contacts détournés",
+			"text": "Rapport Préf-93/2025: le 18 février 2025, la préfecture constate que l'adjoint Paul Reynaud a validé 385 000 EUR de travaux via FR76 3000 6000 8000 0008 9012 345. La comptable cite \"l'ancienne trésorière mentionnée page 6\" comme unique détentrice des reçus transmis à prefecture@etat.fr. Les contributions citoyennes doivent appeler 01 53 98 64 10 avant diffusion publique.",
+			"overrides": {
+				"rupta_ground_truth_people": "Paul Reynaud",
+				"rupta_ground_truth_label": "Deputy Mayor"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MONTANT_",
+				"[IBAN_",
+				"[MAIL_",
+				"[TELEPHONE_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 1
+			}
+		},
+		{
+			"id": "case_media_briefing_leak",
+			"description": "Briefing presse divulgué reliant plusieurs contacts indirects",
+			"text": "Le 22 mars 2025, Aurora Labs a partagé un point presse confidentiel avec press@auroralabs.ai et deux analystes cités comme \"ceux mentionnés en page 4\". L'appel préparatoire se déroule via +49 30 9158 2244 tandis que la captation est stockée sur https://studio.auroralabs.ai/eu/briefing/2025-03-22. Une relance doit partir de la ligne britannique +44 20 7099 4411 si le message n'est pas confirmé avant le 24 mars 2025.",
+			"overrides": {
+				"rupta_ground_truth_people": "Aurora Labs Press Officer",
+				"rupta_ground_truth_label": "Communications Director"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MAIL_",
+				"[URL_",
+				"[TELEPHONE_"
+			],
+			"expected_pattern_counts": {
+				"[TELEPHONE_": 2,
+				"[DATE_": 2
+			}
+		},
+		{
+			"id": "case_clinical_trial_multisite",
+			"description": "Compte-rendu d'essai clinique multi-sites reliant patients par prénoms tronqués",
+			"text": "Journal CT-2045-B: le 5 mai 2025, la coordinatrice Dr Amina Belmonte (amina.belmonte@mediterraneo.clinic) note que \"le patient cité mission 12\" partage ses constantes avec l'équipe espagnole via +34 91 556 33 21. Les photos d'imagerie sont déposées sur https://clinical-hub.eu/secure/ct-2045-b/radiology et synchronisées chaque 8 mai 2025 avec le centre de Barcelone.",
+			"overrides": {
+				"rupta_ground_truth_people": "Amina Belmonte",
+				"rupta_ground_truth_label": "Clinical Coordinator"
+			},
+			"expected_patterns": [
+				"[DATE_",
+				"[MAIL_",
+				"[URL_",
+				"[TELEPHONE_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 2
+			}
+		},
+		{
+			"id": "case_fintech_incident_response",
+			"description": "Chronique d'incident fintech mêlant IP, API key et chemins internes",
+			"text": "Incident IR-77/LucentPay: à 03:11 UTC, la passerelle 2001:0db8:85a3::8a2e:0370:abcd a routé des requêtes signées avec sk-live-9f8e7d6c5b4a3210. L'équipe d'astreinte (pager: ops@lucentpay.com) a fermé l'accès en recopiant les journaux vers sftp://vault.lucentpay.net/incidents/IR-77/ et en vérifiant que \"l'analyste mentionné section 3\" purgeait /var/lib/lucentpay/cache/tokenmap.db. Le correctif sera poussé avant le 28 mai 2025 sur https://status.lucentpay.com.",
+			"overrides": {
+				"ip_policy": "cidr24",
+				"rupta_ground_truth_people": "LucentPay Incident Commander",
+				"rupta_ground_truth_label": "Incident Commander"
+			},
+			"expected_patterns": [
+				"[IP_",
+				"[API_KEY_",
+				"[MAIL_",
+				"[PATH_",
+				"[URL_",
+				"[DATE_"
+			],
+			"expected_pattern_counts": {
+				"[DATE_": 1
+			},
+			"forbidden_patterns": [
+				"sk-live-9f8e7d6c5b4a3210",
+				"/var/lib/lucentpay/cache/tokenmap.db"
+			]
+		}
+	]
+}

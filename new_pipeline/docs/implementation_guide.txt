@@ -1,0 +1,355 @@
+
+
+================================================================================
+GUIDE D'IMPLÉMENTATION ÉTAPE-PAR-ÉTAPE
+================================================================================
+
+ÉTAPE 1: Installation des librairies (LOCAL UNIQUEMENT)
+────────────────────────────────────────────────────────
+
+# Dans votre env conda:
+conda activate ano
+
+# Core dependencies
+pip install schwifty phonenumbers flair spacy
+
+# Download models
+python -m spacy download fr_core_news_sm
+python -m flair.embeddings (se fait auto-first time)
+
+# Vérification installation
+python -c "from schwifty import IBAN; print('✓ schwifty OK')"
+python -c "import phonenumbers; print('✓ phonenumbers OK')"
+python -c "from flair.models import SequenceTagger; print('✓ flair OK')"
+
+
+ÉTAPE 2: Configuration des patterns (RÉGEX AVANT NER)
+──────────────────────────────────────────────────────
+
+Créer un fichier `patterns_config.yaml`:
+
+patterns:
+  # Priorité HAUTE (secrets: déterminer AVANT NER)
+  stripe_secret:
+    regex: 'sk_(?:live|test)_[0-9a-zA-Z]{24,}'
+    enabled: true
+    entity_type: 'API_KEY'
+    priority: 1
+
+  aws_key_id:
+    regex: 'AKIA[0-9A-Z]{16}'
+    enabled: true
+    entity_type: 'AWS_KEY'
+    priority: 1
+
+  google_api:
+    regex: 'AIza[0-9A-Za-z\-_]{35}'
+    enabled: true
+    entity_type: 'GOOGLE_API'
+    priority: 1
+
+  # Priorité MOYENNE (IBAN/BIC: use schwifty library)
+  iban:
+    type: 'library'  # Use schwifty
+    enabled: true
+    entity_type: 'IBAN'
+    priority: 2
+
+  bic:
+    regex: '\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b'
+    enabled: true
+    entity_type: 'BIC'
+    priority: 2
+
+  # IPv6
+  ipv6:
+    regex: '(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}'
+    enabled: true
+    entity_type: 'IP_ADDRESS'
+    priority: 2
+
+  # URLs non-HTTP
+  url_nonhttp:
+    regex: '(?:sftp|ssh|s3|gs|git\+ssh|scp)://\S+'
+    enabled: true
+    entity_type: 'URL'
+    priority: 2
+
+  # Cartes (avec LUHN)
+  credit_card:
+    regex: '\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b'
+    enabled: true
+    entity_type: 'CARD'
+    priority: 2
+    validate_with: 'luhn'
+
+  # Email (après regex, avant NER)
+  email_strict:
+    regex: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    enabled: true
+    entity_type: 'EMAIL'
+    priority: 3
+
+
+ÉTAPE 3: Implémentation du Pipeline
+─────────────────────────────────────
+
+Code Python:
+
+```python
+# anonymization_pipeline_v2.py
+import re
+import yaml
+from schwifty import IBAN
+import phonenumbers
+from flair.models import SequenceTagger
+from flair.data import Sentence
+import spacy
+
+class AdvancedAnonymizer:
+    def __init__(self, config_path='patterns_config.yaml'):
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
+
+        # Load models
+        self.flair_tagger = SequenceTagger.load("flair/ner-french")
+        self.spacy_nlp = spacy.load("fr_core_news_sm")
+
+        # Sort patterns by priority
+        self.patterns = sorted(
+            self.config['patterns'].items(),
+            key=lambda x: x[1].get('priority', 999)
+        )
+
+        self.entity_mapping = {}  # Track replacements
+
+    def phase1_regex_detection(self, text):
+        """Phase 1: Détection par regex (secrets + patterns déterministes)"""
+        entities = []
+
+        for pattern_name, pattern_config in self.patterns:
+            if not pattern_config.get('enabled', True):
+                continue
+
+            if 'type' in pattern_config and pattern_config['type'] == 'library':
+                # Handled separately
+                continue
+
+            regex = pattern_config['regex']
+            entity_type = pattern_config.get('entity_type', pattern_name)
+
+            for match in re.finditer(regex, text):
+                value = match.group()
+
+                # Optional validation (e.g., LUHN for cards)
+                if pattern_config.get('validate_with') == 'luhn':
+                    if not self.luhn_check(value.replace(' ', '').replace('-', '')):
+                        continue
+
+                entities.append({
+                    'start': match.start(),
+                    'end': match.end(),
+                    'value': value,
+                    'type': entity_type,
+                    'pattern_name': pattern_name
+                })
+
+        return entities
+
+    def phase1_schwifty_detection(self, text):
+        """Special handling for IBAN/BIC"""
+        entities = []
+
+        # IBAN pattern (generic)
+        iban_pattern = r'\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]){9,30}\b'
+
+        for match in re.finditer(iban_pattern, text):
+            iban_str = match.group().replace(' ', '')
+            try:
+                iban = IBAN(iban_str)
+                # Valid IBAN
+                entities.append({
+                    'start': match.start(),
+                    'end': match.end(),
+                    'value': match.group(),
+                    'type': 'IBAN',
+                    'bic': iban.bic,
+                    'country': iban.country_code
+                })
+
+                # Also mark BIC if present in text
+                if iban.bic and iban.bic in text:
+                    bic_match = text.find(iban.bic)
+                    if bic_match != -1:
+                        entities.append({
+                            'start': bic_match,
+                            'end': bic_match + len(iban.bic),
+                            'value': iban.bic,
+                            'type': 'BIC'
+                        })
+            except:
+                pass
+
+        return entities
+
+    def phase1_phonenumber_detection(self, text):
+        """International phone number detection"""
+        entities = []
+
+        # E.164 pattern
+        phone_pattern = r'(?:\+|00)[1-9]\d{1,14}|(?:\+33|0)[1-9]\d{8}'
+
+        for match in re.finditer(phone_pattern, text):
+            phone_str = match.group()
+            try:
+                # Auto-detect region
+                parsed = phonenumbers.parse(phone_str, None)
+                if phonenumbers.is_valid_number(parsed):
+                    entities.append({
+                        'start': match.start(),
+                        'end': match.end(),
+                        'value': match.group(),
+                        'type': 'TELEPHONE',
+                        'country': phonenumbers.region_code_for_number(parsed)
+                    })
+            except:
+                pass
+
+        return entities
+
+    def phase2_ner_detection(self, text):
+        """Phase 2: NER with Flair (French-aware)"""
+        entities = []
+
+        sentence = Sentence(text)
+        self.flair_tagger.predict(sentence)
+
+        for entity in sentence.get_spans('ner'):
+            entities.append({
+                'start': entity.start_position,
+                'end': entity.end_position,
+                'value': entity.text,
+                'type': entity.tag,
+                'confidence': entity.score
+            })
+
+        return entities
+
+    def phase1_all(self, text):
+        """Run all Phase 1 detections"""
+        entities = []
+        entities.extend(self.phase1_regex_detection(text))
+        entities.extend(self.phase1_schwifty_detection(text))
+        entities.extend(self.phase1_phonenumber_detection(text))
+        return entities
+
+    def luhn_check(self, card_number):
+        """Validate credit card with LUHN"""
+        digits = [int(d) for d in str(card_number) if d.isdigit()]
+        odd = digits[-1::-2]
+        even = digits[-2::-2]
+        checksum = sum(odd)
+        for d in even:
+            checksum += sum(int(x) for x in str(d * 2))
+        return checksum % 10 == 0
+
+    def anonymize(self, text):
+        """Full anonymization pipeline"""
+        # Phase 1: Regex
+        entities = self.phase1_all(text)
+
+        # Phase 2: NER
+        ner_entities = self.phase2_ner_detection(text)
+        entities.extend(ner_entities)
+
+        # Merge and sort
+        entities.sort(key=lambda x: x['start'])
+
+        # Remove duplicates/overlaps
+        unique_entities = self._merge_overlaps(entities)
+
+        # Replace
+        anonymized = self._replace_entities(text, unique_entities)
+
+        return anonymized, unique_entities
+
+    def _merge_overlaps(self, entities):
+        """Handle overlapping entities"""
+        # TODO: Implement smart merging
+        return entities
+
+    def _replace_entities(self, text, entities):
+        """Replace entities with placeholders"""
+        offset = 0
+        for entity in entities:
+            placeholder = f"[{entity['type']}_XXX]"
+            start = entity['start'] + offset
+            end = entity['end'] + offset
+            text = text[:start] + placeholder + text[end:]
+            offset += len(placeholder) - (entity['end'] - entity['start'])
+        return text
+```
+
+
+ÉTAPE 4: Configuration RUPTA avec contraintes
+───────────────────────────────────────────────
+
+Ajout au config test:
+
+```json
+{
+  "global_overrides": {
+    "llm_paraphrase": true,
+    "paraphrase_intensity": 1,  // ← RÉDUIRE de 2 à 1
+    "paraphrase_preserve_multiplicity": true,  // ← NOUVEAU
+    "llm_audit": true,
+    "rupta_enabled": true,
+    "rupta_preserve_entity_counts": true  // ← NOUVEAU
+  }
+}
+```
+
+Prompt RUPTA modifié:
+
+```python
+RUPTA_PARAPHRASE_PROMPT = '''
+Rewrite the following anonymized text to be less specific, while:
+
+1. PRESERVING ALL ENTITY OCCURRENCES exactly as they are
+2. If there are 2 emails [EMAIL_X] and [EMAIL_Y], keep both
+3. If there are 2 dates [DATE_X] and [DATE_Y], keep both
+4. Do NOT merge or fuse occurrences
+5. Each entity gets a UNIQUE reference
+
+Original: "Contact [PERSON_ABC] via [EMAIL_1] or [PHONE_1]. [PERSON_DEF] has email [EMAIL_2]"
+
+Rewritten example: "You may reach [PERSON_ABC] through [EMAIL_1] or call at [PHONE_1]. [PERSON_DEF]'s contact is [EMAIL_2]"
+
+Text to rewrite:
+{text}
+'''
+```
+
+ÉTAPE 5: Vérification et Validation
+──────────────────────────────────────
+
+```python
+def validate_anonymization(original, anonymized, expected_counts):
+    """Post-processing validation"""
+    issues = []
+
+    # Check forbidden patterns
+    forbidden = ['@', 'sk_', 'AKIA', '+33', '+44']
+    for pattern in forbidden:
+        if pattern in anonymized:
+            issues.append(f"❌ Forbidden pattern visible: {pattern}")
+
+    # Check entity counts
+    for entity_type, count in expected_counts.items():
+        regex = f"\[{entity_type}_\w+\]"
+        found = len(re.findall(regex, anonymized))
+        if found < count:
+            issues.append(f"⚠️ {entity_type}: {found}/{count}")
+
+    return issues
+```

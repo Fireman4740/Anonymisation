@@ -1,0 +1,62 @@
+{
+	"llm": {
+		"provider": "lmstudio",
+		"base_url": "http://172.28.224.1:1234/v1",
+		"retry_count": 1,
+		"fallback_model": null,
+		"models": {
+			"detect": "openai/gpt-oss-20b",
+			"paraphrase": "openai/gpt-oss-20b",
+			"audit": "openai/gpt-oss-20b"
+		},
+		"supports_response_format": false,
+		"require_api_key": false,
+		"allow_fallback": false,
+		"timeout_seconds": 90
+	},
+	"openrouter": {
+		"base_url": "https://openrouter.ai/api/v1",
+		"retry_count": 2,
+		"fallback_model": "qwen/qwen3-30b-a3b-instruct-2507",
+		"models": {
+			"detect": "qwen/qwen3-30b-a3b-instruct-2507",
+			"paraphrase": "qwen/qwen3-30b-a3b-instruct-2507",
+			"audit": "qwen/qwen3-30b-a3b-instruct-2507"
+		}
+	},
+	"features": {
+		"llm_detection": true,
+		"llm_paraphrase": true,
+		"llm_audit": true
+	},
+	"policy_defaults": {
+		"paraphrase_intensity": 1,
+		"paraphrase_preserve_multiplicity": true,
+		"rupta_preserve_entity_counts": true,
+		"risk_threshold": 45
+	},
+	"rupta": {
+		"enabled": false,
+		"p_threshold": 10,
+		"max_iterations": 5,
+		"privacy_threshold": null,
+		"utility_threshold": 80,
+		"model": "qwen/qwen3-30b-a3b-instruct-2507",
+		"temperature": 0.1
+	},
+	"runtime": {
+		"log_level": "INFO",
+		"timeout_seconds": 60
+	},
+	"ner_gpu": {
+		"enabled": true,
+		"vram_gb": 24,
+		"batch_size": 64,
+		"max_parallel_models": 3,
+		"use_fp16": true,
+		"use_torch_compile": false,
+		"gliner_preset": "best",
+		"prefetch_models": true,
+		"optimization_level": "high"
+	}
+}
