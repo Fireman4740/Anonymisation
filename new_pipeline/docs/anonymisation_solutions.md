@@ -8,13 +8,13 @@ Un pipeline d'anonymisation hybride (regex + NER + LLM + RUPTA) montre un taux d
 
 ### Problèmes Identifiés
 
-| Problème | Impact | Cause Racine |
-|----------|--------|-------------|
-| **IBAN/BIC manquants** | Mélangés avec CARD, BIC jamais détecté | Regex insuffisante, pas de validation checksum |
-| **Téléphones multi-pays** | +33, +44, +32, +49, +1 non détectés | Patterns spécifiques manquants |
-| **Occurrences multiples** | Compteurs attendus non respectés | LLM paraphrase fusionne/supprime lors reformatage |
-| **Secrets toujours visibles** | `sk-adm-*`, `ida@orbital.dev` restent visibles | forbidden_patterns non vérifiés ou désactivés |
-| **IPv6, URLs, Cartes, API Keys** | Patterns génériques manquants | Couverture incomplète |
+| Problème                         | Impact                                         | Cause Racine                                      |
+| -------------------------------- | ---------------------------------------------- | ------------------------------------------------- |
+| **IBAN/BIC manquants**           | Mélangés avec CARD, BIC jamais détecté         | Regex insuffisante, pas de validation checksum    |
+| **Téléphones multi-pays**        | +33, +44, +32, +49, +1 non détectés            | Patterns spécifiques manquants                    |
+| **Occurrences multiples**        | Compteurs attendus non respectés               | LLM paraphrase fusionne/supprime lors reformatage |
+| **Secrets toujours visibles**    | `sk-adm-*`, `ida@orbital.dev` restent visibles | forbidden_patterns non vérifiés ou désactivés     |
+| **IPv6, URLs, Cartes, API Keys** | Patterns génériques manquants                  | Couverture incomplète                             |
 
 ---
 
@@ -25,6 +25,7 @@ Un pipeline d'anonymisation hybride (regex + NER + LLM + RUPTA) montre un taux d
 **Installation:** `pip install schwifty`
 
 **Avantages:**
+
 - Valide IBAN et extrait BIC automatiquement
 - Support multi-pays (FR, NL, BE, DE, ES, IT, etc.)
 - Checksum ISO7064_mod97_10 intégré (garantit validité)
@@ -60,6 +61,7 @@ BIC_PATTERN = r'\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b'
 **Installation:** `pip install phonenumbers`
 
 **Avantages:**
+
 - Librairie officielle de Google, très robuste
 - Support 200+ pays avec détection automatique
 - Validation checksum intégrée
@@ -150,12 +152,14 @@ CARD_GENERIC = r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b'
 ### E) Secrets (API Keys, AWS, Stripe) – Patterns Haute Précision
 
 **Stripe:**
+
 ```regex
 STRIPE_SECRET = r'sk_(?:live|test)_[0-9a-zA-Z]{24,}'
 STRIPE_RESTRICTED = r'rk_(?:live|test)_[0-9a-zA-Z]{24,}'
 ```
 
 **AWS:**
+
 ```regex
 AWS_KEY_ID = r'AKIA[0-9A-Z]{16}'
 AWS_TEMP_TOKEN = r'[A-Za-z0-9/+=]{300,}'
@@ -163,6 +167,7 @@ S3_URI = r's3://[a-z0-9][a-z0-9.-]*[a-z0-9](?:/[\w-]*)*'
 ```
 
 **Google:**
+
 ```regex
 GOOGLE_API_KEY = r'AIza[0-9A-Za-z\-_]{35}'
 GOOGLE_OAUTH = r'\d+-[0-9A-Za-z_]{32}\.apps\.googleusercontent\.com'
@@ -189,11 +194,13 @@ URL_NONHTTP = r'(?:sftp|ssh|s3|gs|git\+ssh|scp)://\S+'
 ### Stratégies de Correction
 
 **1. Réduire intensity**
+
 ```json
 "paraphrase_intensity": 1  // Au lieu de 2 (LOW au lieu de HIGH)
 ```
 
 **2. Prompt RUPTA avec contrainte explicite**
+
 ```
 IMPORTANT: Preserve the EXACT count of entities.
 - Si 2 emails: gardez 2 différents
@@ -202,6 +209,7 @@ IMPORTANT: Preserve the EXACT count of entities.
 ```
 
 **3. Post-processing: vérifier et corriger**
+
 ```python
 def verify_entity_counts(anonymized_text, expected_counts):
     for entity_type, count in expected_counts.items():
@@ -216,7 +224,8 @@ def verify_entity_counts(anonymized_text, expected_counts):
 ## Solution 3: Ordre d'Exécution Optimal (Pipeline)
 
 ### Phase 1: Regex AVANT NER (Secrets + Patterns Déterministes)
-- API Keys (Stripe sk_*, AWS AKIA*)
+
+- API Keys (Stripe sk\__, AWS AKIA_)
 - IBAN (avec schwifty)
 - IPv6
 - URLs non-HTTP
@@ -226,6 +235,7 @@ def verify_entity_counts(anonymized_text, expected_counts):
 **Raison:** Ces patterns sont déterministes, pas d'ambiguïté
 
 ### Phase 2: NER (Flair ou spaCy) – Entités Contextuelles
+
 - PERSON (noms, variantes)
 - ORG (organismes)
 - LOCATION (lieux)
@@ -233,6 +243,7 @@ def verify_entity_counts(anonymized_text, expected_counts):
 **Modèles recommandés:**
 
 **Flair (recommandé French):**
+
 ```python
 from flair.models import SequenceTagger
 from flair.data import Sentence
@@ -245,6 +256,7 @@ for entity in sentence.get_spans('ner'):
 ```
 
 **spaCy:**
+
 ```python
 import spacy
 nlp = spacy.load("fr_core_news_sm")
@@ -254,11 +266,13 @@ for ent in doc.ents:
 ```
 
 ### Phase 3: LLM Paraphrase (avec contraintes)
+
 - Générer plusieurs formulations
 - Préserver occurrences multiples
 - Utiliser `paraphrase_intensity: 1` (LOW)
 
 ### Phase 4: RUPTA
+
 - Aligner instances coreferentes
 - Vérifier cohérence globale
 
@@ -275,6 +289,7 @@ for ent in doc.ents:
 ### Actions
 
 **1. Vérifier configuration (check enabled status):**
+
 ```python
 def verify_forbidden_patterns(text, forbidden):
     for pattern in forbidden:
@@ -285,14 +300,15 @@ def verify_forbidden_patterns(text, forbidden):
 ```
 
 **2. Ajouter patterns avec priorité HAUTE:**
+
 ```yaml
 patterns:
   stripe_secret:
-    regex: 'sk_(?:live|test|adm)_[0-9a-zA-Z]{24,}'
-    priority: 1  # AVANT NER
-  
+    regex: "sk_(?:live|test|adm)_[0-9a-zA-Z]{24,}"
+    priority: 1 # AVANT NER
+
   generic_secret:
-    regex: 'sk_adm_[0-9a-z]+'
+    regex: "sk_adm_[0-9a-z]+"
     priority: 1
 ```
 
@@ -301,11 +317,13 @@ patterns:
 ## Librairies NER Complémentaires (Locale)
 
 ### Flair
+
 - **Installation:** `pip install flair`
 - **Modèle French:** `flair/ner-french` (F1=90.61%)
 - **Supporte:** PER, LOC, ORG, MISC
 
 ### spaCy
+
 - **Installation:** `pip install spacy`
 - **Modèle French:** `python -m spacy download fr_core_news_sm`
 
@@ -313,27 +331,29 @@ patterns:
 
 ## Résumé Tableau – Solutions vs Problèmes
 
-| Problème | Librairie/Solution | Priorité | Latence | Complexité |
-|----------|------|----------|---------|-----------|
-| IBAN/BIC | schwifty | HAUTE | ~1ms | Facile |
-| Téléphones | phonenumbers | HAUTE | ~2ms | Facile |
-| IPv6 | Regex native | MOYENNE | ~0.5ms | Facile |
-| URLs non-HTTP | Regex native | MOYENNE | ~0.5ms | Facile |
-| Cartes Crédit | LUHN + Regex | MOYENNE | ~1ms | Moyen |
-| API Keys | Patterns Stripe/AWS | HAUTE | ~0.5ms | Facile |
-| Emails | Regex + forbidden_patterns | HAUTE | ~0.5ms | Facile |
-| Occurrence multiple | prompt_intensity: 1 | HAUTE | ~100ms | Moyen |
+| Problème            | Librairie/Solution         | Priorité | Latence | Complexité |
+| ------------------- | -------------------------- | -------- | ------- | ---------- |
+| IBAN/BIC            | schwifty                   | HAUTE    | ~1ms    | Facile     |
+| Téléphones          | phonenumbers               | HAUTE    | ~2ms    | Facile     |
+| IPv6                | Regex native               | MOYENNE  | ~0.5ms  | Facile     |
+| URLs non-HTTP       | Regex native               | MOYENNE  | ~0.5ms  | Facile     |
+| Cartes Crédit       | LUHN + Regex               | MOYENNE  | ~1ms    | Moyen      |
+| API Keys            | Patterns Stripe/AWS        | HAUTE    | ~0.5ms  | Facile     |
+| Emails              | Regex + forbidden_patterns | HAUTE    | ~0.5ms  | Facile     |
+| Occurrence multiple | prompt_intensity: 1        | HAUTE    | ~100ms  | Moyen      |
 
 ---
 
 ## Roadmap d'Implémentation (2–3 jours)
 
 ### Jour 1: Patterns Critiques (6h)
+
 - ✓ Installer schwifty, phonenumbers, flair
-- ✓ Implémenter Stripe sk_*, AWS AKIA*, Google AIza*
+- ✓ Implémenter Stripe sk\__, AWS AKIA_, Google AIza\*
 - ✓ Tester sur `case_cloud_logs_indirect` → forbidden_patterns hidden
 
 ### Jour 2: Détection Complète (8h)
+
 - ✓ Schwifty IBAN/BIC
 - ✓ phonenumbers (téléphones)
 - ✓ IPv6, URLs, cartes (LUHN)
@@ -341,6 +361,7 @@ patterns:
 - ✓ Tester sur `case_long_b2b_investigation` → [BIC_*] présent
 
 ### Jour 3: RUPTA + Validation (4–6h)
+
 - ✓ Réduire `paraphrase_intensity: 2 → 1`
 - ✓ Prompts RUPTA avec préservation multiplicité
 - ✓ verify_entity_counts()
@@ -354,6 +375,7 @@ patterns:
 **Après:** 100% (12/12 cas)
 
 Implémentation de ces solutions devrait résoudre 11/11 cas échoués en respectant:
+
 - ✓ Tous les patterns attendus
 - ✓ Les compteurs d'occurrences multiples
 - ✓ Les forbidden_patterns (anonymisation complète)
@@ -378,41 +400,41 @@ class AdvancedAnonymizer:
     def __init__(self, config_path='patterns_config.yaml'):
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
-        
+
         # Load models
         self.flair_tagger = SequenceTagger.load("flair/ner-french")
         self.spacy_nlp = spacy.load("fr_core_news_sm")
-        
+
         # Sort patterns by priority
         self.patterns = sorted(
             self.config['patterns'].items(),
             key=lambda x: x[1].get('priority', 999)
         )
-        
+
         self.entity_mapping = {}
-    
+
     def phase1_regex_detection(self, text):
         """Phase 1: Détection par regex (secrets + patterns déterministes)"""
         entities = []
-        
+
         for pattern_name, pattern_config in self.patterns:
             if not pattern_config.get('enabled', True):
                 continue
-            
+
             if 'type' in pattern_config and pattern_config['type'] == 'library':
                 continue
-            
+
             regex = pattern_config['regex']
             entity_type = pattern_config.get('entity_type', pattern_name)
-            
+
             for match in re.finditer(regex, text):
                 value = match.group()
-                
+
                 # Optional validation (e.g., LUHN for cards)
                 if pattern_config.get('validate_with') == 'luhn':
                     if not self.luhn_check(value.replace(' ', '').replace('-', '')):
                         continue
-                
+
                 entities.append({
                     'start': match.start(),
                     'end': match.end(),
@@ -420,16 +442,16 @@ class AdvancedAnonymizer:
                     'type': entity_type,
                     'pattern_name': pattern_name
                 })
-        
+
         return entities
-    
+
     def phase1_schwifty_detection(self, text):
         """Special handling for IBAN/BIC"""
         entities = []
-        
+
         # IBAN pattern (generic)
         iban_pattern = r'\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]){9,30}\b'
-        
+
         for match in re.finditer(iban_pattern, text):
             iban_str = match.group().replace(' ', '')
             try:
@@ -443,7 +465,7 @@ class AdvancedAnonymizer:
                     'bic': iban.bic,
                     'country': iban.country_code
                 })
-                
+
                 # Also mark BIC if present in text
                 if iban.bic and iban.bic in text:
                     bic_match = text.find(iban.bic)
@@ -456,16 +478,16 @@ class AdvancedAnonymizer:
                         })
             except:
                 pass
-        
+
         return entities
-    
+
     def phase1_phonenumber_detection(self, text):
         """International phone number detection"""
         entities = []
-        
+
         # E.164 pattern
         phone_pattern = r'(?:\+|00)[1-9]\d{1,14}|(?:\+33|0)[1-9]\d{8}'
-        
+
         for match in re.finditer(phone_pattern, text):
             phone_str = match.group()
             try:
@@ -481,16 +503,16 @@ class AdvancedAnonymizer:
                     })
             except:
                 pass
-        
+
         return entities
-    
+
     def phase2_ner_detection(self, text):
         """Phase 2: NER with Flair (French-aware)"""
         entities = []
-        
+
         sentence = Sentence(text)
         self.flair_tagger.predict(sentence)
-        
+
         for entity in sentence.get_spans('ner'):
             entities.append({
                 'start': entity.start_position,
@@ -499,9 +521,9 @@ class AdvancedAnonymizer:
                 'type': entity.tag,
                 'confidence': entity.score
             })
-        
+
         return entities
-    
+
     def phase1_all(self, text):
         """Run all Phase 1 detections"""
         entities = []
@@ -509,7 +531,7 @@ class AdvancedAnonymizer:
         entities.extend(self.phase1_schwifty_detection(text))
         entities.extend(self.phase1_phonenumber_detection(text))
         return entities
-    
+
     def luhn_check(self, card_number):
         """Validate credit card with LUHN"""
         digits = [int(d) for d in str(card_number) if d.isdigit()]
@@ -519,32 +541,32 @@ class AdvancedAnonymizer:
         for d in even:
             checksum += sum(int(x) for x in str(d * 2))
         return checksum % 10 == 0
-    
+
     def anonymize(self, text):
         """Full anonymization pipeline"""
         # Phase 1: Regex
         entities = self.phase1_all(text)
-        
+
         # Phase 2: NER
         ner_entities = self.phase2_ner_detection(text)
         entities.extend(ner_entities)
-        
+
         # Merge and sort
         entities.sort(key=lambda x: x['start'])
-        
+
         # Remove duplicates/overlaps
         unique_entities = self._merge_overlaps(entities)
-        
+
         # Replace
         anonymized = self._replace_entities(text, unique_entities)
-        
+
         return anonymized, unique_entities
-    
+
     def _merge_overlaps(self, entities):
         """Handle overlapping entities"""
         # TODO: Implement smart merging
         return entities
-    
+
     def _replace_entities(self, text, entities):
         """Replace entities with placeholders"""
         offset = 0
