@@ -1,0 +1,1921 @@
+{
+  "policy": "L0",
+  "split": "test",
+  "datasets": {
+    "dbbio": {
+      "samples": [
+        {
+          "id": "dbbio_0",
+          "ground_truth_people": "Kurt Edward Fishback",
+          "ground_truth_label": "Photographer",
+          "baseline": {
+            "anonymized_text": "[PER_OXE] is an American [PER_BZP] noted for his portraits of other artists and photographers. [PER_EPX] was born in [LOC_VZO], [LOC_XQZ] in 1942. Son of photographer [PER_YBP] and namesake of photographer [PER_UIH], he was exposed to art photography at an early age as his father's friends included [PER_UIH], [PER_ZGT] and [PER_CNV]. [PER_EPX] studied art at [ORG_WSO], [ORG_TVA], [ORG_VSY] and [ORG_IEH] where he received his Master of Fine Arts Degree studying with [PER_YTH], [PER_KGI], [PER_SMB] and [PER_FCS]. [ORG_VFA] was the first medium that gained [PER_SBK] high visibility in the [ORG_MEO]. [PER_EPX] took up photography in 1962 when he asked his [PER_SFZ] to teach him. After finishing graduate work and teaching fine art media at several colleges, [PER_EPX] was asked to teach at his [PER_SFZ]'s [ORG_HXW] in [LOC_VZO]. The series of artist portraits which now number over 250 were begun in 1979. Since 1963 [PER_EPX] has been involved in many solo and group exhibitions including; [ORG_KPN], and [ORG_NMZ]. His work is represented in many public, private and corporate collections including; [ORG_KPN], [ORG_TVA], and [ORG_AZP], [LOC_FLX], [LOC_ARW]. Today, [PER_EPX] lives in [LOC_VZO], [LOC_LNK] with his wife [PER_OIQ]. [PER_OXP] exhibits at [ORG_PRE], teaches photography at [ORG_EFI], and has published several books including a book of portraits of [LOC_LNK] artists entitled, Art in Residence: West Coast Artists in Their Space (see illustration). The book includes portraits of 74 artists, including [PER_ZGT], [PER_VQQ], [PER_EBC], [PER_DJG], and [PER_BKJ]. Other artist portraits made by [PER_EPX] include [PER_VYP], [PER_VQO], [PER_YVS], [PER_QVZ] and [PER_KEO]. [PER_EPX] is represented by [ORG_EHD] in [LOC_RRI] and [ORG_GAM] in [LOC_ALY].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Robert Mapplethorpe",
+                "Peter Hujar",
+                "David LaChapelle",
+                "Cindy Sherman",
+                "Richard Avedon",
+                "Larry Sultan",
+                "Robert Frank",
+                "Sally Mann",
+                "Nan Goldin",
+                "Gregory Crewdson"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 26.10397481918335
+          },
+          "rupta": {
+            "anonymized_text": "[PER_MPV] is an American [PER_YCI] noted for his portraits of other artists and photographers. [PER_CZZ] was born in [LOC_NRZ], [LOC_FIN] in 1942. Son of photographer [PER_XMS] and namesake of photographer [PER_AOJ], he was exposed to art photography at an early age as his father's friends included [PER_AOJ], [PER_QWO] and [PER_UVZ]. [PER_CZZ] studied art at [ORG_YRV], [ORG_TYZ], [ORG_CQP] and [ORG_YZA] where he received his Master of Fine Arts Degree studying with [PER_YFQ], [PER_ZBU], [PER_MPJ] and [PER_NMZ]. [ORG_DQP] was the first medium that gained [PER_CAN] high visibility in the [ORG_NQN]. [PER_CZZ] took up photography in 1962 when he asked his [PER_IQJ] to teach him. After finishing graduate work and teaching fine art media at several colleges, [PER_CZZ] was asked to teach at his [PER_IQJ]'s [ORG_ONK] in [LOC_NRZ]. The series of artist portraits which now number over 250 were begun in 1979. Since 1963 [PER_CZZ] has been involved in many solo and group exhibitions including; [ORG_FYI], and [ORG_GTU]. His work is represented in many public, private and corporate collections including; [ORG_FYI], [ORG_TYZ], and [ORG_LJB], [LOC_ASC], [LOC_GWB]. Today, [PER_CZZ] lives in [LOC_NRZ], [LOC_TWO] with his wife [PER_AII]. [PER_VQU] exhibits at [ORG_HQS], teaches photography at [ORG_LJJ], and has published several books including a book of portraits of [LOC_TWO] artists entitled, Art in Residence: West Coast Artists in Their Space (see illustration). The book includes portraits of 74 artists, including [PER_QWO], [PER_IQG], [PER_IOS], [PER_HRU], and [PER_YZQ]. Other artist portraits made by [PER_CZZ] include [PER_IHA], [PER_BRA], [PER_UFA], [PER_HGH] and [PER_MZZ]. [PER_CZZ] is represented by [ORG_ZDF] in [LOC_SYV] and [ORG_NWU] in [LOC_ILN].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Robert Mapplethorpe",
+                "Peter Hujar",
+                "David LaChapelle",
+                "Cindy Sherman",
+                "Richard Avedon",
+                "Larry Sultan",
+                "Robert Frank",
+                "Sally Mann",
+                "Nan Goldin",
+                "Gregory Crewdson"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.2306952476501465
+          }
+        },
+        {
+          "id": "dbbio_1",
+          "ground_truth_people": "Jacques Brugnon",
+          "ground_truth_label": "Tennis Player",
+          "baseline": {
+            "anonymized_text": "[PER_IJM] \\\"[ORG_CTE]\\\" [PER_VGK] (11 [DATE_KNT] – 20 [DATE_IKD]) was a [LOC_DXV] [PER_HNH], one of the famous \\\"Four Musketeers\\\" from [LOC_BML] who dominated tennis in the late 1920s and early 1930s. [PER_ADA] was born in [LOC_JBU] and died in [LOC_JBU]. [PER_ADA] was primarily a doubles specialist who won 10 Grand Slam doubles titles in the French, American, Australian and British championships. Additionally [PER_ADA] won two mixed doubles titles at [LOC_BBW] partnering [PER_XPO]. [PER_ADA] was also a fine singles player but never won a Major title. [PER_ADA] played in 20 Wimbledon Championships between 1920 and 1948 and achieved his best singles result in 1926 when [PER_ADA] reached the semifinals, losing in a close five set match to [PER_YCU]. Between 1921 and 1934 [PER_ADA] played 31 ties for the [ORG_NTJ], mainly as a [PER_TVF], and compiled a record of 26 wins versus 11 losses. [PER_ADA] was part of the famous [ORG_OAB] team that conquered the Cup in 1927 against the [LOC_SBM] and of four of the five teams that defended it successfully until 1932. [PER_VGK] was ranked World No. 9 for 1927 by [PER_GXS]. [PER_DZP] of [ORG_XJM]. [ORG_EDH] were inducted simultaneously into the [ORG_QGO] in [LOC_ZLL], [LOC_YXT], in 1976.",
+            "privacy": {
+              "rank": 5,
+              "confirmation": "Yes",
+              "sensitive_entities": [
+                "nom complet",
+                "sport pratiqué",
+                "période de carrière",
+                "titre majeur remporté"
+              ],
+              "candidates": [
+                "Jean Borotra",
+                "Henri Cochet",
+                "Bobby Riggs",
+                "René Lacoste",
+                "Jacques Brugnon",
+                "Bill Tilden",
+                "Don Budge",
+                "Fred Perry",
+                "Frank Shields",
+                "George Lott"
+              ],
+              "confidence": 0.5
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.8368637561798096
+          },
+          "rupta": {
+            "anonymized_text": "[PER_SFF] \\\"[ORG_UTL]\\\" [PER_WVT] (11 [DATE_TIK] – 20 [DATE_MAU]) was a [LOC_GQP] [PER_XDT], one of the famous \\\"Four Musketeers\\\" from [LOC_FWP] who dominated tennis in the late 1920s and early 1930s. [PER_ECZ] was born in [LOC_GUD] and died in [LOC_GUD]. [PER_ECZ] was primarily a doubles specialist who won 10 Grand Slam doubles titles in the French, American, Australian and British championships. Additionally [PER_ECZ] won two mixed doubles titles at [LOC_FFM] partnering [PER_XSJ]. [PER_ECZ] was also a fine singles player but never won a Major title. [PER_ECZ] played in 20 Wimbledon Championships between 1920 and 1948 and achieved his best singles result in 1926 when [PER_ECZ] reached the semifinals, losing in a close five set match to [PER_AVV]. Between 1921 and 1934 [PER_ECZ] played 31 ties for the [ORG_ZKT], mainly as a [PER_HNG], and compiled a record of 26 wins versus 11 losses. [PER_ECZ] was part of the famous [ORG_WVK] team that conquered the Cup in 1927 against the [LOC_WRC] and of four of the five teams that defended it successfully until 1932. [PER_WVT] was ranked World No. 9 for 1927 by [PER_NYS]. [PER_YRR] of [ORG_PXQ]. [ORG_KXK] were inducted simultaneously into the [ORG_DUA] in [LOC_RFO], [LOC_WQV], in 1976.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Jean Borotra",
+                "Henri Cochet",
+                "Bobby Riggs",
+                "René Lacoste",
+                "Édouard Mérey",
+                "Bill Tilden",
+                "Frank Shields",
+                "Bud Collins",
+                "Dorothy Cheney",
+                "Roderick MacKenzie"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.9680249691009521
+          }
+        },
+        {
+          "id": "dbbio_2",
+          "ground_truth_people": "Georgy Grechko",
+          "ground_truth_label": "Astronaut",
+          "baseline": {
+            "anonymized_text": "[PER_CQE] (born [DATE_WTR]) is a retired [ORG_ENM] cosmonaut who flew on several space flights including Soyuz 17, Soyuz 26, and Soyuz T-14. [PER_ZLR] graduated from the [ORG_LGZ] with a doctorate in mathematics. [PER_OQO] was a member of [ORG_QWY]. [PER_OQO] went on to work at [PER_WHT]'s [ORG_CFV] and from there was selected for cosmonaut training for the Soviet moon programme. When that program was cancelled, [PER_OQO] went on to work on the Salyut space stations. [PER_ZLR] made the first spacewalk in an Orlan space suit on [DATE_OFG] during the Salyut 6 [TICKET_EKK] mission. [PER_OQO] was twice awarded the medal of Hero of the Soviet Union. [PER_OQO] resigned from the [ORG_IDH] in 1992 to lecture on atmospheric physics at the [ORG_LWS]. [PER_ZLR] has written his memoirs as \\\"Космонавт No. 34: От лучины до пришельцев,\\\" (Cosmonaut No. 34 From Splinter to Aliens) [ORG_ZBF], [LOC_GAN], 2013. A minor planet 3148 Grechko discovered by [PER_CTX] [PER_TEJ] in 1979 is named after him. [PER_ZLR], along with [PER_DAS], [PER_LGB] and [PER_AYI] established the [ORG_KPH] in 1984. Membership is open to all [PER_HVX] who have flown in outer space.",
+            "privacy": {
+              "rank": 4,
+              "confirmation": "Yes",
+              "sensitive_entities": [
+                "nom complet",
+                "mission spatiale",
+                "année de vol",
+                "nationalité"
+              ],
+              "candidates": [
+                "Vladimir Grechko",
+                "Viktor Gorbatko",
+                "Anatoly Filipchenko",
+                "Georgy Grechko",
+                "Sergei Krikalev",
+                "Valery Ryumin",
+                "Alexei Leonov",
+                "Pyotr Klimuk",
+                "Vladimir Shatalov",
+                "Gennady Sarafanov"
+              ],
+              "confidence": 0.6
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.8874831199645996
+          },
+          "rupta": {
+            "anonymized_text": "[PER_LXK] (born [DATE_SJA]) is a retired [ORG_IOX] cosmonaut who flew on several space flights including Soyuz 17, Soyuz 26, and Soyuz T-14. [PER_OMW] graduated from the [ORG_BYO] with a doctorate in mathematics. [PER_DUI] was a member of [ORG_YGG]. [PER_DUI] went on to work at [PER_VHZ]'s [ORG_TPP] and from there was selected for cosmonaut training for the Soviet moon programme. When that program was cancelled, [PER_DUI] went on to work on the Salyut space stations. [PER_OMW] made the first spacewalk in an Orlan space suit on [DATE_QEE] during the Salyut 6 [TICKET_VIC] mission. [PER_DUI] was twice awarded the medal of Hero of the Soviet Union. [PER_DUI] resigned from the [ORG_NBY] in 1992 to lecture on atmospheric physics at the [ORG_CFY]. [PER_OMW] has written his memoirs as \\\"Космонавт No. 34: От лучины до пришельцев,\\\" (Cosmonaut No. 34 From Splinter to Aliens) [ORG_OSW], [LOC_SHX], 2013. A minor planet 3148 Grechko discovered by [PER_KAD] [PER_ILA] in 1979 is named after him. [PER_OMW], along with [PER_RHJ], [PER_XAR] and [PER_PVF] established the [ORG_WAH] in 1984. Membership is open to all [PER_AIB] who have flown in outer space.",
+            "privacy": {
+              "rank": 5,
+              "confirmation": "Yes",
+              "sensitive_entities": [
+                "nom",
+                "prénom",
+                "mission spatiale",
+                "année de vol"
+              ],
+              "candidates": [
+                "Vladimir Grechko",
+                "Vladimir Shatalov",
+                "Anatoly Filipchenko",
+                "Viktor Gorbatko",
+                "Georgy Grechko",
+                "Pyotr Klimuk",
+                "Sergei Krikalev",
+                "Valery Ryumin",
+                "Yuri Malyshev",
+                "Alexei Leonov"
+              ],
+              "confidence": 0.5
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.9650037288665771
+          }
+        },
+        {
+          "id": "dbbio_3",
+          "ground_truth_people": "Stephen Turnbull",
+          "ground_truth_label": "Soccer Player",
+          "baseline": {
+            "anonymized_text": "[PER_OED] (born 7 [DATE_XSS]) is an English footballer who currently plays for [ORG_ASI]. [PER_QSM] is the twin brother of fellow midfielder [PER_SEN]. [PER_JHZ] is a [PER_XUP]. [PER_QSM] captained the [ORG_IZQ] during the Dallas Cup in 2005 where they achieved third place, and made 22 appearances for the [ORG_MEL] the following season, earning his first professional contract. [PER_QSM] joined [ORG_JVU] on loan in 2006, where [PER_QSM] was picked by [PER_YTR] [PER_DXP] for their 3–1 FA Cup second round replay win at [ORG_BYU] on 12 December; [PER_QSM] was ineligible to play and [ORG_JVU] were therefore thrown out of the tournament. [PER_TSH] recalled [PER_JHZ] to [LOC_HNC] soon after this. [PER_QSM] spent [DATE_ZVK] on loan at [LOC_BIL], playing in four matches. After leaving [LOC_HNC] at the end of the 2007–08 season, [PER_QSM] signed for [LOC_VYH] on 2 [DATE_NYB] teaming up with his [PER_CAN]. [PER_QSM] was released by [LOC_VYH] on 14 [DATE_GMF] and signed for neighbours [ORG_ASI]. Whilst at the club [PER_QSM] was awarded the 2010–11 Supporters Player of the year award. In [DATE_XZB] [PER_QSM] joined [LOC_UPY], but left in [DATE_EHF] to move to [LOC_IYO]. In [DATE_VYF], [PER_JHZ] returned to [LOC_WHV] and rejoined [ORG_ASI]. [PER_QSM] plays part-time and works in the engine room of a cruise ship. [PER_QSM] then left [ORG_FMQ] to join [ORG_GHX] at the end of the 2013–14 season. In [DATE_GKQ], [PER_QSM] started his third spell at [LOC_MKJ]. In the 2014–15 season, [PER_QSM] scored seven goals for the [ORG_FMQ], one of them the famous free-kick at [ORG_AFF] in the second round of the FA Cup. [PER_QSM] helped [LOC_MKJ] get to the third round proper as well as win the Northumberland Senior Cup. As of 22 August [PER_QSM] has played a total of 150 appearances in three spells at [ORG_ASI].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Luke Chadwick",
+                "James McFadden",
+                "Danny Rose",
+                "Michael Carrick",
+                "Tom Cleverley",
+                "James Milner",
+                "Jack Wilshere",
+                "Ross Barkley",
+                "Adam Johnson",
+                "Scott Sinclair"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 95,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.2642183303833008
+          },
+          "rupta": {
+            "anonymized_text": "[PER_HVL] (born 7 [DATE_TAS]) is an English footballer who currently plays for [ORG_SXU]. [PER_JZZ] is the twin brother of fellow midfielder [PER_NDD]. [PER_NML] is a [PER_VZL]. [PER_JZZ] captained the [ORG_UXD] during the Dallas Cup in 2005 where they achieved third place, and made 22 appearances for the [ORG_AUN] the following season, earning his first professional contract. [PER_JZZ] joined [ORG_EEA] on loan in 2006, where [PER_JZZ] was picked by [PER_XBB] [PER_CGC] for their 3–1 FA Cup second round replay win at [ORG_UUK] on 12 December; [PER_JZZ] was ineligible to play and [ORG_EEA] were therefore thrown out of the tournament. [PER_CIN] recalled [PER_NML] to [LOC_MYK] soon after this. [PER_JZZ] spent [DATE_NAA] on loan at [LOC_ZDX], playing in four matches. After leaving [LOC_MYK] at the end of the 2007–08 season, [PER_JZZ] signed for [LOC_DDD] on 2 [DATE_AGX] teaming up with his [PER_ZXC]. [PER_JZZ] was released by [LOC_DDD] on 14 [DATE_CTC] and signed for neighbours [ORG_SXU]. Whilst at the club [PER_JZZ] was awarded the 2010–11 Supporters Player of the year award. In [DATE_BHC] [PER_JZZ] joined [LOC_WSR], but left in [DATE_CNC] to move to [LOC_UJC]. In [DATE_VFH], [PER_NML] returned to [LOC_MCL] and rejoined [ORG_SXU]. [PER_JZZ] plays part-time and works in the engine room of a cruise ship. [PER_JZZ] then left [ORG_RAR] to join [ORG_VKO] at the end of the 2013–14 season. In [DATE_OUF], [PER_JZZ] started his third spell at [LOC_POP]. In the 2014–15 season, [PER_JZZ] scored seven goals for the [ORG_RAR], one of them the famous free-kick at [ORG_FIZ] in the second round of the FA Cup. [PER_JZZ] helped [LOC_POP] get to the third round proper as well as win the Northumberland Senior Cup. As of 22 August [PER_JZZ] has played a total of 150 appearances in three spells at [ORG_SXU].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Jordan Rhodes",
+                "James Vaughan",
+                "Tommy Smith",
+                "Michael Chopra",
+                "Danny Graham",
+                "Chris Wood",
+                "Adam Hammill",
+                "Liam Lawrence",
+                "Nathan Dyer",
+                "James Meredith"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.109208583831787
+          }
+        },
+        {
+          "id": "dbbio_4",
+          "ground_truth_people": "Rolf Disch",
+          "ground_truth_label": "Architect",
+          "baseline": {
+            "anonymized_text": "[PER_PCQ] is a German [PER_TPD], [PER_BQR] and [PER_AKH] who has contributed greatly to the advancement and efficiency of solar architecture internationally. Born in [LOC_YHZ], [LOC_ZBK], [PER_BXB] has dedicated particular focus to regional renewable and sustainable energy. As head of his own architecture firm, [PER_PCQ] [ORG_XNF], [PER_BXB] has led [LOC_ZBK] as the solar pioneer in respect to residential, retail and [LOC_YNP] building and design. In 1994, [PER_PCQ] built the Heliotrope in [LOC_VFN] which was the [LOC_BOS]’s first home to create more energy than it uses, as it physically rotates with the sun to maximize its solar intake. [PER_BXB] then developed his concept, [ORG_CEF], simply making it a permanent goal for his [LOC_OLK] to produce more energy than they consume in order to sell the surplus solar energy back into the [LOC_DRN] for profit. [PER_PCQ]’s biggest venture was completed in 2004 with the [ORG_ASW] home Solar Settlement and the 60,000 sq ft (5,600 m2). PlusEnergy Sun Ship. In [DATE_DSE], [PER_BXB] launched the 100% GmbH organization, with the aim to make [LOC_VFN] and its [LOC_JDO] the first 100% sustainable renewable energy region in the [LOC_BOS].",
+            "privacy": {
+              "rank": 1,
+              "confirmation": "Yes",
+              "sensitive_entities": [
+                "architecte",
+                "bâtiment solaire",
+                "projet intégré",
+                "ville allemande",
+                "énergie renouvelable",
+                "design innovant"
+              ],
+              "candidates": [
+                "Rolf Disch",
+                "Frei Otto",
+                "Peter Zumthor",
+                "Christoph Ingenhoven",
+                "Gottfried Böhm",
+                "Hans Kollhoff",
+                "Dieter Kienast",
+                "Ulrich Frank",
+                "Andreas Kipar",
+                "Stefan W. Kühn"
+              ],
+              "confidence": 0.9
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.6766085624694824
+          },
+          "rupta": {
+            "anonymized_text": "[PER_LPR] is a German [PER_IMI], [PER_HFJ] and [PER_KRT] who has contributed greatly to the advancement and efficiency of solar architecture internationally. Born in [LOC_YVH], [LOC_NJD], [PER_URU] has dedicated particular focus to regional renewable and sustainable energy. As head of his own architecture firm, [PER_LPR] [ORG_KMV], [PER_URU] has led [LOC_NJD] as the solar pioneer in respect to residential, retail and [LOC_FZL] building and design. In 1994, [PER_LPR] built the Heliotrope in [LOC_OVO] which was the [LOC_UOL]’s first home to create more energy than it uses, as it physically rotates with the sun to maximize its solar intake. [PER_URU] then developed his concept, [ORG_THX], simply making it a permanent goal for his [LOC_OWE] to produce more energy than they consume in order to sell the surplus solar energy back into the [LOC_ZGX] for profit. [PER_LPR]’s biggest venture was completed in 2004 with the [ORG_LOY] home Solar Settlement and the 60,000 sq ft (5,600 m2). PlusEnergy Sun Ship. In [DATE_YYP], [PER_URU] launched the 100% GmbH organization, with the aim to make [LOC_OVO] and its [LOC_WGI] the first 100% sustainable renewable energy region in the [LOC_UOL].",
+            "privacy": {
+              "rank": 1,
+              "confirmation": "Yes",
+              "sensitive_entities": [
+                "architecte solaire",
+                "maison à énergie positive",
+                "Freiburg",
+                "projet Heliotrope"
+              ],
+              "candidates": [
+                "Rolf Disch",
+                "Frei Otto",
+                "Peter Zumthor",
+                "Christoph Ingenhoven",
+                "Gottfried Böhm",
+                "Dieter Kienast",
+                "Hans Kollhoff",
+                "Ulrich Frank",
+                "Michael Schildberger",
+                "Wolfgang Tschapeller"
+              ],
+              "confidence": 0.9
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.7664225101470947
+          }
+        },
+        {
+          "id": "dbbio_5",
+          "ground_truth_people": "Lawrence S. Trimble",
+          "ground_truth_label": "Congressman",
+          "baseline": {
+            "anonymized_text": "[PER_VWN] (26 [DATE_WCF] – 9 [DATE_KNF]) was a [ORG_CBO] congressman from [LOC_PYU], a [LOC_PYU] [PER_LSD], and [LOC_QMA] politician and [PER_SMO]. [ORG_KNF] was born in [LOC_MYD], [LOC_PYU] to the farming family of [PER_JZX] ([PER_EDR]) [ORG_KNF]. [PER_KBB] completed preparatory studies and later studied law [LOC_LTR], and was admitted to the bar [LOC_LTR] at the age of 22. In 1847, [PER_KBB] moved to [LOC_UFB], opened a law practice and entered politics. [PER_KBB] served as a [PER_UIA] in [LOC_PYU]'s [ORG_QIO] from 1851 to 1853. [PER_NII] was a [PER_PCW] up to the Civil War. [PER_KBB] was elected as a [PER_LSD] for the [ORG_PUU] in the [LOC_SBH] in 1856 and served until 1860. From 1860 until 1865 [PER_KBB] was [PER_ZNM] of the [ORG_DUK]. [ORG_KNF] served three consecutive terms in the U.S. [ORG_DDM] from 1865 to 1870 as a [PER_LFW] for the [LOC_TYV]. [PER_KBB] was one of the 47 representatives who voted against the impeachment of [PER_LDC] in 1868. In 1870, [PER_KBB] failed to receive the [ORG_JVF] nomination from his [LOC_SLP] for [ORG_BAG]. In 1879, [PER_NII] moved to [LOC_QUM], [LOC_NII], where he continued the practice of law and again entered politics. [PER_KBB] was the only [ORG_IFS] elected to the [LOC_NII] Constitutional Convention of 1889 where [PER_KBB] represented [LOC_WQP] and gave the opening address. After the convention [PER_KBB] retired to his ranch. [PER_NII] died in [LOC_QUM], [DATE_EGN] and was buried in the [LOC_CAO] off of [LOC_IBM].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "William Jennings Bryan",
+                "James A. Garfield",
+                "Ulysses S. Grant",
+                "Rutherford B. Hayes",
+                "Benjamin Harrison",
+                "Grover Cleveland",
+                "Chester A. Arthur",
+                "Andrew Johnson",
+                "Abraham Lincoln",
+                "Theodore Roosevelt"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.2613215446472168
+          },
+          "rupta": {
+            "anonymized_text": "[PER_LHO] (26 [DATE_DJT] – 9 [DATE_XUO]) was a [ORG_AJA] congressman from [LOC_SLM], a [LOC_SLM] [PER_GXC], and [LOC_ZXB] politician and [PER_MZW]. [ORG_GJW] was born in [LOC_CKP], [LOC_SLM] to the farming family of [PER_YOF] ([PER_WMS]) [ORG_GJW]. [PER_DNP] completed preparatory studies and later studied law [LOC_WZR], and was admitted to the bar [LOC_WZR] at the age of 22. In 1847, [PER_DNP] moved to [LOC_HMR], opened a law practice and entered politics. [PER_DNP] served as a [PER_LUU] in [LOC_SLM]'s [ORG_TYN] from 1851 to 1853. [PER_CNS] was a [PER_NBZ] up to the Civil War. [PER_DNP] was elected as a [PER_GXC] for the [ORG_AYK] in the [LOC_RBP] in 1856 and served until 1860. From 1860 until 1865 [PER_DNP] was [PER_YOQ] of the [ORG_EIK]. [ORG_GJW] served three consecutive terms in the U.S. [ORG_WFL] from 1865 to 1870 as a [PER_VDN] for the [LOC_RTY]. [PER_DNP] was one of the 47 representatives who voted against the impeachment of [PER_QPW] in 1868. In 1870, [PER_DNP] failed to receive the [ORG_QHY] nomination from his [LOC_RTJ] for [ORG_USE]. In 1879, [PER_CNS] moved to [LOC_PVK], [LOC_MJL], where he continued the practice of law and again entered politics. [PER_DNP] was the only [ORG_COR] elected to the [LOC_MJL] Constitutional Convention of 1889 where [PER_DNP] represented [LOC_CXG] and gave the opening address. After the convention [PER_DNP] retired to his ranch. [PER_CNS] died in [LOC_PVK], [DATE_PLA] and was buried in the [LOC_DCE] off of [LOC_KOV].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "James A. Garfield",
+                "William McKinley",
+                "Rutherford B. Hayes",
+                "Ulysses S. Grant",
+                "Benjamin Harrison",
+                "Chester A. Arthur",
+                "Grover Cleveland",
+                "Andrew Johnson",
+                "Abraham Lincoln",
+                "Theodore Roosevelt"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.1619501113891602
+          }
+        },
+        {
+          "id": "dbbio_6",
+          "ground_truth_people": "Adrian Aeschbacher",
+          "ground_truth_label": "Classical Music Artist",
+          "baseline": {
+            "anonymized_text": "[PER_GSR] (10 [DATE_JDS] in [LOC_MGK], [LOC_UMW] – 9 [DATE_TBK] in [LOC_SDY]) was a Swiss [PER_NVP]. [PER_NXV] was [PER_QFA]. His youth was spent at [LOC_YZE] where [PER_NXV] was professor of piano at the [ORG_KCQ], and [PER_NXV] was his instructor from the age of four to sixteen. His teachers were [PER_APD] (at the [ORG_FPH]) and [PER_KFT]. [PER_XOB] then continued his studies for two years intensively with [PER_BKZ] in [LOC_DNF] and began his performing career in 1934. [PER_XOB] became famous as an interpreter of [PER_YRB], [PER_UBW], [PER_YWG] and [PER_YKO]. [ORG_AOG] also performed and left recordings of works by [PER_CDH], [PER_NWE], [PER_QCY] and [PER_LMN]. [PER_XOB] recorded for [ORG_BCT] among other labels. From 1965 until 1977 [PER_XOB] taught at the [ORG_RJG] in [LOC_VOA]. [ORG_AOG]'s notable students included [PER_CJP].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Arthur Rubinstein",
+                "Clara Haskil",
+                "György Szell",
+                "Emil Gilels",
+                "Vladimir Horowitz",
+                "Sviatoslav Richter",
+                "Artur Schnabel",
+                "Wilhelm Kempff",
+                "André Watts",
+                "Radu Lupu"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.7898521423339844
+          },
+          "rupta": {
+            "anonymized_text": "[PER_LIQ] (10 [DATE_RPW] in [LOC_MXW], [LOC_IDP] – 9 [DATE_NDT] in [LOC_FNY]) was a Swiss [PER_XFU]. [PER_XCP] was [PER_NCJ]. His youth was spent at [LOC_ZBX] where [PER_XCP] was professor of piano at the [ORG_KOJ], and [PER_XCP] was his instructor from the age of four to sixteen. His teachers were [PER_IJZ] (at the [ORG_WWK]) and [PER_EXI]. [PER_QWG] then continued his studies for two years intensively with [PER_FTD] in [LOC_DBS] and began his performing career in 1934. [PER_QWG] became famous as an interpreter of [PER_DJM], [PER_FSC], [PER_GKC] and [PER_AOP]. [ORG_HNY] also performed and left recordings of works by [PER_SBK], [PER_AKV], [PER_YKU] and [PER_FKI]. [PER_QWG] recorded for [ORG_RXL] among other labels. From 1965 until 1977 [PER_QWG] taught at the [ORG_IBY] in [LOC_GTF]. [ORG_HNY]'s notable students included [PER_KQM].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Arthur Rubinstein",
+                "Clara Haskil",
+                "György Szell",
+                "Alfred Cortot",
+                "Walter Gieseking",
+                "Paul Badura-Skoda",
+                "Emil Gilels",
+                "Vladimir Horowitz",
+                "Sviatoslav Richter",
+                "Artur Schnabel"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.8233993053436279
+          }
+        },
+        {
+          "id": "dbbio_7",
+          "ground_truth_people": "Ernest Nash",
+          "ground_truth_label": "Photographer",
+          "baseline": {
+            "anonymized_text": "[PER_IKO] ([DATE_KYX] – [DATE_CUD]) was a student of Roman architecture and pioneer of archaeological photography. [PER_IAP] was born as [PER_SYX], but later changed his name to [PER_IAP] when he was living in the [LOC_AVE] between 1939 and 1952. [PER_SFT] was a [PER_EGP] of the [ORG_BBH] and had a [ORG_VFN] in his native city of [LOC_WBY], [LOC_EOE]. [PER_IAP] first went to [LOC_LAL] on [DATE_CEM] with a goal of documenting in photographs the [LOC_BCW] of [LOC_ABM], [LOC_TGZ], and [LOC_NVF]. The main reason for fleeing [LOC_WBY] was the institution of the racial laws by [PER_JHZ]. [PER_SFT] emigrated to the [LOC_AVE] in 1939, but returned to [LOC_LAL] in 1952 to continue his work. [PER_SFT] established the [ORG_TAN] archive at the [ORG_SDP] in [LOC_ABM] in 1957 and served as its [PER_YZY]. Besides architectural photography [PER_SFT] also produced a series of portraits of famous musicians, including [PER_PTE], while [PER_SFT] lived in [LOC_ARR]. The Bartók photo is still used by the [ORG_DPV]. [PER_SFT] is survived by [PER_XDD], [PER_ZNW], [PER_HZQ] and now two great grand children. His first two wives have already died. [PER_IAP] died in [LOC_ABM] in 1974.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Fernando de Almeida",
+                "Giovanni Battista Piranesi",
+                "Giorgio Vasari",
+                "Rudolf Wittkower",
+                "Adolf Loos",
+                "Giovanni Battista Tiepolo",
+                "Luigi Piccinato",
+                "Paolo Portoghesi",
+                "Carlo Scarpa",
+                "Giovanni Battista Soria"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.9759955406188965
+          },
+          "rupta": {
+            "anonymized_text": "[PER_GXR] ([DATE_YVL] – [DATE_WOU]) was a student of Roman architecture and pioneer of archaeological photography. [PER_WPR] was born as [PER_RXV], but later changed his name to [PER_WPR] when he was living in the [LOC_MFL] between 1939 and 1952. [PER_YSV] was a [PER_NMM] of the [ORG_VZS] and had a [ORG_XTU] in his native city of [LOC_ATZ], [LOC_FNL]. [PER_WPR] first went to [LOC_XUG] on [DATE_KQS] with a goal of documenting in photographs the [LOC_YWT] of [LOC_WKN], [LOC_NFS], and [LOC_JBQ]. The main reason for fleeing [LOC_ATZ] was the institution of the racial laws by [PER_QLH]. [PER_YSV] emigrated to the [LOC_MFL] in 1939, but returned to [LOC_XUG] in 1952 to continue his work. [PER_YSV] established the [ORG_YPN] archive at the [ORG_IXU] in [LOC_WKN] in 1957 and served as its [PER_VVU]. Besides architectural photography [PER_YSV] also produced a series of portraits of famous musicians, including [PER_ZGO], while [PER_YSV] lived in [LOC_VUS]. The Bartók photo is still used by the [ORG_OAG]. [PER_YSV] is survived by [PER_LFU], [PER_AAR], [PER_XBM] and now two great grand children. His first two wives have already died. [PER_WPR] died in [LOC_WKN] in 1974.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Rudolf Koller",
+                "György Károlyi",
+                "Ferenc Farkas",
+                "László Kádár",
+                "András Szántó",
+                "Zoltán Szabó",
+                "István Tóth",
+                "János Varga",
+                "Béla Szabó",
+                "Tamás Szabó"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.8733625411987305
+          }
+        },
+        {
+          "id": "dbbio_8",
+          "ground_truth_people": "Alan Lee",
+          "ground_truth_label": "Soccer Player",
+          "baseline": {
+            "anonymized_text": "[PER_TAI] (born 21 [DATE_MMR]) is a Irish former footballer who played as a [PER_IQN]; he is now working as an [PER_XVU] at [ORG_SFL]. [PER_RCE] scored 119 goals in 547 appearances in a 19-year professional career in the [ORG_YOQ], and won 10 caps for the [ORG_OEP]. [PER_RCE] started his career with [ORG_UBX], also playing on loan at [ORG_DBZ] and [ORG_VIP]. Following a season with [LOC_OSI], [PER_RCE] signed with [ORG_LQC] in 2000. [PER_RCE] is considered something of a [PER_NNK] at the [ORG_IYS], after helping the \\\"[ORG_RTT]\\\" to win promotion out of the [ORG_LUI] in 2000–01. [PER_RCE] was then bought by [ORG_MQO], and made almost 100 appearances for the [ORG_MHC] between 2003 and 2006. Then purchased by [ORG_SFL], [PER_RCE] made over 100 appearances for the [ORG_IYS] before earning a big money move to [LOC_DMV]. After returning from a loan spell at [ORG_KXX], [PER_RCE] wrote himself into the [ORG_IYS]'s folklore by scoring in the final game of the 2009–10 season against [ORG_SVD], saving the [ORG_ZZR] from relegation and ultimately administration. Following these heroics [PER_RCE] moved on to [ORG_QPZ], and helped the \\\"[ORG_OJF]\\\" to win promotion out of [ORG_ORZ] in 2012. [PER_RCE] announced his retirement in 2014, having spent his final season as a [PER_RPM] at [ORG_SFL].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Dermot Keely",
+                "Dermot Kealy",
+                "Dermot O'Leary",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe",
+                "Dermot O'Keeffe"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.8892529010772705
+          },
+          "rupta": {
+            "anonymized_text": "[PER_HBM] (born 21 [DATE_RIO]) is a Irish former footballer who played as a [PER_ZQH]; he is now working as an [PER_XPL] at [ORG_CNN]. [PER_ZMD] scored 119 goals in 547 appearances in a 19-year professional career in the [ORG_JPO], and won 10 caps for the [ORG_GEU]. [PER_ZMD] started his career with [ORG_USU], also playing on loan at [ORG_KQP] and [ORG_YJL]. Following a season with [LOC_AIL], [PER_ZMD] signed with [ORG_BRZ] in 2000. [PER_ZMD] is considered something of a [PER_ZVY] at the [ORG_MXT], after helping the \\\"[ORG_YQC]\\\" to win promotion out of the [ORG_AEO] in 2000–01. [PER_ZMD] was then bought by [ORG_SJX], and made almost 100 appearances for the [ORG_ISO] between 2003 and 2006. Then purchased by [ORG_CNN], [PER_ZMD] made over 100 appearances for the [ORG_MXT] before earning a big money move to [LOC_VZU]. After returning from a loan spell at [ORG_NID], [PER_ZMD] wrote himself into the [ORG_MXT]'s folklore by scoring in the final game of the 2009–10 season against [ORG_BQY], saving the [ORG_KSL] from relegation and ultimately administration. Following these heroics [PER_ZMD] moved on to [ORG_TSH], and helped the \\\"[ORG_TPX]\\\" to win promotion out of [ORG_VSV] in 2012. [PER_ZMD] announced his retirement in 2014, having spent his final season as a [PER_IYD] at [ORG_CNN].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "Error",
+              "sensitive_entities": [],
+              "candidates": [],
+              "confidence": 0.0,
+              "error": "LLM call failed: Response ended prematurely"
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.9405066967010498
+          }
+        },
+        {
+          "id": "dbbio_9",
+          "ground_truth_people": "Nicole Struse",
+          "ground_truth_label": "Table Tennis Player",
+          "baseline": {
+            "anonymized_text": "[PER_BXL] (born [DATE_XUF] in [LOC_EVB], [LOC_MMD]) is a table tennis player from [LOC_KRN], who won several national contests and reached round three with [PER_FLC] in the Women's Doubles Competition at the 2004 Summer Olympics. [PER_SZT] represented her native country at four consecutive Summer Olympics, starting in 1992. 1995 [PER_SZT] was ranked no 1 in the [ORG_NVF]. 2004 [PER_SZT] won the Europe Top-12 table tennis tournament. After winning the eight German single championship [PER_SZT] replaced [PER_TWV] and [PER_XTB] as new record holder in 2005. 2006 [PER_SZT] and [PER_PZA] won the German double championship. [PER_XEK] ist right-hander, her strength is the offence. Recently, in [DATE_XOU], [PER_SZT] was sixth of the German ranking. After that [PER_SZT] was not ranked any more because of having not taken part in enough table tennis games during the last twelve months.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Birgit Fischer",
+                "Diana Schuler",
+                "Petra Kvitová",
+                "Sandra Mikolaschek",
+                "Diana Kühn",
+                "Anja Kühn",
+                "Doris Gierl",
+                "Sabine Schmitz",
+                "Monika Krawczyk",
+                "Nadine Schröder"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.5142827033996582
+          },
+          "rupta": {
+            "anonymized_text": "[PER_CJC] (born [DATE_ZAO] in [LOC_GSN], [LOC_FOK]) is a table tennis player from [LOC_URT], who won several national contests and reached round three with [PER_RIW] in the Women's Doubles Competition at the 2004 Summer Olympics. [PER_YOO] represented her native country at four consecutive Summer Olympics, starting in 1992. 1995 [PER_YOO] was ranked no 1 in the [ORG_KNQ]. 2004 [PER_YOO] won the Europe Top-12 table tennis tournament. After winning the eight German single championship [PER_YOO] replaced [PER_PZR] and [PER_SGW] as new record holder in 2005. 2006 [PER_YOO] and [PER_WSS] won the German double championship. [PER_GCA] ist right-hander, her strength is the offence. Recently, in [DATE_DMP], [PER_YOO] was sixth of the German ranking. After that [PER_YOO] was not ranked any more because of having not taken part in enough table tennis games during the last twelve months.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Birgit Fischer",
+                "Diana Schuler",
+                "Petra Kvitová",
+                "Sandra Mikolaschek",
+                "Diana Kühn",
+                "Anja Kühn",
+                "Doris Schröder",
+                "Sabine Schmitz",
+                "Monika Krawczyk",
+                "Nadine Schröder"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 0.5526101589202881
+          }
+        }
+      ],
+      "summary": {
+        "baseline": {
+          "samples": 10,
+          "avg_privacy_rank": 700.3,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 99.5,
+          "utility_preserved_rate": 1.0,
+          "avg_runtime_seconds": 3.4199853420257567
+        },
+        "rupta": {
+          "samples": 10,
+          "avg_privacy_rank": 799.8,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 100.0,
+          "utility_preserved_rate": 1.0,
+          "avg_runtime_seconds": 0.9391183853149414
+        }
+      }
+    },
+    "reddit": {
+      "samples": [
+        {
+          "id": "reddit_0",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00011277198791503906
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00048470497131347656
+          }
+        },
+        {
+          "id": "reddit_1",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jacques Chirac",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Valérie Pécresse",
+                "Marine Le Pen",
+                "Jean-Luc Mélenchon",
+                "Bruno Le Maire",
+                "Arnaud Montebourg",
+                "Cécile Duflot"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002682209014892578
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "Gérard Collomb",
+                "Bruno Le Maire",
+                "Christine Lagarde",
+                "Catherine Vautrin"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002930164337158203
+          }
+        },
+        {
+          "id": "reddit_2",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00037288665771484375
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002751350402832031
+          }
+        },
+        {
+          "id": "reddit_3",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002677440643310547
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00031876564025878906
+          }
+        },
+        {
+          "id": "reddit_4",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Bernard Cazeneuve",
+                "Gérard Collomb",
+                "Christine Lagarde",
+                "Manuel Valls",
+                "François Bayrou"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0005390644073486328
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00027251243591308594
+          }
+        },
+        {
+          "id": "reddit_5",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "software engineer",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002567768096923828
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002830028533935547
+          }
+        },
+        {
+          "id": "reddit_6",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "shop owner",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0003592967987060547
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00032782554626464844
+          }
+        },
+        {
+          "id": "reddit_7",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "shop owner",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "Gérard Collomb",
+                "Bruno Le Maire",
+                "Catherine Vautrin",
+                "Valérie Pécresse"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002856254577636719
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0003223419189453125
+          }
+        },
+        {
+          "id": "reddit_8",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "shop owner",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002815723419189453
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Nelson Mandela",
+                "Mahatma Gandhi",
+                "Martin Luther King Jr.",
+                "Malala Yousafzai",
+                "Abraham Lincoln",
+                "Julius Nyerere",
+                "Desmond Tutu",
+                "Mohandas Karamchand Gandhi",
+                "Frederick Douglass",
+                "Aung San Suu Kyi"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002593994140625
+          }
+        },
+        {
+          "id": "reddit_9",
+          "ground_truth_people": "Unknown",
+          "ground_truth_label": "shop owner",
+          "baseline": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "Jean-Luc Mélenchon",
+                "Marine Le Pen",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Alain Juppé",
+                "François Bayrou",
+                "Bruno Le Maire",
+                "Gérard Collomb",
+                "Christine Lagarde"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.00026917457580566406
+          },
+          "rupta": {
+            "anonymized_text": "",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Emmanuel Macron",
+                "François Hollande",
+                "Nicolas Sarkozy",
+                "Jacques Chirac",
+                "Valérie Pécresse",
+                "Marine Le Pen",
+                "Jean-Luc Mélenchon",
+                "Arnaud Montebourg",
+                "Bruno Le Maire",
+                "Catherine Vidal"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 0,
+              "confirmation": "No",
+              "confused_entities": [],
+              "utility_preserved": false
+            },
+            "runtime_seconds": 0.0002524852752685547
+          }
+        }
+      ],
+      "summary": {
+        "baseline": {
+          "samples": 10,
+          "avg_privacy_rank": 999.0,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 0.0,
+          "utility_preserved_rate": 0.0,
+          "avg_runtime_seconds": 0.0003013134002685547
+        },
+        "rupta": {
+          "samples": 10,
+          "avg_privacy_rank": 999.0,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 0.0,
+          "utility_preserved_rate": 0.0,
+          "avg_runtime_seconds": 0.00030891895294189454
+        }
+      }
+    },
+    "tab": {
+      "samples": [
+        {
+          "id": "001-61807",
+          "ground_truth_people": "Galip Yalman",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_JOH]) against the [ORG_FPE] lodged with the [ORG_GON] (“the [ORG_JUP]”) under former [CODE_DKO] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_GRJ], [PER_XJP], [PER_ILL], [PER_TZZ] and [PER_BEZ] (“[PER_NWM]”), on 29 [DATE_QYE].\n\nThe applicants were represented by [PER_IUT]. [PER_OZS], a [PER_YKP] practising in [LOC_MZF]. The [ORG_BDY] (“the [ORG_DGN]”) did not designate an [PER_GHX] for the purposes of the proceedings before the [ORG_DGS].\n\nThe [PER_XWA] alleged that their case, which commenced in 1989 and terminated in 1996, was not heard within a reasonable time as required by the Convention.\n\nThe application was transmitted to the [ORG_XTI] on 1 [DATE_MJE], when [CODE_RTL] to the Convention came into force ([CODE_VPF] § 2 of [CODE_RTL]).\n\nThe application was allocated to the Second Section of the [ORG_XTI] ([CODE_EBL] of the Rules of Court). Within that Section, the [ORG_MYU] that would consider the case ([CODE_YTN] § 1 of the Convention) was constituted as provided in [CODE_GLZ].\n\nOn 1 [DATE_SFO] the [ORG_XTI] changed the composition of its Sections ([CODE_BBL]). This case was assigned to the newly composed First Section ([CODE_EBL]).\n\nBy a decision of 15 [DATE_AUK], the [ORG_XTI] declared the application admissible.\n\nThe [PER_XWA] and the [ORG_DGN] each filed observations on the merits ([CODE_HZZ]).\n\nTHE FACTS\n\nIn [DATE_TDA] the [PER_XWA] were taken into police custody and were subsequently placed in detention on remand on suspicion of membership of an [ORG_STE]. The [LOC_JPX] [ORG_AKG] filed a bill of indictment with the [LOC_JPX] [ORG_ZWR] ([ORG_ZLJ]) charging the [PER_XWA] under [CODE_JTL] of the Criminal Code with membership of an [ORG_STE] whose object was to undermine the constitutional order.\n\nOn various dates between 1982 and 1984 the [PER_XWA] were released pending trial.\n\nOn 13 [DATE_NCT] the [ORG_BUQ] acquitted the [PER_XWA] of the charges against them.\n\nOn various dates in March, April and [DATE_UFR] the [PER_XWA] brought individual actions before the [ORG_XTH] against the [ORG_IVB], pursuant to [CODE_PKG]. [PER_NBL] requested compensation for their unjustified detention on remand.\n\nOn 20 [DATE_EMQ] the [ORG_XTI] decided to join the [PER_XWA]’ cases.\n\nOn 15 [DATE_QCZ] the [ORG_XTH] awarded non‑pecuniary compensation to the [PER_XWA]. The [PER_XWA] appealed, arguing that the amount of compensation awarded was not sufficient.\n\nOn 31 [DATE_SJT] the [ORG_EVV] quashed the judgment of the [ORG_XLU].\n\nOn 6 [DATE_GVU] the [ORG_XTH] increased the amount of non‑pecuniary compensation.\n\nOn 15 [DATE_GVU] the [PER_XWA] again appealed.\n\nOn 30 [DATE_YTM] the [ORG_EVV] dismissed the [PER_XWA]’ appeal and upheld the judgment of the [ORG_KII].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Václav Havel",
+                "Havel Štěpán",
+                "Milan Kundera",
+                "Jiří Dienstbier",
+                "Pavel Tigrid",
+                "Jan Palach",
+                "Zdeněk Mlynář",
+                "Václav Benda",
+                "Jiří Hájek",
+                "Ludvík Vaculík"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.9265484809875488
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_CPN]) against the [ORG_AVZ] lodged with the [ORG_IYV] (“the [ORG_OND]”) under former [CODE_XTK] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_QUH], [PER_XKC], [PER_DTU], [PER_PJJ] and [PER_VAU] (“[PER_QQI]”), on 29 [DATE_SHE].\n\nThe applicants were represented by [PER_ZUQ]. [PER_UFJ], a [PER_WUV] practising in [LOC_ZSD]. The [ORG_KKM] (“the [ORG_YTN]”) did not designate an [PER_NBJ] for the purposes of the proceedings before the [ORG_WGH].\n\nThe [PER_PTA] alleged that their case, which commenced in 1989 and terminated in 1996, was not heard within a reasonable time as required by the Convention.\n\nThe application was transmitted to the [ORG_ZCH] on 1 [DATE_XQV], when [CODE_POL] to the Convention came into force ([CODE_PEW] § 2 of [CODE_POL]).\n\nThe application was allocated to the Second Section of the [ORG_ZCH] ([CODE_JRP] of the Rules of Court). Within that Section, the [ORG_DBG] that would consider the case ([CODE_NWL] § 1 of the Convention) was constituted as provided in [CODE_LWM].\n\nOn 1 [DATE_LPI] the [ORG_ZCH] changed the composition of its Sections ([CODE_DHV]). This case was assigned to the newly composed First Section ([CODE_JRP]).\n\nBy a decision of 15 [DATE_RZM], the [ORG_ZCH] declared the application admissible.\n\nThe [PER_PTA] and the [ORG_YTN] each filed observations on the merits ([CODE_NDC]).\n\nTHE FACTS\n\nIn [DATE_VUJ] the [PER_PTA] were taken into police custody and were subsequently placed in detention on remand on suspicion of membership of an [ORG_FOV]. The [LOC_EKZ] [ORG_NNR] filed a bill of indictment with the [LOC_EKZ] [ORG_EGQ] ([ORG_GHS]) charging the [PER_PTA] under [CODE_FNH] of the Criminal Code with membership of an [ORG_FOV] whose object was to undermine the constitutional order.\n\nOn various dates between 1982 and 1984 the [PER_PTA] were released pending trial.\n\nOn 13 [DATE_LOJ] the [ORG_TAZ] acquitted the [PER_PTA] of the charges against them.\n\nOn various dates in March, April and [DATE_USJ] the [PER_PTA] brought individual actions before the [ORG_FUK] against the [ORG_JEA], pursuant to [CODE_MMB]. [PER_VET] requested compensation for their unjustified detention on remand.\n\nOn 20 [DATE_CSP] the [ORG_ZCH] decided to join the [PER_PTA]’ cases.\n\nOn 15 [DATE_JPH] the [ORG_FUK] awarded non‑pecuniary compensation to the [PER_PTA]. The [PER_PTA] appealed, arguing that the amount of compensation awarded was not sufficient.\n\nOn 31 [DATE_XYX] the [ORG_HMT] quashed the judgment of the [ORG_KKC].\n\nOn 6 [DATE_LUS] the [ORG_FUK] increased the amount of non‑pecuniary compensation.\n\nOn 15 [DATE_LUS] the [PER_PTA] again appealed.\n\nOn 30 [DATE_PFO] the [ORG_HMT] dismissed the [PER_PTA]’ appeal and upheld the judgment of the [ORG_PSA].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Václav Havel",
+                "Havel Štěpán",
+                "Milan Kundera",
+                "Jiří Dienstbier",
+                "Jan Palach",
+                "Zdeněk Mlynář",
+                "Václav Klaus",
+                "Pavel Tigrid",
+                "Jiří Dienstbier Jr.",
+                "Jiří Hájek"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.7447609901428223
+          }
+        },
+        {
+          "id": "001-61253",
+          "ground_truth_people": "John Harding Price",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in two applications (nos. 43185/98 and 43186/98) against the [LOC_BNB] lodged with the [ORG_POC] (“the [ORG_FAU]”) under former [CODE_FMH] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_SLB], [PER_QRE] (introduced on 4 [DATE_UYA]) and [PER_OVS] (introduced on 12 [DATE_FRU]).\n\n[ORG_XSN] (“the [ORG_YOK]”) were represented by their [PER_QGT], [PER_LWI].[PER_RDE]. [PER_JGS] of the [ORG_DCB].\n\nThe [PER_XLO] alleged that the proceedings in which they were sued in respect of property in [LOC_CSI] were not dealt with within a reasonable time.\n\nThe applications were transmitted to the [ORG_VKA] on 1 [DATE_HWB], when [CODE_RWN] to the Convention came into force ([CODE_CKP] § 2 of [CODE_RWN]).\n\nThe applications were allocated to the Third Section of the [ORG_VKA] ([CODE_HNI] of the Rules of Court). Within that Section, the [ORG_QNE] that would consider the case ([CODE_OUE] § 1 of the Convention) was constituted as provided in [CODE_RPT].\n\nOn 1 [DATE_XTL] the [ORG_VKA] changed the composition of its Sections ([CODE_UCZ]). This case was assigned to the newly composed Second Section ([CODE_HNI]).\n\nBy a decision of 3 [DATE_OVM] the [ORG_VKA] declared the applications partly admissible, having in the meantime joined them on 28 [DATE_ZZI].\n\nThe [PER_AVX] and the [ORG_YOK] each filed observations on the merits ([CODE_PMY]).\n\nTHE FACTS\n\nTHE CIRCUMSTANCES OF THE CASE\n\n[PER_URH] were born in 1929 and 1923 respectively. The [PER_AVX] in [CODE_UXF] (“[PER_RFE]”) is a [PER_BCE]; the [PER_AVX] in [CODE_EQO] (“[PER_ZTF]”) is a [PER_IVP]. [PER_CQD] live in [LOC_XRQ].\n\n[ORG_QBD], together with [PER_RFE]’s wife, were sued by “[PER_VJE]”, a [PER_HHB] of [PER_RFE], in respect of property in [LOC_CSI]. The writ was issued on 12 [DATE_IVV]. Before the action came to trial, the [PER_TFH] was adjudicated bankrupt on 9 [DATE_OHL] and the [PER_VGA] in bankruptcy continued the action.\n\nThe trial was set down to commence in the [ORG_SAI] in [DATE_HQP] but was postponed until the end of [DATE_GLS] because the [PER_GTL] was not available for the length of time needed for the hearing.\n\nOn the fourth day of trial, while [PER_VJE] was being cross-examined, an adjournment was granted because [PER_VJE] claimed to feel unwell. In the event, it emerged that no medical justification could be given for his continued non-attendance, but nonetheless [PER_FDF] remained absent for the rest of the trial. Because of the delay caused by [PER_VJE]’s non-attendance, the trial could not be concluded in [DATE_GLS] and had to be adjourned until [DATE_WCM]. Judgment was given on 27 [DATE_ROD].\n\n[PER_HNJ] accepted the argument of [ORG_QBD] and [PER_RAH] that it was necessary to disregard [PER_VJE]’s evidence because of his failure to remain for cross-examination. However, on the basis of the documentary evidence and that adduced by the [ORG_WQW] and [PER_RAH], the [PER_GTL] found that the transfer of the [LOC_CSI] [LOC_DGU] should be set aside on the ground that the [ORG_OCQ] had not been able to rebut the presumption of undue influence created by the discrepancy in the price they paid [PER_VJE] for the property and its value at the time of the transfer, together with the doctor-patient relationship between [PER_RFE] and [PER_VJE].\n\nThe formal record of the [PER_GTL]’s order was not prepared by the parties until 26 [DATE_ZYW]. [PER_URH] and [PER_RAH] applied to the [ORG_LVG] for leave to appeal on 1 [DATE_KWW]. The appeal bundles were lodged on 4 [DATE_IQQ]. On 15 [DATE_MYW] the appeal was listed for hearing, and it was heard on 16 and 17 [DATE_UNM], on which last date the [ORG_LVG] gave judgment dismissing the appeal.\n\nIn connection with the moneys paid by [PER_RFE] for the property, the [ORG_LVG] confirmed the decision of the [PER_UPT] that the sum should be repaid, but that no interest should be paid on it. [PER_VCH] had based his decision on the fact that [PER_RFE] “had had possession of the properties and receipt of the rents since the completion of the sale, subject only to the agreement to allow [PER_WLH]] to use number 212 in the early months”. [PER_HOP] regarded this as a “rough and ready result”, but one which would “reduce the opportunities for further dispute between the parties”.\n\nOn 19 [DATE_UNM] the [PER_XLO] and [PER_RAH] were refused leave by the [ORG_LVG] to appeal to the [ORG_BJB]. On 30 [DATE_OVV] the [PER_XLO] and [PER_RAH] were refused leave to appeal by the [ORG_BJB].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Lord Hoffmann",
+                "Lord Hope of Craighead",
+                "Lord Steyn",
+                "Lord Clyde",
+                "Lord Walker of Gestingthorpe",
+                "Lord Brown of Eaton-under-Heywood",
+                "Lord Neuberger of Abbotsbury",
+                "Lord Mance",
+                "Lord Wilson of Culworth",
+                "Lord Reed"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.4827702045440674
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in two applications (nos. 43185/98 and 43186/98) against the [LOC_JUG] lodged with the [ORG_FII] (“the [ORG_FYG]”) under former [CODE_SHY] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_TZE], [PER_LKL] (introduced on 4 [DATE_LLA]) and [PER_BBZ] (introduced on 12 [DATE_PCL]).\n\n[ORG_LQV] (“the [ORG_MOB]”) were represented by their [PER_MWT], [PER_AKU].[PER_UFJ]. [PER_CAU] of the [ORG_ZLN].\n\nThe [PER_XFO] alleged that the proceedings in which they were sued in respect of property in [LOC_XAV] were not dealt with within a reasonable time.\n\nThe applications were transmitted to the [ORG_HSI] on 1 [DATE_STP], when [CODE_BGB] to the Convention came into force ([CODE_IJW] § 2 of [CODE_BGB]).\n\nThe applications were allocated to the Third Section of the [ORG_HSI] ([CODE_NNY] of the Rules of Court). Within that Section, the [ORG_VSS] that would consider the case ([CODE_LWP] § 1 of the Convention) was constituted as provided in [CODE_OXR].\n\nOn 1 [DATE_QMM] the [ORG_HSI] changed the composition of its Sections ([CODE_EMO]). This case was assigned to the newly composed Second Section ([CODE_NNY]).\n\nBy a decision of 3 [DATE_LIC] the [ORG_HSI] declared the applications partly admissible, having in the meantime joined them on 28 [DATE_TVR].\n\nThe [PER_AAI] and the [ORG_MOB] each filed observations on the merits ([CODE_UDD]).\n\nTHE FACTS\n\nTHE CIRCUMSTANCES OF THE CASE\n\n[PER_QRF] were born in 1929 and 1923 respectively. The [PER_AAI] in [CODE_PZN] (“[PER_JVP]”) is a [PER_SHT]; the [PER_AAI] in [CODE_UIR] (“[PER_ACW]”) is a [PER_IDW]. [PER_VLF] live in [LOC_DCP].\n\n[ORG_TQK], together with [PER_JVP]’s wife, were sued by “[PER_SEQ]”, a [PER_DTG] of [PER_JVP], in respect of property in [LOC_XAV]. The writ was issued on 12 [DATE_XFI]. Before the action came to trial, the [PER_ZTF] was adjudicated bankrupt on 9 [DATE_RJV] and the [PER_OHZ] in bankruptcy continued the action.\n\nThe trial was set down to commence in the [ORG_UGF] in [DATE_QVO] but was postponed until the end of [DATE_CPD] because the [PER_IAU] was not available for the length of time needed for the hearing.\n\nOn the fourth day of trial, while [PER_SEQ] was being cross-examined, an adjournment was granted because [PER_SEQ] claimed to feel unwell. In the event, it emerged that no medical justification could be given for his continued non-attendance, but nonetheless [PER_SKZ] remained absent for the rest of the trial. Because of the delay caused by [PER_SEQ]’s non-attendance, the trial could not be concluded in [DATE_CPD] and had to be adjourned until [DATE_LTG]. Judgment was given on 27 [DATE_UQZ].\n\n[PER_VJM] accepted the argument of [ORG_TQK] and [PER_ASW] that it was necessary to disregard [PER_SEQ]’s evidence because of his failure to remain for cross-examination. However, on the basis of the documentary evidence and that adduced by the [ORG_JVU] and [PER_ASW], the [PER_IAU] found that the transfer of the [LOC_XAV] [LOC_JBS] should be set aside on the ground that the [ORG_JDK] had not been able to rebut the presumption of undue influence created by the discrepancy in the price they paid [PER_SEQ] for the property and its value at the time of the transfer, together with the doctor-patient relationship between [PER_JVP] and [PER_SEQ].\n\nThe formal record of the [PER_IAU]’s order was not prepared by the parties until 26 [DATE_XQH]. [PER_QRF] and [PER_ASW] applied to the [ORG_HNF] for leave to appeal on 1 [DATE_CRJ]. The appeal bundles were lodged on 4 [DATE_INJ]. On 15 [DATE_VVW] the appeal was listed for hearing, and it was heard on 16 and 17 [DATE_XDD], on which last date the [ORG_HNF] gave judgment dismissing the appeal.\n\nIn connection with the moneys paid by [PER_JVP] for the property, the [ORG_HNF] confirmed the decision of the [PER_TXH] that the sum should be repaid, but that no interest should be paid on it. [PER_QQM] had based his decision on the fact that [PER_JVP] “had had possession of the properties and receipt of the rents since the completion of the sale, subject only to the agreement to allow [PER_QGF]] to use number 212 in the early months”. [PER_SUZ] regarded this as a “rough and ready result”, but one which would “reduce the opportunities for further dispute between the parties”.\n\nOn 19 [DATE_XDD] the [PER_XFO] and [PER_ASW] were refused leave by the [ORG_HNF] to appeal to the [ORG_OFY]. On 30 [DATE_ELF] the [PER_XFO] and [PER_ASW] were refused leave to appeal by the [ORG_OFY].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Gordon Brown",
+                "Tony Blair",
+                "David Cameron",
+                "Boris Johnson",
+                "Theresa May",
+                "Jeremy Corbyn",
+                "Rishi Sunak",
+                "Ed Miliband",
+                "Nick Clegg",
+                "George Osborne"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.361741542816162
+          }
+        },
+        {
+          "id": "001-66929",
+          "ground_truth_people": "Mehmet Bülent Yılmaz",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_OCV]) against the [ORG_TXY] lodged with the [ORG_RFQ] (“the [ORG_JCB]”) under former [CODE_IIR] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_ZLI], [PER_IQD] and [PER_QMM] (“[PER_MHY]”), on 20 [DATE_ASX].\n\nThe applicants, who had been granted legal aid, were represented by [PER_NXG].Ç. [PER_IZP], a [PER_DSI] practising in [LOC_QKN]. The [ORG_UGF] (“the [ORG_JQD]”) did not designate an [PER_NZG] for the purpose of the proceedings before [ORG_WTY].\n\nOn 21 [DATE_MKZ] the [ORG_DUE] decided to communicate the application to the [ORG_JQD]. Under the provisions of [CODE_TMQ] § 3 of the Convention, it decided to examine the merits of the application at the same time as its admissibility.\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_MHY] were born in 1975 and 1970 respectively.\n\nOn 19 and 20 [DATE_DBR] respectively the [PER_RHP] were taken into custody by [PER_WKQ] from the [ORG_FJY] of the [ORG_NYB] on suspicion of their membership to an illegal organisation, namely the [ORG_QEK].\n\nIn their police statements the [PER_RHP] accepted the accusations against them.\n\nOn 22 [DATE_DBR] the [PER_RHP] were brought before the [PER_YXH] at the [LOC_RSC], where they repeated the statements they had made to the [ORG_ZMR]. [PER_OXM] ordered that [PER_OYP] be placed in detention on remand.\n\nIn an indictment dated 6 [DATE_ANT], the [ORG_YDT] at the [ORG_VTW] initiated criminal proceedings against the [PER_RHP]. [PER_UNO] charged the [PER_HOO] with being member of an [ORG_CDS] under [CODE_FEG] § 2 of the Criminal Code and the [PER_RJA] with aiding and abetting an [ORG_CDS] under [CODE_WFX] of the Criminal Code.\n\nDuring the hearings before the [ORG_VTW], the [PER_RHP] denied the statements they had made to the [ORG_ZMR] and the [PER_YXH].\n\nOn 25 [DATE_TKQ] the [ORG_VTW], composed of two [PER_IHZ] and a [PER_HJI], convicted the [PER_RHP] as charged and sentenced the first [PER_SOC] to three years and nine months’ imprisonment and the second [PER_SOC] to twelve years and six months’ imprisonment. Neither the applicants nor their lawyers were present in this last hearing.\n\n[PER_MHY] appealed. On 12 [DATE_VHX] the [ORG_MPV] dismissed the [PER_RHP]’ appeal, upholding the [ORG_VTW]’s reasoning and assessment of evidence. The decision, which was pronounced in the absence of the [PER_RHP] and their lawyers, was deposited with the [ORG_AIR] on 21 [DATE_VHX].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Ahmet Şık",
+                "Oğuz Güngör",
+                "Mehmet Altan",
+                "Ahmet Hakan Çakır",
+                "İlhan Selçuk",
+                "Mehmet Şimşek",
+                "Yusuf Çağatay",
+                "Tuncay Özkan",
+                "Sırrı Süreyya Önder",
+                "Mehmet Barış"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.5763278007507324
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_MIX]) against the [ORG_TIA] lodged with the [ORG_QBR] (“the [ORG_DSW]”) under former [CODE_IPJ] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by [PER_UBO], [PER_SMG] and [PER_UPQ] (“[PER_OAE]”), on 20 [DATE_MBH].\n\nThe applicants, who had been granted legal aid, were represented by [PER_YQR].Ç. [PER_CAQ], a [PER_IKN] practising in [LOC_EAE]. The [ORG_UWB] (“the [ORG_BGW]”) did not designate an [PER_QRO] for the purpose of the proceedings before [ORG_BMX].\n\nOn 21 [DATE_WKG] the [ORG_IIB] decided to communicate the application to the [ORG_BGW]. Under the provisions of [CODE_BSP] § 3 of the Convention, it decided to examine the merits of the application at the same time as its admissibility.\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_OAE] were born in 1975 and 1970 respectively.\n\nOn 19 and 20 [DATE_LDC] respectively the [PER_DMA] were taken into custody by [PER_LMQ] from the [ORG_MPF] of the [ORG_TNJ] on suspicion of their membership to an illegal organisation, namely the [ORG_CSQ].\n\nIn their police statements the [PER_DMA] accepted the accusations against them.\n\nOn 22 [DATE_LDC] the [PER_DMA] were brought before the [PER_GSJ] at the [LOC_DER], where they repeated the statements they had made to the [ORG_TQQ]. [PER_MGH] ordered that [PER_DRC] be placed in detention on remand.\n\nIn an indictment dated 6 [DATE_BRE], the [ORG_UJQ] at the [ORG_FHE] initiated criminal proceedings against the [PER_DMA]. [PER_PLD] charged the [PER_LYG] with being member of an [ORG_JIE] under [CODE_UFQ] § 2 of the Criminal Code and the [PER_CIL] with aiding and abetting an [ORG_JIE] under [CODE_EKU] of the Criminal Code.\n\nDuring the hearings before the [ORG_FHE], the [PER_DMA] denied the statements they had made to the [ORG_TQQ] and the [PER_GSJ].\n\nOn 25 [DATE_ZUY] the [ORG_FHE], composed of two [PER_CYA] and a [PER_EQF], convicted the [PER_DMA] as charged and sentenced the first [PER_BKG] to three years and nine months’ imprisonment and the second [PER_BKG] to twelve years and six months’ imprisonment. Neither the applicants nor their lawyers were present in this last hearing.\n\n[PER_OAE] appealed. On 12 [DATE_OCR] the [ORG_DFF] dismissed the [PER_DMA]’ appeal, upholding the [ORG_FHE]’s reasoning and assessment of evidence. The decision, which was pronounced in the absence of the [PER_DMA] and their lawyers, was deposited with the [ORG_NMG] on 21 [DATE_OCR].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Ahmet Şık",
+                "Oğuz Güngör",
+                "Mehmet Altan",
+                "Cumhur Yılmaz",
+                "İlhan Selçuk",
+                "Yusuf Çağatay",
+                "Sırrı Süreyya Önder",
+                "Tuncay Özkan",
+                "Hakan Şükür",
+                "Bülent Arınç"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.6095948219299316
+          }
+        },
+        {
+          "id": "001-159913",
+          "ground_truth_people": "Kamil Prus",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_JCT]) against the [ORG_FDO] lodged with the [ORG_RXO] under [CODE_HZW] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_RMX], [PER_FKW] (“the [PER_LXA]”), on 6 [DATE_LSY].\n\n[PER_WVS], who had been granted legal aid, was represented by [PER_LLA]. [PER_NZZ], a [PER_ETG] practising in [LOC_MLO]. [ORG_ZIH] (“the [ORG_QWL]”) were represented by their [PER_MJW], [PER_JZQ]. [PER_MQU], of the [ORG_KMZ].\n\n[PER_WVS] alleged, in particular, a breach of [CODE_JKZ] of the Convention on account of the imposition on him of the so-called “dangerous detainee” regime.\n\nOn 7 [DATE_SAR] the application was communicated to the [ORG_QWL].\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_WVS] was born in 1987 and is detained in [LOC_MLO].\n\n[PER_OTX]. Criminal proceedings against the applicant\n\nOn 1 [DATE_EBC] the [PER_LXA] was arrested and remanded in custody. In 2006 [PER_INO] was convicted of three counts of battery and robbery and received prison sentences ranging from two to four years. On 28 [DATE_YEB] the [ORG_ZZQ] imposed a cumulative sentence for four criminal convictions.\n\nB. Imposition of the so-called “dangerous detainee” regime\n\nOn 5 [DATE_UJR] the [ORG_VSV] imposed on the [PER_LXA] the so-called “dangerous detainee” regime. The [ORG_EIF] held that the [PER_LXA] had been the leader of or an active participant in a planned collective remonstrance in [LOC_MMM] ([CODE_DZN] § 2 (2a) of the Code of Execution of Criminal Sentences), as the [PER_AQI] refused to accept food provided by the [ORG_IQA]. The [ORG_DOX] learned that the [PER_AQI] were planning another collective protest for 11 [DATE_UJR]. The [ORG_EIF] also considered that the [PER_LXA] was particularly depraved.\n\nOn 18 [DATE_HIK] the [ORG_VSV] rejected an appeal lodged by the [PER_LXA] and dismissed his request for leave to examine the appeal outside the statutory time-limit.\n\nSubsequently, the [PER_LXA] was transferred to the [LOC_ZGS].\n\nOn 3 [DATE_JKE] the [LOC_ZGS] [ORG_MIO] reviewed and upheld the decision to apply the regime to the [PER_LXA], considering that [PER_INO] posed a serious threat to the security of the [LOC_ITO]. [PER_WVS] appealed.\n\nOn 4 [DATE_QPO] the [ORG_ZZQ] dismissed the appeal. The [ORG_RXO] referred to the reasons given in the decision of 5 [DATE_UJR], holding that the decision had been lawful and justified.\n\nOn 3 [DATE_NST] the [PER_LXA] lodged a complaint with the [ORG_HOH]. [PER_INO] complained that [PER_INO] was having difficulties in accessing [LOC_WPX] in the [LOC_ZGS]. The [ORG_DOX] dismissed the complaint, holding that educational activities were not organised for [PER_XTV].\n\nOn an unspecified date in 2011 the [PER_LXA] notified the [ORG_QTK] of his allegedly unlawful classification as a “dangerous detainee” on 5 [DATE_UJR]. [PER_INO] claimed that the [ORG_EYO] had exceeded their powers in imposing the regime on [PER_QQU]. On 29 [DATE_QPO] the [ORG_TVZ] refused to open an investigation in the case, holding that no offence had been committed.\n\nOn 28 [DATE_QPO] the [ORG_PFL] [ORG_MIO] revoked its decision to classify the [PER_LXA] as a “dangerous detainee”. It considered that the [PER_LXA]’s behaviour had improved and that [PER_INO] no longer posed a threat to the security of the remand centre.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Tariq Ramadan",
+                "Abdelbaset al-Megrahi",
+                "Omar al-Bashir",
+                "Yasser Arafat",
+                "Hosni Mubarak",
+                "Muammar Gaddafi",
+                "Saddam Hussein",
+                "Osama bin Laden",
+                "Ayatollah Khomeini",
+                "Mahmoud Ahmadinejad"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.4742846488952637
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_WCF]) against the [ORG_OMJ] lodged with the [ORG_EZF] under [CODE_QZN] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_UKR], [PER_ECQ] (“the [PER_IHU]”), on 6 [DATE_DZI].\n\n[PER_CMG], who had been granted legal aid, was represented by [PER_NJB]. [PER_NXL], a [PER_NOT] practising in [LOC_STP]. [ORG_XXN] (“the [ORG_NFV]”) were represented by their [PER_QXS], [PER_NFO]. [PER_DKW], of the [ORG_FAH].\n\n[PER_CMG] alleged, in particular, a breach of [CODE_PQQ] of the Convention on account of the imposition on him of the so-called “dangerous detainee” regime.\n\nOn 7 [DATE_OWU] the application was communicated to the [ORG_NFV].\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_CMG] was born in 1987 and is detained in [LOC_STP].\n\n[PER_OTF]. Criminal proceedings against the applicant\n\nOn 1 [DATE_UCB] the [PER_IHU] was arrested and remanded in custody. In 2006 [PER_YUL] was convicted of three counts of battery and robbery and received prison sentences ranging from two to four years. On 28 [DATE_BZV] the [ORG_HOI] imposed a cumulative sentence for four criminal convictions.\n\nB. Imposition of the so-called “dangerous detainee” regime\n\nOn 5 [DATE_OHI] the [ORG_SKO] imposed on the [PER_IHU] the so-called “dangerous detainee” regime. The [ORG_KKR] held that the [PER_IHU] had been the leader of or an active participant in a planned collective remonstrance in [LOC_SPN] ([CODE_TSA] § 2 (2a) of the Code of Execution of Criminal Sentences), as the [PER_CUS] refused to accept food provided by the [ORG_VSF]. The [ORG_NIU] learned that the [PER_CUS] were planning another collective protest for 11 [DATE_OHI]. The [ORG_KKR] also considered that the [PER_IHU] was particularly depraved.\n\nOn 18 [DATE_HVH] the [ORG_SKO] rejected an appeal lodged by the [PER_IHU] and dismissed his request for leave to examine the appeal outside the statutory time-limit.\n\nSubsequently, the [PER_IHU] was transferred to the [LOC_DIJ].\n\nOn 3 [DATE_KZY] the [LOC_DIJ] [ORG_JCM] reviewed and upheld the decision to apply the regime to the [PER_IHU], considering that [PER_YUL] posed a serious threat to the security of the [LOC_TIY]. [PER_CMG] appealed.\n\nOn 4 [DATE_LTA] the [ORG_HOI] dismissed the appeal. The [ORG_EZF] referred to the reasons given in the decision of 5 [DATE_OHI], holding that the decision had been lawful and justified.\n\nOn 3 [DATE_PTE] the [PER_IHU] lodged a complaint with the [ORG_DDG]. [PER_YUL] complained that [PER_YUL] was having difficulties in accessing [LOC_HLY] in the [LOC_DIJ]. The [ORG_NIU] dismissed the complaint, holding that educational activities were not organised for [PER_QPQ].\n\nOn an unspecified date in 2011 the [PER_IHU] notified the [ORG_MUH] of his allegedly unlawful classification as a “dangerous detainee” on 5 [DATE_OHI]. [PER_YUL] claimed that the [ORG_BFZ] had exceeded their powers in imposing the regime on [PER_MWE]. On 29 [DATE_LTA] the [ORG_MZW] refused to open an investigation in the case, holding that no offence had been committed.\n\nOn 28 [DATE_LTA] the [ORG_QUF] [ORG_JCM] revoked its decision to classify the [PER_IHU] as a “dangerous detainee”. It considered that the [PER_IHU]’s behaviour had improved and that [PER_YUL] no longer posed a threat to the security of the remand centre.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Boris Johnson",
+                "Julian Assange",
+                "Gary McKinnon",
+                "Paul Manafort",
+                "Edward Snowden",
+                "Assange",
+                "Mikhail Khodorkovsky",
+                "Nelson Mandela",
+                "Gulnara Karimova",
+                "Alexei Navalny"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.5205109119415283
+          }
+        },
+        {
+          "id": "001-61227",
+          "ground_truth_people": "Spencer James Mellors",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_FXJ]) against the [LOC_DFV] lodged with the [ORG_UWD] under [CODE_YDC] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [LOC_FNI] national, [PER_QAN] (“the [PER_YUG]”), on 12 [DATE_PLG].\n\n[PER_WKN], who had been granted legal aid, was represented by [PER_ODL]. [PER_YDQ], a [PER_EWP] practising in [LOC_OPV]. [ORG_UIE] (“the [ORG_CAM]”) were represented by their [PER_CAC], [PER_VKV]. [PER_GKA] of the [ORG_WWA], [LOC_IWR].\n\n[PER_WKN] alleged that his criminal proceedings exceeded a reasonable time contrary to [CODE_YJY] § 1 of the Convention.\n\nThe application was allocated to the [ORG_HEG] ([CODE_FOU] of the Rules of Court). Within that Section, the [ORG_RRE] that would consider the case ([CODE_ZFW] § 1 of the Convention) was constituted as provided in [CODE_TSZ].\n\nOn 19 [DATE_FZV], the [ORG_UWD] rejected part of the application as inadmissible.\n\nOn 1 [DATE_YOA], the [ORG_UWD] changed the composition of its sections ([CODE_AGG]). This case was assigned to the newly composed [ORG_WBN].\n\nBy a final decision of 30 [DATE_AWQ], the [ORG_UWD] declared the application partly admissible.\n\nThe [PER_YUG] and the [ORG_CAM] each filed observations on the merits ([CODE_ARF]). [ORG_HLF] decided, after consulting the parties, that no hearing on the merits was required ([CODE_QPQ] in fine).\n\nTHE FACTS\n\n[PER_WKN] was born in 1964 and is currently serving a sentence of imprisonment in HM Prison [LOC_ELO], [LOC_CRZ].\n\n[PER_WKN] was arrested on a charge of attempted murder arising out of a high speed car chase which occurred in the early hours of 29 [DATE_PLI]. On 30 [DATE_PLI], [PER_VLA] was arrested again, interviewed and cautioned in respect of a separate incident of rape and assault which also occurred during the early morning of 29 [DATE_PLI].\n\nOn 31 [DATE_PLI], the [PER_YUG] appeared in court in respect of the various road traffic offences and the attempted murder of a [PER_YDW]. On 7 [DATE_DVN], [PER_VLA] was fully committed and remanded in custody on those charges (of which [PER_VLA] was later acquitted).\n\nOn 30 [DATE_DVN], the [PER_YUG] appeared before the [ORG_QSM] and was committed in respect of the rape charge.\n\nOn 24 [DATE_OES], the trial began in the [ORG_JMG]. On 2 [DATE_CTP], the [PER_YUG] was convicted, by a majority verdict, of all charges and sentenced to 9 years 9 months' imprisonment.\n\nOn 8 [DATE_CTP], the [PER_YUG] lodged an intention to appeal with the [ORG_JMG] sitting as an appeal court. On 20 [DATE_GKG], a Note of Appeal was lodged.\n\nOn 26 [DATE_XBE], a [PER_BUU] refused the appeal. [PER_WKN] appealed.\n\nOn 31 [DATE_ZNC], the Note of Appeal was allowed by three judges in restricted terms relating to the direction given by the [PER_LZW] on the special defence of alibi.\n\nOn 20 [DATE_VLS], the appeal was set down to be heard. According to the [ORG_CAM], it did not take place as the [PER_YUG] refused to leave prison. The [PER_YUG] stated that contrary to statutory authority the [ORG_OOT] governor refused to allow him to leave the [LOC_DEC] wearing civilian clothes instead of a [LOC_DEC] uniform for the hearing. A further hearing was fixed for 22 [DATE_DIB]. On that date, the [ORG_VKB] requested, and obtained, an adjournment as the [PER_LIW] was engaged abroad.\n\nOn 19 [DATE_SWM], the appeal was set down to be heard. It was discontinued due to lack of court time and pressure of other business. It was noted that the appeal was complex and would last half a day.\n\nOn 13 and 14 [DATE_XUO], there was another appeal hearing. As the [PER_YUG]'s [ORG_TTL] had become aware that the [ORG_LMR] had never cited a [PER_AWK], [PER_ABY]. to appear at the trial, [PER_VLA] had lodged and argued an additional ground of appeal on this point. Following argument, [PER_VLA] sought to lodge further additional grounds of appeal. The appeal was continued to 13 [DATE_HZQ] to enable [PER_ERU] to do so.\n\nOn 13 [DATE_HZQ], the [ORG_JMG] held that the failure to hear the evidence of [PER_WKN] resulted in unfairness and that further evidence should be heard. [PER_EWE] was designated as the judge to hear the evidence. On 28 [DATE_SWG], [PER_VLA] fixed a date to take the evidence of [PER_ABY]. On 20 [DATE_XCV], the hearing was adjourned as the [PER_YUG]'s counsel withdrew from acting on his behalf.\n\nOn 16 [DATE_GUS], [PER_WKN] gave evidence. In his note of 20 [DATE_ERY], [PER_EWE] gave his view of the credibility and reliability of [PER_ABY]. The appeal was relisted for hearing on 8 [DATE_ORP] but the [PER_YUG]'s [ORG_QFL] wrote to the [ORG_UWD] requesting that another date, possibly in the following week, be fixed due to the unavailability of [PER_THJ].\n\nOn 24 [DATE_EVI], the appeal was heard before the [ORG_JMG].\n\nOn 22 [DATE_AJI], the judgment of the [ORG_UWD] was given by the [PER_VSL], [PER_VLW]. It dismissed the [PER_YUG]'s appeal.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "David Cameron",
+                "Gordon Brown",
+                "Tony Blair",
+                "Boris Johnson",
+                "Jeremy Corbyn",
+                "Rishi Sunak",
+                "Ed Miliband",
+                "Nick Clegg",
+                "William Hague",
+                "Michael Howard"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 3.3038933277130127
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_JES]) against the [LOC_NGE] lodged with the [ORG_KQW] under [CODE_ZXU] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [LOC_BYI] national, [PER_MKM] (“the [PER_ACF]”), on 12 [DATE_JNK].\n\n[PER_OFN], who had been granted legal aid, was represented by [PER_OKM]. [PER_HPH], a [PER_RLA] practising in [LOC_CUW]. [ORG_PUY] (“the [ORG_UOM]”) were represented by their [PER_YNR], [PER_ZNN]. [PER_CQZ] of the [ORG_KUL], [LOC_LRI].\n\n[PER_OFN] alleged that his criminal proceedings exceeded a reasonable time contrary to [CODE_VAW] § 1 of the Convention.\n\nThe application was allocated to the [ORG_GFK] ([CODE_MLJ] of the Rules of Court). Within that Section, the [ORG_TXM] that would consider the case ([CODE_TPN] § 1 of the Convention) was constituted as provided in [CODE_XNV].\n\nOn 19 [DATE_IYT], the [ORG_KQW] rejected part of the application as inadmissible.\n\nOn 1 [DATE_CYM], the [ORG_KQW] changed the composition of its sections ([CODE_LYK]). This case was assigned to the newly composed [ORG_YAL].\n\nBy a final decision of 30 [DATE_JAQ], the [ORG_KQW] declared the application partly admissible.\n\nThe [PER_ACF] and the [ORG_UOM] each filed observations on the merits ([CODE_WYM]). [ORG_TQK] decided, after consulting the parties, that no hearing on the merits was required ([CODE_LEC] in fine).\n\nTHE FACTS\n\n[PER_OFN] was born in 1964 and is currently serving a sentence of imprisonment in HM Prison [LOC_RRQ], [LOC_WVM].\n\n[PER_OFN] was arrested on a charge of attempted murder arising out of a high speed car chase which occurred in the early hours of 29 [DATE_COO]. On 30 [DATE_COO], [PER_DRQ] was arrested again, interviewed and cautioned in respect of a separate incident of rape and assault which also occurred during the early morning of 29 [DATE_COO].\n\nOn 31 [DATE_COO], the [PER_ACF] appeared in court in respect of the various road traffic offences and the attempted murder of a [PER_JUX]. On 7 [DATE_TWM], [PER_DRQ] was fully committed and remanded in custody on those charges (of which [PER_DRQ] was later acquitted).\n\nOn 30 [DATE_TWM], the [PER_ACF] appeared before the [ORG_AYP] and was committed in respect of the rape charge.\n\nOn 24 [DATE_XCP], the trial began in the [ORG_YYC]. On 2 [DATE_ZJV], the [PER_ACF] was convicted, by a majority verdict, of all charges and sentenced to 9 years 9 months' imprisonment.\n\nOn 8 [DATE_ZJV], the [PER_ACF] lodged an intention to appeal with the [ORG_YYC] sitting as an appeal court. On 20 [DATE_GQZ], a Note of Appeal was lodged.\n\nOn 26 [DATE_UEA], a [PER_XNJ] refused the appeal. [PER_OFN] appealed.\n\nOn 31 [DATE_SRQ], the Note of Appeal was allowed by three judges in restricted terms relating to the direction given by the [PER_QOT] on the special defence of alibi.\n\nOn 20 [DATE_RYD], the appeal was set down to be heard. According to the [ORG_UOM], it did not take place as the [PER_ACF] refused to leave prison. The [PER_ACF] stated that contrary to statutory authority the [ORG_SOY] governor refused to allow him to leave the [LOC_JJW] wearing civilian clothes instead of a [LOC_JJW] uniform for the hearing. A further hearing was fixed for 22 [DATE_WQW]. On that date, the [ORG_EVG] requested, and obtained, an adjournment as the [PER_UWN] was engaged abroad.\n\nOn 19 [DATE_WZG], the appeal was set down to be heard. It was discontinued due to lack of court time and pressure of other business. It was noted that the appeal was complex and would last half a day.\n\nOn 13 and 14 [DATE_HAH], there was another appeal hearing. As the [PER_ACF]'s [ORG_AEI] had become aware that the [ORG_DSU] had never cited a [PER_ELR], [PER_RCJ]. to appear at the trial, [PER_DRQ] had lodged and argued an additional ground of appeal on this point. Following argument, [PER_DRQ] sought to lodge further additional grounds of appeal. The appeal was continued to 13 [DATE_JPV] to enable [PER_MZB] to do so.\n\nOn 13 [DATE_JPV], the [ORG_YYC] held that the failure to hear the evidence of [PER_KSI] resulted in unfairness and that further evidence should be heard. [PER_SBP] was designated as the judge to hear the evidence. On 28 [DATE_WIP], [PER_DRQ] fixed a date to take the evidence of [PER_RCJ]. On 20 [DATE_MHN], the hearing was adjourned as the [PER_ACF]'s counsel withdrew from acting on his behalf.\n\nOn 16 [DATE_WRC], [PER_KSI] gave evidence. In his note of 20 [DATE_QYW], [PER_SBP] gave his view of the credibility and reliability of [PER_RCJ]. The appeal was relisted for hearing on 8 [DATE_YUE] but the [PER_ACF]'s [ORG_LAW] wrote to the [ORG_KQW] requesting that another date, possibly in the following week, be fixed due to the unavailability of [PER_OMY].\n\nOn 24 [DATE_ELW], the appeal was heard before the [ORG_YYC].\n\nOn 22 [DATE_VVB], the judgment of the [ORG_KQW] was given by the [PER_ALY], [PER_XJS]. It dismissed the [PER_ACF]'s appeal.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Gary McKinnon",
+                "Lance Armstrong",
+                "Michael Jackson",
+                "O.J. Simpson",
+                "Ricky Ross",
+                "John Walker Lindh",
+                "David Beckham",
+                "Russell Brand",
+                "Andrew Tate",
+                "Jimmy Savile"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 3.2109267711639404
+          }
+        },
+        {
+          "id": "001-90749",
+          "ground_truth_people": "Andreas Orphanides",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_NPW]) against the [LOC_GRV] lodged with the [ORG_ANG] (“the [ORG_WEN]”) under former [CODE_VNK] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_IZY], [PER_VCO] (“the [PER_FVO]”), on 9 [DATE_ZEZ].\n\n[PER_HUT] was represented by [PER_XVR]. [PER_LDC], a [PER_LCP] practising in [LOC_WDF]. The [ORG_DAQ] (“the [ORG_ZYS]”) were represented by their [PER_JMD], [PER_FXU].[PER_BBG].\n\n[PER_HUT] alleged that the Turkish occupation of the northern part of [LOC_HKV] had prevented [PER_MXF] from having access to his home and properties.\n\nThe application was transmitted to the [ORG_QEP] on 1 [DATE_GYT], when [CODE_DPN] to the Convention came into force ([CODE_PTB] § 2 of [CODE_DPN]).\n\nBy a decision of 8 [DATE_MFG] the [ORG_QEP] declared the application admissible.\n\nThe [PER_FVO] and the [ORG_ZYS] each filed observations on the merits ([CODE_CPW]). In addition, third-party comments were received from the [ORG_BRY], which had exercised its right to intervene ([CODE_VSR] § 1 of the Convention and [CODE_SVY] (b)).\n\nTHE FACTS\n\n[PER_HUT] was born in 1955 and lives in [LOC_WDF].\n\n[PER_HUT] claimed that until [DATE_MNX] [PER_RAP] used to live with his family in a [LOC_OMY] belonging to his parents in [LOC_TRE], a village in the [LOC_IWW]. In [DATE_MNX], as the [ORG_LAI] was advancing, the [PER_FVO] and his family had been forced to leave [LOC_TRE]. Ever since, [PER_RZH] have not been able to return to the [PER_FVO]’s parents’ house.\n\nOn 20 [DATE_HTZ] the [PER_FVO]’s [PER_ECT] donated half of their house to the [PER_FVO]. [ORG_SBG] also donated to [PER_MXF] half of three other houses, two shops and a number of plots of land and [LOC_SFT] in [LOC_TRE]. The remaining half of the properties mentioned above was transferred to the [PER_FVO]’s [PER_XDA]. The transfers at issue were recorded in the [ORG_RTQ].\n\n[PER_HUT] produced the relevant affirmations of ownership issued by the [ORG_JDY]. According to these documents, the [PER_FVO]’s properties could be described as follows: (a) [LOC_NER], [LOC_UQD], [LOC_SCA] – [LOC_JCR], area 2,282 sq. m; (b) [LOC_IKB] and 513, [LOC_UUC], [LOC_FUM], area: 3,862 sq. m and 3,405 sq. m respectively; (c) [LOC_LNW], 20, 28 and 29, [LOC_BKB], [LOC_FUM], area: 1,053 sq. m, 1,024 sq. m, 1,769 sq. m and 1,405 sq. m respectively; (d) [LOC_IWG] and 128/1, [LOC_IGS], [LOC_WAG], area: 5,219 sq. m and 1,469 sq. m respectively; (e) [LOC_MBE], [LOC_IGS], [LOC_DEE] with [LOC_RPA], area: 4,877 sq. m; (f) plots nos. 22, 22/1, 22/2, 22/3 and 22/4, sheet/plan 11/15W.2 and E.2, [LOC_DEE] with two wells and [LOC_AKF], area: 7,032 sq. m; (g) [LOC_MGN], [LOC_IGS].E (no. 2), lemon plantation, area: 1,018 sq. m; (h) plot no. 104, sheet/plan 11/15W.2.[LOC_GPL] (no. 2), [LOC_FPK] of an area of 37 sq. m with a [LOC_FMB]; (i) [LOC_UKI], [LOC_PZC] and [LOC_HNG], [LOC_GTB],[LOC_TKL] (no. 1), [LOC_DEE] (area: 2,358 sq. m) with a [LOC_RPA] and one [LOC_FPK] (area: 84 sq. m); on this property had been constructed: a [LOC_FNU] of an area of 152.25 sq. m; two shops of an area of 56 sq. m; two semidetached [LOC_QYU] (areas: 152.25 sq. m and 63 sq. m respectively); one residence of an area of 219.41 sq. m; (j) [LOC_GPI], 773, 774, 775 and 776, [LOC_TEZ],[LOC_GPL].1 and 11/23W1E (no. 2), right to use a [LOC_FMB].\n\n[PER_HUT] alleged that the Turkish occupation of [LOC_ZZN] had prevented [PER_MXF] from using and/or enjoying his properties.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Mehmet Ali Talat",
+                "Derviş Eroğlu",
+                "Mustafa Akıncı",
+                "Rauf Denktaş",
+                "İrsen Küçük",
+                "Mehmet Şimşek",
+                "Fazıl Küçük",
+                "Turgut Özal",
+                "Ecevit Demirel",
+                "Ahmet Davutoğlu"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.6905324459075928
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_ITU]) against the [LOC_SPM] lodged with the [ORG_SXI] (“the [ORG_MZA]”) under former [CODE_IMY] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_JIG], [PER_FXA] (“the [PER_XVT]”), on 9 [DATE_DKG].\n\n[PER_CBJ] was represented by [PER_PJQ]. [PER_XZB], a [PER_LCH] practising in [LOC_CXV]. The [ORG_DQR] (“the [ORG_YYN]”) were represented by their [PER_LQJ], [PER_BTO].[PER_DCU].\n\n[PER_CBJ] alleged that the Turkish occupation of the northern part of [LOC_SSC] had prevented [PER_IDK] from having access to his home and properties.\n\nThe application was transmitted to the [ORG_VGX] on 1 [DATE_VUD], when [CODE_JDP] to the Convention came into force ([CODE_PSR] § 2 of [CODE_JDP]).\n\nBy a decision of 8 [DATE_FZC] the [ORG_VGX] declared the application admissible.\n\nThe [PER_XVT] and the [ORG_YYN] each filed observations on the merits ([CODE_MJM]). In addition, third-party comments were received from the [ORG_TDD], which had exercised its right to intervene ([CODE_LFB] § 1 of the Convention and [CODE_BAA] (b)).\n\nTHE FACTS\n\n[PER_CBJ] was born in 1955 and lives in [LOC_CXV].\n\n[PER_CBJ] claimed that until [DATE_LIT] [PER_RIV] used to live with his family in a [LOC_QTI] belonging to his parents in [LOC_BLI], a village in the [LOC_BAU]. In [DATE_LIT], as the [ORG_UTR] was advancing, the [PER_XVT] and his family had been forced to leave [LOC_BLI]. Ever since, [PER_HAZ] have not been able to return to the [PER_XVT]’s parents’ house.\n\nOn 20 [DATE_PZO] the [PER_XVT]’s [PER_UAX] donated half of their house to the [PER_XVT]. [ORG_KWJ] also donated to [PER_IDK] half of three other houses, two shops and a number of plots of land and [LOC_QAP] in [LOC_BLI]. The remaining half of the properties mentioned above was transferred to the [PER_XVT]’s [PER_XRJ]. The transfers at issue were recorded in the [ORG_HKR].\n\n[PER_CBJ] produced the relevant affirmations of ownership issued by the [ORG_XQM]. According to these documents, the [PER_XVT]’s properties could be described as follows: (a) [LOC_WWE], [LOC_JPN], [LOC_MJV] – [LOC_JQY], area 2,282 sq. m; (b) [LOC_LTE] and 513, [LOC_XKI], [LOC_ZBQ], area: 3,862 sq. m and 3,405 sq. m respectively; (c) [LOC_AMP], 20, 28 and 29, [LOC_JSY], [LOC_ZBQ], area: 1,053 sq. m, 1,024 sq. m, 1,769 sq. m and 1,405 sq. m respectively; (d) [LOC_QRU] and 128/1, [LOC_BBM], [LOC_SHL], area: 5,219 sq. m and 1,469 sq. m respectively; (e) [LOC_CLR], [LOC_BBM], [LOC_LLL] with [LOC_JWH], area: 4,877 sq. m; (f) plots nos. 22, 22/1, 22/2, 22/3 and 22/4, sheet/plan 11/15W.2 and E.2, [LOC_LLL] with two wells and [LOC_RRJ], area: 7,032 sq. m; (g) [LOC_LMR], [LOC_BBM].E (no. 2), lemon plantation, area: 1,018 sq. m; (h) plot no. 104, sheet/plan 11/15W.2.[LOC_PKR] (no. 2), [LOC_MFS] of an area of 37 sq. m with a [LOC_STJ]; (i) [LOC_ACE], [LOC_HCY] and [LOC_ECY], [LOC_CJC],[LOC_APN] (no. 1), [LOC_LLL] (area: 2,358 sq. m) with a [LOC_JWH] and one [LOC_MFS] (area: 84 sq. m); on this property had been constructed: a [LOC_AEY] of an area of 152.25 sq. m; two shops of an area of 56 sq. m; two semidetached [LOC_MQH] (areas: 152.25 sq. m and 63 sq. m respectively); one residence of an area of 219.41 sq. m; (j) [LOC_RYB], 773, 774, 775 and 776, [LOC_OUG],[LOC_PKR].1 and 11/23W1E (no. 2), right to use a [LOC_STJ].\n\n[PER_CBJ] alleged that the Turkish occupation of [LOC_WOL] had prevented [PER_IDK] from using and/or enjoying his properties.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Mehmet Ali Talat",
+                "Derviş Eroğlu",
+                "Mustafa Akıncı",
+                "Rauf Denktaş",
+                "İrsen Küçük",
+                "Kudret Özersay",
+                "Fazıl Küçük",
+                "Talat Aydoğan",
+                "Sibel Siber",
+                "Ersin Tatar"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.704918622970581
+          }
+        },
+        {
+          "id": "001-79346",
+          "ground_truth_people": "Lars Wassdahl",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_CZL]) against the [ORG_YJK] lodged with the [ORG_VGA] under [CODE_AHA] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_CBX], [PER_HLI] (“the [PER_VDW]”), on 8 [DATE_TPB].\n\nThe [ORG_MVG] (“the [ORG_NBU]”) were represented by their Agent, [PER_XUU], [ORG_PER].\n\nOn 29 [DATE_ARR] the [ORG_VGA] declared the application partly inadmissible and decided to communicate the complaint concerning the length of the administrative proceedings to the [ORG_NBU]. Applying [CODE_DZH] § 3 of the Convention, it decided to rule on the admissibility and merits of the application at the same time.\n\nTHE FACTS\n\nTHE CIRCUMSTANCES OF THE CASE\n\n[PER_OGK] was born in 1947 and lives in [LOC_UNJ].\n\nOn 28 [DATE_XWW] the [ORG_YEW] ([ORG_OVM]) of the [LOC_NTD] sent a preliminary consideration (övervägande) to the [PER_VDW] informing him that it was considering disallowing the deduction [PER_XKB] had made for the interest [PER_XKB] had paid on debts in the amount of 2,000,000 Swedish kronor (SEK), as well as his declared capital gains for the sale of stocks in the amount of SEK 775,000, that [PER_XKB] had made in his tax return for 1995. Further, it was considering imposing tax surcharges (skattetillägg) amounting to SEK 147,000 (approximately 15,800 euros [EUR]), i.e. 40% of the increased tax liability on the sum of SEK 1,225,000.\n\nThe preliminary consideration was based on an investigation of a [ORG_ZJL] which had done business with a substantial number of [PER_GXD]. As concerned the [PER_VDW], it appeared that [PER_XKB] had borrowed SEK 40,000,000 from the [ORG_ZJL] and commissioned it to buy stocks for the same amount on his behalf. [PER_OGK] then sold the stocks back to the [ORG_ZJL] at a fixed date, upon which [PER_XKB] had made a capital gain. At the same time, [PER_XKB] repaid the loan together with interest to the [ORG_ZJL]. As the capital gain corresponded to the interest, they were set off against each other. In the [ORG_YEW]’s view, the transactions had in reality never taken place and the [PER_VDW] had simply received two statements of account and a promissory note in order to use them to obtain tax advantages.\n\n[PER_OGK] was requested to submit any comments [PER_XKB] might have to the [ORG_YEW] by 22 [DATE_KOC], which [PER_XKB] did. [PER_XKB] claimed that the transactions had taken place and that his tax return should be approved.\n\nOn 27 [DATE_MDX] the [ORG_YEW] decided to follow its preliminary consideration. With regard to the imposition of tax surcharges, it found that the [PER_VDW] had submitted incorrect information about the purported transactions.\n\nOn 3 [DATE_QFK] the [PER_VDW] appealed against the decision, disputing the [ORG_YEW]’s findings. [PER_XKB] maintained that there were no grounds for disallowing the deductions or imposing tax surcharges on [PER_ZKS].\n\nOn 30 [DATE_BUZ] the [ORG_YEW] made its obligatory re-assessment of its decision of 27 [DATE_MDX] but upheld it. It then forwarded the appeal to the [ORG_EOZ] ([ORG_CPL]) of the [LOC_SNN].\n\nOn 29 [DATE_NBM] the [ORG_EOZ] rejected the [PER_VDW]’s appeal after having held an oral hearing. It agreed with the [ORG_YEW]’s conclusion that no transactions had in reality taken place between the [PER_VDW] and the [ORG_ZJL], for which reason they could not be included in his tax return. Moreover, the [ORG_VGA] found that the [PER_VDW] had submitted incorrect information to the [ORG_YEW] and that there were no grounds on which to remit the tax surcharges.\n\nOn 30 [DATE_SAG] the [PER_VDW] appealed to the [ORG_TNK] ([ORG_HPZ]) in [LOC_UFP], maintaining his claims. On 30 [DATE_YKZ] [PER_XKB] made further submissions to the [ORG_VGA], stating inter alia that his rights under [CODE_OQZ] of the Convention had been violated as [PER_XKB] had not had access to the same material as the [ORG_YEW], and since the tax surcharges had been incorrectly imposed on [PER_ZKS].\n\nBy judgment of 15 [DATE_XQX] the [ORG_TNK] upheld the [ORG_FID]’s judgment in full, without giving any new reasons of its own.\n\nOn 27 [DATE_PRI] the [PER_VDW] appealed to the [ORG_AIO] ([ORG_KLK]), relying on the same grounds as before the [ORG_AXX] and expanding them further.\n\nOn 11 [DATE_YUQ] the [ORG_AIO] refused leave to appeal.\n\nOn 25 [DATE_TPB] the [PER_VDW] sued the [ORG_MUG], through the [ORG_GGB], before the [ORG_JWZ] ([ORG_GGQ]) in [LOC_NYV]. [PER_XKB] sought SEK 6,850,000 (approximately EUR 736,000) in damages on the grounds that the [ORG_YEW] and the [ORG_RIO] had not afforded [PER_ZKS] a fair procedure, having withheld certain information from [PER_ZKS], and that the proceedings had been of excessive length. [PER_XKB] invoked national legislation as well as the Convention and its case-law.\n\nThe [ORG_JSJ] contested the suit, claiming that it had not caused the [PER_VDW] any injury, either by fault or neglect, for which [PER_XKB] could claim damages.\n\nIn a judgment of 21 [DATE_KSW], the [ORG_JWZ] rejected the [PER_VDW]’s claims. As concerned the length of the proceedings, the [ORG_VGA] considered that the [ORG_RIO]’ examination of his tax case had not taken so long as to incur the [ORG_JSJ]’s liability for damages.\n\nOn 27 [DATE_KSW] the [PER_VDW] appealed to the [ORG_DZR] ([ORG_XFS]), maintaining his claims.\n\nOn 2 [DATE_ARR] the [ORG_UJQ] upheld the [ORG_FID]’s judgment in full. With regard to the complaint about the length of the proceedings, the [ORG_VGA], without giving any reasons, found that the tax proceedings could not be considered to have been of excessive duration.\n\nOn 12 [DATE_TDU] the [PER_VDW] appealed to the [ORG_NTL] ([ORG_RMK]) where the case is still pending, awaiting a decision on leave to appeal.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Carl Bildt",
+                "Mats Persson",
+                "Anders Borg",
+                "Göran Persson",
+                "Lars Leijonborg",
+                "Mikael Odenberg",
+                "Björn von Sydow",
+                "Stefan Löfven",
+                "Fredrik Reinfeldt",
+                "Klas Nordström"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.7343478202819824
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_LUJ]) against the [ORG_HBZ] lodged with the [ORG_VHL] under [CODE_JXP] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_EVY], [PER_NDD] (“the [PER_GEZ]”), on 8 [DATE_PKE].\n\nThe [ORG_EZA] (“the [ORG_RAJ]”) were represented by their Agent, [PER_DJH], [ORG_XCO].\n\nOn 29 [DATE_RIA] the [ORG_VHL] declared the application partly inadmissible and decided to communicate the complaint concerning the length of the administrative proceedings to the [ORG_RAJ]. Applying [CODE_ODO] § 3 of the Convention, it decided to rule on the admissibility and merits of the application at the same time.\n\nTHE FACTS\n\nTHE CIRCUMSTANCES OF THE CASE\n\n[PER_RVI] was born in 1947 and lives in [LOC_IMG].\n\nOn 28 [DATE_CEJ] the [ORG_UZS] ([ORG_EYQ]) of the [LOC_XDM] sent a preliminary consideration (övervägande) to the [PER_GEZ] informing him that it was considering disallowing the deduction [PER_WDA] had made for the interest [PER_WDA] had paid on debts in the amount of 2,000,000 Swedish kronor (SEK), as well as his declared capital gains for the sale of stocks in the amount of SEK 775,000, that [PER_WDA] had made in his tax return for 1995. Further, it was considering imposing tax surcharges (skattetillägg) amounting to SEK 147,000 (approximately 15,800 euros [EUR]), i.e. 40% of the increased tax liability on the sum of SEK 1,225,000.\n\nThe preliminary consideration was based on an investigation of a [ORG_KYN] which had done business with a substantial number of [PER_YFE]. As concerned the [PER_GEZ], it appeared that [PER_WDA] had borrowed SEK 40,000,000 from the [ORG_KYN] and commissioned it to buy stocks for the same amount on his behalf. [PER_RVI] then sold the stocks back to the [ORG_KYN] at a fixed date, upon which [PER_WDA] had made a capital gain. At the same time, [PER_WDA] repaid the loan together with interest to the [ORG_KYN]. As the capital gain corresponded to the interest, they were set off against each other. In the [ORG_UZS]’s view, the transactions had in reality never taken place and the [PER_GEZ] had simply received two statements of account and a promissory note in order to use them to obtain tax advantages.\n\n[PER_RVI] was requested to submit any comments [PER_WDA] might have to the [ORG_UZS] by 22 [DATE_TVI], which [PER_WDA] did. [PER_WDA] claimed that the transactions had taken place and that his tax return should be approved.\n\nOn 27 [DATE_NPM] the [ORG_UZS] decided to follow its preliminary consideration. With regard to the imposition of tax surcharges, it found that the [PER_GEZ] had submitted incorrect information about the purported transactions.\n\nOn 3 [DATE_IOS] the [PER_GEZ] appealed against the decision, disputing the [ORG_UZS]’s findings. [PER_WDA] maintained that there were no grounds for disallowing the deductions or imposing tax surcharges on [PER_JUX].\n\nOn 30 [DATE_TDS] the [ORG_UZS] made its obligatory re-assessment of its decision of 27 [DATE_NPM] but upheld it. It then forwarded the appeal to the [ORG_ERV] ([ORG_GOZ]) of the [LOC_VNF].\n\nOn 29 [DATE_HNE] the [ORG_ERV] rejected the [PER_GEZ]’s appeal after having held an oral hearing. It agreed with the [ORG_UZS]’s conclusion that no transactions had in reality taken place between the [PER_GEZ] and the [ORG_KYN], for which reason they could not be included in his tax return. Moreover, the [ORG_VHL] found that the [PER_GEZ] had submitted incorrect information to the [ORG_UZS] and that there were no grounds on which to remit the tax surcharges.\n\nOn 30 [DATE_YBM] the [PER_GEZ] appealed to the [ORG_MBC] ([ORG_VWO]) in [LOC_AGW], maintaining his claims. On 30 [DATE_KPC] [PER_WDA] made further submissions to the [ORG_VHL], stating inter alia that his rights under [CODE_SXO] of the Convention had been violated as [PER_WDA] had not had access to the same material as the [ORG_UZS], and since the tax surcharges had been incorrectly imposed on [PER_JUX].\n\nBy judgment of 15 [DATE_EHX] the [ORG_MBC] upheld the [ORG_OPC]’s judgment in full, without giving any new reasons of its own.\n\nOn 27 [DATE_YJK] the [PER_GEZ] appealed to the [ORG_DUH] ([ORG_RRT]), relying on the same grounds as before the [ORG_YCZ] and expanding them further.\n\nOn 11 [DATE_OIL] the [ORG_DUH] refused leave to appeal.\n\nOn 25 [DATE_PKE] the [PER_GEZ] sued the [ORG_EJA], through the [ORG_IXK], before the [ORG_LWW] ([ORG_WWM]) in [LOC_FXZ]. [PER_WDA] sought SEK 6,850,000 (approximately EUR 736,000) in damages on the grounds that the [ORG_UZS] and the [ORG_XFX] had not afforded [PER_JUX] a fair procedure, having withheld certain information from [PER_JUX], and that the proceedings had been of excessive length. [PER_WDA] invoked national legislation as well as the Convention and its case-law.\n\nThe [ORG_SMI] contested the suit, claiming that it had not caused the [PER_GEZ] any injury, either by fault or neglect, for which [PER_WDA] could claim damages.\n\nIn a judgment of 21 [DATE_ZLK], the [ORG_LWW] rejected the [PER_GEZ]’s claims. As concerned the length of the proceedings, the [ORG_VHL] considered that the [ORG_XFX]’ examination of his tax case had not taken so long as to incur the [ORG_SMI]’s liability for damages.\n\nOn 27 [DATE_ZLK] the [PER_GEZ] appealed to the [ORG_IHY] ([ORG_HNZ]), maintaining his claims.\n\nOn 2 [DATE_RIA] the [ORG_BYA] upheld the [ORG_OPC]’s judgment in full. With regard to the complaint about the length of the proceedings, the [ORG_VHL], without giving any reasons, found that the tax proceedings could not be considered to have been of excessive duration.\n\nOn 12 [DATE_HYE] the [PER_GEZ] appealed to the [ORG_CWI] ([ORG_UWO]) where the case is still pending, awaiting a decision on leave to appeal.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Carl Bildt",
+                "Mats Persson",
+                "Anders Borg",
+                "Göran Persson",
+                "Fredrik Reinfeldt",
+                "Lars Leijonborg",
+                "Mikael Odenberg",
+                "Björn von Sydow",
+                "Stefan Löfven",
+                "Anna Kinberg Batra"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 2.8201375007629395
+          }
+        },
+        {
+          "id": "001-61744",
+          "ground_truth_people": "Robert Edward Hill",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_JWX]) against the [LOC_GLN] lodged with the [ORG_KXX] under [CODE_MST] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [LOC_JJE] national, [PER_JSJ] (“the [PER_CFD]”), on 11 [DATE_ATQ].\n\n[PER_SWG], who had been granted legal aid, was represented by [PER_VNI]. [PER_JYP], a [PER_FBT] practising in [LOC_TZK]. [ORG_HHO] (“the [ORG_VUG]”) were represented by their [PER_MKN], [PER_GCM]. [PER_GKJ] of the [ORG_LQE], [LOC_TZK].\n\n[PER_SWG], serving a sentence of mandatory life imprisonment, alleged that the [ORG_FXF] did not provide the guarantees and procedures required by [CODE_KVF] § 4 when examining whether [PER_WJV] should be released and that [PER_WJV] had no enforceable right to compensation for any breach of his rights as required by [CODE_KVF] § 5.\n\nThe application was allocated to the [ORG_IGX] ([CODE_JIC] of the Rules of Court). Within that Section, the [ORG_YEV] that would consider the case ([CODE_QBA] § 1 of the Convention) was constituted as provided in [CODE_PQP].\n\nBy a decision of 23 [DATE_YVM], the [ORG_KXX] declared the remainder of application admissible.\n\nThe [PER_CFD] filed observations on just satisfaction and the [ORG_VUG] replied ([CODE_OFU]).\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_SWG] was born in 1959 and is serving a sentence of life imprisonment in [LOC_CAV].\n\n[PER_SWG] was convicted in or around 1981 for the murder of an [PER_GUY]. [PER_WJV] was sentenced to mandatory life imprisonment, and his tariff (the minimum period of imprisonment required to satisfy the requirements of retribution and deterrence) was set at 12 years.\n\nAt the time of the [PER_CFD]'s latest Parole Board review in 2001, [PER_WJV] was detained in [ORG_UBD] as a “Category C” [PER_DUS] ([PER_ONZ] being given a security category classification ranging from Category A (highest risk) to Category D (suitable for open conditions)). The [ORG_FXF] recommended that the [PER_CFD] should be transferred to open conditions, and that his detention should be reviewed after two years. By letter dated 6 [DATE_JBH] the [PER_VXE] informed the [ORG_KTC] that [PER_WJV] did not accept the [ORG_FXF]'s recommendation for transfer to open conditions, and that the next review should begin after 12 months. In the letter to the [PER_CFD] which accompanied the decision it was stated that: “... [t]he [ORG_NOC] attaches particular weight to the [PER_IGW]'s report, it has highlighted in some detail, the need for further exploration of your insight into, and responsibility for, the index offence and the apparent lack of empathy towards the [PER_PDK].”\n\nIn [DATE_FRG] the [PER_CFD] was transferred to [ORG_WFD]. [PER_WJV] claimed that [PER_WJV] did not receive notification of the parole decision until sometime after 13 [DATE_SRH]. The [ORG_VUG] stated that a copy of the decision letter was sent to the [PER_CFD] on 6 [DATE_JBH] and a copy to the [ORG_ZWB] then acting for the [PER_CFD] on 7 [DATE_XZT]. When the [PER_CFD] changed his [ORG_ZWB] in [DATE_SRH], the [ORG_OQA] sent a copy of the decision to the new [ORG_ZWB].\n\n[PER_SWG] stated that [PER_WJV] wanted to seek judicial review of the decision, but was unable to find a [PER_FBT] who was prepared to act on his behalf. [PER_AWO] gave advice that judicial review stood little prospect of success as the reports recommending a move to open conditions had been slightly ambiguous, there were a number of very unfavourable reports and the [PER_VXE] had given extensive reasons for rejecting the recommended move.\n\nThe [PER_CFD]'s first [ORG_FXF] oral hearing under new arrangements was scheduled for [DATE_IIQ]. At the [PER_CFD]'s request, it was deferred until [DATE_LHQ] to allow the [PER_CFD] time to complete certain courses identified in the reports for the [ORG_FXF] review.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Ian Brady",
+                "Myra Hindley",
+                "Fred West",
+                "Peter Sutcliffe",
+                "Stephen Port",
+                "Robert Black",
+                "Michael Stone",
+                "Derek Bentley",
+                "James Hanratty",
+                "Ronald Ryan"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.9887375831604004
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_NES]) against the [LOC_PGZ] lodged with the [ORG_LTE] under [CODE_IML] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [LOC_CSQ] national, [PER_ZHB] (“the [PER_VON]”), on 11 [DATE_AZS].\n\n[PER_HNT], who had been granted legal aid, was represented by [PER_TAG]. [PER_AXC], a [PER_IJJ] practising in [LOC_HSR]. [ORG_LCX] (“the [ORG_DFR]”) were represented by their [PER_UYT], [PER_WPF]. [PER_FUY] of the [ORG_RXV], [LOC_HSR].\n\n[PER_HNT], serving a sentence of mandatory life imprisonment, alleged that the [ORG_QGA] did not provide the guarantees and procedures required by [CODE_CJC] § 4 when examining whether [PER_KJJ] should be released and that [PER_KJJ] had no enforceable right to compensation for any breach of his rights as required by [CODE_CJC] § 5.\n\nThe application was allocated to the [ORG_BUB] ([CODE_RRM] of the Rules of Court). Within that Section, the [ORG_XOF] that would consider the case ([CODE_IHE] § 1 of the Convention) was constituted as provided in [CODE_RSG].\n\nBy a decision of 23 [DATE_QFH], the [ORG_LTE] declared the remainder of application admissible.\n\nThe [PER_VON] filed observations on just satisfaction and the [ORG_DFR] replied ([CODE_HQR]).\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\n[PER_HNT] was born in 1959 and is serving a sentence of life imprisonment in [LOC_GWN].\n\n[PER_HNT] was convicted in or around 1981 for the murder of an [PER_ABH]. [PER_KJJ] was sentenced to mandatory life imprisonment, and his tariff (the minimum period of imprisonment required to satisfy the requirements of retribution and deterrence) was set at 12 years.\n\nAt the time of the [PER_VON]'s latest Parole Board review in 2001, [PER_KJJ] was detained in [ORG_AIZ] as a “Category C” [PER_QST] ([PER_YCA] being given a security category classification ranging from Category A (highest risk) to Category D (suitable for open conditions)). The [ORG_QGA] recommended that the [PER_VON] should be transferred to open conditions, and that his detention should be reviewed after two years. By letter dated 6 [DATE_CQJ] the [PER_PMJ] informed the [ORG_AJI] that [PER_KJJ] did not accept the [ORG_QGA]'s recommendation for transfer to open conditions, and that the next review should begin after 12 months. In the letter to the [PER_VON] which accompanied the decision it was stated that: “... [t]he [ORG_GLX] attaches particular weight to the [PER_QXC]'s report, it has highlighted in some detail, the need for further exploration of your insight into, and responsibility for, the index offence and the apparent lack of empathy towards the [PER_LKP].”\n\nIn [DATE_RVY] the [PER_VON] was transferred to [ORG_NKW]. [PER_KJJ] claimed that [PER_KJJ] did not receive notification of the parole decision until sometime after 13 [DATE_UGK]. The [ORG_DFR] stated that a copy of the decision letter was sent to the [PER_VON] on 6 [DATE_CQJ] and a copy to the [ORG_KUQ] then acting for the [PER_VON] on 7 [DATE_RTH]. When the [PER_VON] changed his [ORG_KUQ] in [DATE_UGK], the [ORG_NTD] sent a copy of the decision to the new [ORG_KUQ].\n\n[PER_HNT] stated that [PER_KJJ] wanted to seek judicial review of the decision, but was unable to find a [PER_IJJ] who was prepared to act on his behalf. [PER_TKO] gave advice that judicial review stood little prospect of success as the reports recommending a move to open conditions had been slightly ambiguous, there were a number of very unfavourable reports and the [PER_PMJ] had given extensive reasons for rejecting the recommended move.\n\nThe [PER_VON]'s first [ORG_QGA] oral hearing under new arrangements was scheduled for [DATE_CAU]. At the [PER_VON]'s request, it was deferred until [DATE_TUW] to allow the [PER_VON] time to complete certain courses identified in the reports for the [ORG_QGA] review.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Ian Brady",
+                "Myra Hindley",
+                "Fred West",
+                "Peter Sutcliffe",
+                "Stephen Port",
+                "Robert Black",
+                "Michael Stone",
+                "Derek Bentley",
+                "James Hanratty",
+                "Ronald Ryan"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 1.9062879085540771
+          }
+        },
+        {
+          "id": "001-60735",
+          "ground_truth_people": "Rolf Lundevall",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_EAO]) against the [ORG_DGI] lodged with the [ORG_XOH] (“the [ORG_VBZ]”) under former [CODE_LQG] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_MMA], [PER_JKP] (“the [PER_UBV]”), on 28 [DATE_CYV].\n\n[PER_HQF] was until 31 [DATE_YLO] represented by [PER_FZR]. [PER_TFX] and thereafter by [PER_IPP]. [PER_JQA], both lawyers practising in [LOC_JMT]. [ORG_UYJ] (“the [ORG_LSP]”) were represented by their [PER_MSM], [PER_YBY]. [PER_NFJ], [ORG_EZS].\n\n[PER_HQF] alleged, in particular, that his rights under [CODE_GHT] of the Convention had been violated on account of the lack of an oral hearing before the [ORG_OVK] in proceedings concerning social security benefits.\n\nThe application was transmitted to the [ORG_CNV] on 1 [DATE_YXC], when [CODE_TPE] to the Convention came into force ([CODE_AOZ] § 2 of [CODE_TPE]).\n\nThe application was allocated to the [ORG_BEC] ([CODE_KUE] of the Rules of Court). Within that Section, the [ORG_OKL] that would consider the case ([CODE_EJF] § 1 of the Convention) was constituted as provided in [CODE_OAX].\n\nBy a decision of 4 [DATE_YLO] the [ORG_CNV] declared the application partly admissible.\n\nOn 1 [DATE_QRY] the [ORG_CNV] changed the composition of its Sections ([CODE_XYH]). This case was assigned to the newly composed [ORG_ZGA].\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\nOn 6 [DATE_JJR] the [PER_UBV], who was born in 1919, applied for disability benefits under the Social Insurance Act (Lagen om allmän försäkring, [IP_VPA]; hereinafter “the 1962 Act”). [PER_MEB] claimed that [PER_MEB] was in need of assistance and had additional costs due to a speech impediment caused by a laryngectomy operation in 1979.\n\nBy a decision of 24 [DATE_LIN] the [ORG_SFV] ([ORG_YUQ]; hereinafter “the Office”) of the [LOC_LHY] rejected the application, finding that the [PER_UBV]’s needs or costs were not such as to make him eligible for disability benefits.\n\nOn 27 [DATE_ZSI] the [PER_UBV] requested the [ORG_CZG] to review its decision under chapter 20, section 10 a of the 1962 Act. [PER_MEB] claimed that [PER_MEB] had failed to fully state his need of assistance and his additional costs in the original application. On 27 [DATE_FZU] [PER_MEB] asked the [ORG_CZG], alternatively, to consider his request as a new application and to grant him benefits as from [DATE_OFE].\n\nOn 12 [DATE_ILK] the [ORG_CZG] found that there was no basis for a review of its earlier decision. Further, in regard to the [PER_UBV]’s alternative claim, the [ORG_CZG] noted that the [PER_UBV] had reached the age of 65 in 1984 and that information relating to the time that followed could not be taken into account under the relevant rules. Consequently, the [PER_UBV]’s alternative claim was rejected.\n\n[PER_HQF] appealed to the [ORG_PPS] ([ORG_GSS]) of the [LOC_LHY]. On 13 [DATE_HLQ] the [ORG_CNV] gave judgment in his favour. It considered that the [ORG_CZG]’s first decision had been based on insufficient information and that the [ORG_CZG] should therefore have reviewed that decision at the [PER_UBV]’s request. It noted that, according to the two medical certificates in the case, the [PER_UBV] had considerable additional costs due to his handicap. Consequently, [PER_MEB] was entitled to disability benefits as long as his need of assistance and his additional costs, taken together, attained the level required under the 1962 Act. Accepting the information submitted by the [PER_UBV] in this regard, the [ORG_CNV] found that that level had been attained and granted [PER_PIN] a disability allowance as from [DATE_XZZ]. The [ORG_CNV] did not hold an oral hearing nor, apparently, did the [PER_UBV] request one.\n\n[ORG_ULF] ([ORG_NGU]; hereinafter “[ORG_RPD]”) appealed against the [ORG_PPS]’s judgment to the [ORG_OVK] ([ORG_IHD]) in [LOC_JMT], requesting that the [ORG_CZG]’s decision of 12 [DATE_ILK] be confirmed. The [ORG_HLB] claimed that the information in the case showed that, before the age of 65, the [PER_UBV] had not suffered a functional impairment to such an extent that his need of assistance and extra expenses on account thereof had made him eligible for a disability allowance. Thus, the [ORG_CZG]’s first decision could not be considered to have been incorrect due to it being based on incorrect or incomplete material. Consequently, there were no grounds for a review under the 1962 Act. [ORG_RPD] further requested the [ORG_SEB] to stay the enforcement of the appealed judgment. The latter request was granted by a decision of 30 [DATE_MZH].\n\n[PER_HQF] made submissions in response to the [ORG_HLB]’s appeal. On 25 [DATE_OBA] [PER_MEB] requested the [ORG_OVK] to hold an oral hearing in the case during which the [PER_BEQ] in charge of the case at the [ORG_CZG] should give evidence relating to the meaning of its decision and the information on which it had been based. The [PER_UBV] also asked the [ORG_CNV] to obtain the opinion of a medical expert.\n\nOn 12 [DATE_ZTP] the [ORG_OVK] rejected both requests. In regard to the request for an oral hearing, the [ORG_CNV], after having restated section 9 of the Administrative [ORG_CNV] Procedure Act (Förvaltningsprocesslagen, [IP_TQE]; hereinafter “the 1971 Act”; see further paragraph 23 below), gave the following reasons: “Having regard to the subject-matter at issue and the information that has come to hand in the case, [the [ORG_CNV]] finds that an oral hearing is unnecessary and rejects the request to that effect. [[PER_HQF]] is invited to state the further circumstances [PER_MEB] wishes to invoke and submit his final written observations in the case within two weeks after having been notified of this decision. The case can be determined notwithstanding a failure to submit such written observations.”\n\n[PER_HQF] and the [ORG_HLB] made further submissions. The [PER_UBV] maintained that the [ORG_HLB] had failed to adequately explain the reasons for its appeal and posed several questions to the [ORG_HLB]. [PER_MEB] requested that the [ORG_CNV] order the [ORG_HLB] to clarify its position in the case. The [ORG_CNV] did not do so, however. The [PER_UBV]’s submissions were, however, forwarded to the [ORG_HLB] which replied that it maintained its position in the case. On account of the [ORG_CNV]’s refusal to order the [ORG_HLB] to clarify its position and to hold a hearing, the [PER_UBV] called into question the impartiality of the proceedings. By letters of 16 [DATE_VKL] and 10 [DATE_PFZ] [PER_MEB] reiterated his request for an oral hearing, stating that a hearing would give [PER_PIN] the opportunity to ask questions to the [ORG_HLB] and to present judgments in similar cases in support of his application for disability benefits. Furthermore, in assessing his condition, the [ORG_CNV] would benefit from having met [PER_PIN] in person.\n\nOn 1 [DATE_FGJ] the [ORG_OVK] rejected the [PER_UBV]’s renewed requests for an oral hearing and gave judgment in favour of the [ORG_HLB]. Thus, by 3 votes to 2, it quashed the [ORG_PPS]’s judgment and confirmed the [ORG_CZG]’s decision of 12 [DATE_ILK]. Without giving any further reasons, it considered that there had been no basis for a review of the [ORG_CZG]’s first decision. The dissenting judges considered that the [PER_UBV] was entitled to the disability allowance granted to him by the [ORG_PPS] and that, for this reason, there were exceptional reasons to change the [ORG_CZG]’s decision.\n\n[PER_HQF] appealed to the [ORG_ZCU] ([ORG_GLX]). [PER_MEB] requested that the case be referred back to the [ORG_OVK] for re-examination or, alternatively, that the [ORG_ZCU] confirm the [ORG_PPS]’s judgment. [PER_MEB] complained about the lack of an oral hearing in the [ORG_OVK] and also requested the [ORG_ZCU] to hold an oral hearing. On 24 [DATE_CYV] the [ORG_ZCU] refused the [PER_UBV] leave to appeal.\n\nOn 9 [DATE_KZA] the [PER_UBV] made a renewed request for a disability allowance. By a decision of 12 [DATE_NNC] the [ORG_CZG] found that [PER_MEB] had special needs and costs due to his handicap which made [PER_PIN] eligible for disability benefits under the 1962 Act. As an allowance could be given retroactively only for the two years preceding the application, the [PER_UBV] was granted an allowance as from [DATE_ILK].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Carl Bildt",
+                "Göran Persson",
+                "Fredrik Reinfeldt",
+                "Stefan Löfven",
+                "Ulf Kristersson",
+                "Olof Palme",
+                "Thorbjörn Fälldin",
+                "Maud Olofsson",
+                "Lars Leijonborg",
+                "Birgitta Dahl"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 4.209603309631348
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case originated in an application ([CODE_JAJ]) against the [ORG_WQY] lodged with the [ORG_BWX] (“the [ORG_IYD]”) under former [CODE_ZAD] of the Convention for the Protection of Human Rights and Fundamental Freedoms (“the Convention”) by a [PER_VRT], [PER_GKI] (“the [PER_FGH]”), on 28 [DATE_CLP].\n\n[PER_PQH] was until 31 [DATE_HRM] represented by [PER_AOS]. [PER_XBC] and thereafter by [PER_UYO]. [PER_LKR], both lawyers practising in [LOC_FDH]. [ORG_KIE] (“the [ORG_NEZ]”) were represented by their [PER_STH], [PER_KHD]. [PER_TLR], [ORG_TDE].\n\n[PER_PQH] alleged, in particular, that his rights under [CODE_DOP] of the Convention had been violated on account of the lack of an oral hearing before the [ORG_YVB] in proceedings concerning social security benefits.\n\nThe application was transmitted to the [ORG_MVB] on 1 [DATE_WVW], when [CODE_TET] to the Convention came into force ([CODE_HKB] § 2 of [CODE_TET]).\n\nThe application was allocated to the [ORG_GBB] ([CODE_BET] of the Rules of Court). Within that Section, the [ORG_IOC] that would consider the case ([CODE_EUU] § 1 of the Convention) was constituted as provided in [CODE_QDQ].\n\nBy a decision of 4 [DATE_HRM] the [ORG_MVB] declared the application partly admissible.\n\nOn 1 [DATE_BHS] the [ORG_MVB] changed the composition of its Sections ([CODE_NLQ]). This case was assigned to the newly composed [ORG_MZR].\n\nTHE FACTS\n\nI. THE CIRCUMSTANCES OF THE CASE\n\nOn 6 [DATE_CFQ] the [PER_FGH], who was born in 1919, applied for disability benefits under the Social Insurance Act (Lagen om allmän försäkring, [IP_LZU]; hereinafter “the 1962 Act”). [PER_YCY] claimed that [PER_YCY] was in need of assistance and had additional costs due to a speech impediment caused by a laryngectomy operation in 1979.\n\nBy a decision of 24 [DATE_NMN] the [ORG_UTB] ([ORG_IWV]; hereinafter “the Office”) of the [LOC_SUQ] rejected the application, finding that the [PER_FGH]’s needs or costs were not such as to make him eligible for disability benefits.\n\nOn 27 [DATE_QTS] the [PER_FGH] requested the [ORG_ITM] to review its decision under chapter 20, section 10 a of the 1962 Act. [PER_YCY] claimed that [PER_YCY] had failed to fully state his need of assistance and his additional costs in the original application. On 27 [DATE_CNI] [PER_YCY] asked the [ORG_ITM], alternatively, to consider his request as a new application and to grant him benefits as from [DATE_PFI].\n\nOn 12 [DATE_TTM] the [ORG_ITM] found that there was no basis for a review of its earlier decision. Further, in regard to the [PER_FGH]’s alternative claim, the [ORG_ITM] noted that the [PER_FGH] had reached the age of 65 in 1984 and that information relating to the time that followed could not be taken into account under the relevant rules. Consequently, the [PER_FGH]’s alternative claim was rejected.\n\n[PER_PQH] appealed to the [ORG_QOU] ([ORG_QNN]) of the [LOC_SUQ]. On 13 [DATE_FKM] the [ORG_MVB] gave judgment in his favour. It considered that the [ORG_ITM]’s first decision had been based on insufficient information and that the [ORG_ITM] should therefore have reviewed that decision at the [PER_FGH]’s request. It noted that, according to the two medical certificates in the case, the [PER_FGH] had considerable additional costs due to his handicap. Consequently, [PER_YCY] was entitled to disability benefits as long as his need of assistance and his additional costs, taken together, attained the level required under the 1962 Act. Accepting the information submitted by the [PER_FGH] in this regard, the [ORG_MVB] found that that level had been attained and granted [PER_DYM] a disability allowance as from [DATE_JTL]. The [ORG_MVB] did not hold an oral hearing nor, apparently, did the [PER_FGH] request one.\n\n[ORG_QEN] ([ORG_GIX]; hereinafter “[ORG_CXQ]”) appealed against the [ORG_QOU]’s judgment to the [ORG_YVB] ([ORG_KJP]) in [LOC_FDH], requesting that the [ORG_ITM]’s decision of 12 [DATE_TTM] be confirmed. The [ORG_LEO] claimed that the information in the case showed that, before the age of 65, the [PER_FGH] had not suffered a functional impairment to such an extent that his need of assistance and extra expenses on account thereof had made him eligible for a disability allowance. Thus, the [ORG_ITM]’s first decision could not be considered to have been incorrect due to it being based on incorrect or incomplete material. Consequently, there were no grounds for a review under the 1962 Act. [ORG_CXQ] further requested the [ORG_EWO] to stay the enforcement of the appealed judgment. The latter request was granted by a decision of 30 [DATE_BZT].\n\n[PER_PQH] made submissions in response to the [ORG_LEO]’s appeal. On 25 [DATE_YTA] [PER_YCY] requested the [ORG_YVB] to hold an oral hearing in the case during which the [PER_AIX] in charge of the case at the [ORG_ITM] should give evidence relating to the meaning of its decision and the information on which it had been based. The [PER_FGH] also asked the [ORG_MVB] to obtain the opinion of a medical expert.\n\nOn 12 [DATE_CMI] the [ORG_YVB] rejected both requests. In regard to the request for an oral hearing, the [ORG_MVB], after having restated section 9 of the Administrative [ORG_MVB] Procedure Act (Förvaltningsprocesslagen, [IP_DCJ]; hereinafter “the 1971 Act”; see further paragraph 23 below), gave the following reasons: “Having regard to the subject-matter at issue and the information that has come to hand in the case, [the [ORG_MVB]] finds that an oral hearing is unnecessary and rejects the request to that effect. [[PER_PQH]] is invited to state the further circumstances [PER_YCY] wishes to invoke and submit his final written observations in the case within two weeks after having been notified of this decision. The case can be determined notwithstanding a failure to submit such written observations.”\n\n[PER_PQH] and the [ORG_LEO] made further submissions. The [PER_FGH] maintained that the [ORG_LEO] had failed to adequately explain the reasons for its appeal and posed several questions to the [ORG_LEO]. [PER_YCY] requested that the [ORG_MVB] order the [ORG_LEO] to clarify its position in the case. The [ORG_MVB] did not do so, however. The [PER_FGH]’s submissions were, however, forwarded to the [ORG_LEO] which replied that it maintained its position in the case. On account of the [ORG_MVB]’s refusal to order the [ORG_LEO] to clarify its position and to hold a hearing, the [PER_FGH] called into question the impartiality of the proceedings. By letters of 16 [DATE_AIQ] and 10 [DATE_AQA] [PER_YCY] reiterated his request for an oral hearing, stating that a hearing would give [PER_DYM] the opportunity to ask questions to the [ORG_LEO] and to present judgments in similar cases in support of his application for disability benefits. Furthermore, in assessing his condition, the [ORG_MVB] would benefit from having met [PER_DYM] in person.\n\nOn 1 [DATE_CBY] the [ORG_YVB] rejected the [PER_FGH]’s renewed requests for an oral hearing and gave judgment in favour of the [ORG_LEO]. Thus, by 3 votes to 2, it quashed the [ORG_QOU]’s judgment and confirmed the [ORG_ITM]’s decision of 12 [DATE_TTM]. Without giving any further reasons, it considered that there had been no basis for a review of the [ORG_ITM]’s first decision. The dissenting judges considered that the [PER_FGH] was entitled to the disability allowance granted to him by the [ORG_QOU] and that, for this reason, there were exceptional reasons to change the [ORG_ITM]’s decision.\n\n[PER_PQH] appealed to the [ORG_YQB] ([ORG_EWR]). [PER_YCY] requested that the case be referred back to the [ORG_YVB] for re-examination or, alternatively, that the [ORG_YQB] confirm the [ORG_QOU]’s judgment. [PER_YCY] complained about the lack of an oral hearing in the [ORG_YVB] and also requested the [ORG_YQB] to hold an oral hearing. On 24 [DATE_CLP] the [ORG_YQB] refused the [PER_FGH] leave to appeal.\n\nOn 9 [DATE_EKY] the [PER_FGH] made a renewed request for a disability allowance. By a decision of 12 [DATE_QIZ] the [ORG_ITM] found that [PER_YCY] had special needs and costs due to his handicap which made [PER_DYM] eligible for disability benefits under the 1962 Act. As an allowance could be given retroactively only for the two years preceding the application, the [PER_FGH] was granted an allowance as from [DATE_KGZ].",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Carl Bildt",
+                "Göran Persson",
+                "Olof Palme",
+                "Fredrik Reinfeldt",
+                "Stefan Löfven",
+                "Mona Sahlin",
+                "Lars Leijonborg",
+                "Birgitta Dahl",
+                "Anna Lindh",
+                "Mats Persson"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 4.050216197967529
+          }
+        },
+        {
+          "id": "001-57899",
+          "ground_truth_people": "Anthony Boner",
+          "ground_truth_label": "applicant",
+          "baseline": {
+            "anonymized_text": "PROCEDURE\n\nThe case was referred to the [ORG_GMK] on 12 [DATE_QVX] by the [ORG_HPG] (“the [ORG_PXP]“) and on 3 [DATE_TAK] by the [ORG_WTW] (“the [ORG_PNJ]“), within the three-month period laid down by [CODE_RVU] para. 1 and [CODE_JFE] ([CODE_TBV]-1, [CODE_GRL]) of the Convention. It originated in an application ([CODE_OME]) against the [LOC_YFT] lodged with the [ORG_PXP] under [CODE_EQX] ([CODE_HYX]) on 4 [DATE_FBX] by a [PER_IQC], [PER_DCN]. [ORG_XYY]’s request referred to Articles 44 and 48 ([CODE_YNU], [CODE_QYM]) and to the declaration whereby the [ORG_INH] recognised the compulsory jurisdiction of the [ORG_GMK] ([CODE_ZUC]) ([CODE_RAJ]); the [ORG_PNJ]’s application referred to [CODE_LJM] ([CODE_QYM]). The object of the request and the application was to obtain a decision as to whether the facts of the case disclosed a breach by the [PER_HZF] State of its obligations under [CODE_TVU] para. 3 (c) ([CODE_GSI]-3-c).\n\nIn response to the enquiry made in accordance with Rule 33 para. 3 (d) of Rules of Court A, the [PER_OTN] stated that [PER_ULI] wished to take part in the proceedings and designated the [PER_OIN] who would represent him (Rule 30).\n\nOn 23 [DATE_TAK], the [PER_LAU] decided that in the interests of the [ORG_HPM] this case and the case of Maxwell v. the United Kingdom ([CODE_TDE]/426/505) should be heard by the same [ORG_LAE] (Rule 21 para. 6). The [ORG_LAE] to be constituted included ex officio [PER_FZK], the elected judge of British nationality ([CODE_BNW] of the Convention) ([CODE_SFM]), and [PER_XCI]. [PER_VPK], the President of the [ORG_GMK] (Rule 21 para. 3 (b)). On 25 [DATE_TAK], in the presence of the [PER_OXU], the [PER_NFW] drew by lot the names of the other seven members, namely [PER_XCI]. [PER_XMC], [PER_IHF]. [PER_DIJ], [PER_OQL]. Palm, [PER_IHF].[PER_FOM], [PER_LZT]. [PER_LRF], [PER_ORR].B. Baka and Mr J. [PER_YBW] ([CODE_BNW] in fine of the Convention and Rule 21 para. 4) ([CODE_SFM]).\n\nAs [ORG_ZZH] (Rule 21 para. 5), [PER_ZKD], acting through the [PER_OXU], consulted the [PER_OGU], the [PER_UKJ] and the [PER_ATK] on the organisation of the proceedings (Rules 37 para. 1 and 38). Pursuant to the order made in consequence, the [ORG_ZBN] received the [PER_OTN]’s memorial on 31 [DATE_NHS] and the [ORG_PNJ]’s memorial on 10 [DATE_IYE]. On 5 [DATE_FAD] the [ORG_PNJ] submitted their written reply to the [PER_OTN]’s claims for just satisfaction under [CODE_DOH] ([CODE_OWX]) of the Convention. On 15 [DATE_FAD] the [PER_REV] to the [ORG_PXP] informed the [PER_OXU] that the [PER_HOZ] would not submit written observations in reply.\n\nIn accordance with the [PER_NFW]’s decision, the hearing took place in public in the [LOC_PAQ], [LOC_ESO], on 18 [DATE_FAD]. [ORG_UWE] had held a preparatory meeting beforehand. There appeared before the Court:\n\nfor the Government [PER_GTU]. [PER_BQU], [ORG_JWU], [PER_TAL], [PER_CXP], [PER_INK], [PER_WNQ], [PER_XCI]. [PER_HDK], Counsel, [PER_GTU]. [PER_WVI], [PER_ORR]. [PER_TPM], Advisers;\n\nfor the Commission [PER_HUE]. [PER_SUA], [PER_HOZ];\n\nfor the applicant [PER_CVF]. [PER_AOC], QC, Counsel, [PER_MPK].[PER_NQJ], Solicitor. [ORG_UWE] heard addresses by [PER_ASD], [PER_OYK] and [PER_JUZ] as well as replies to its questions.\n\nAS TO THE FACTS\n\nI. CIRCUMSTANCES OF THE CASE\n\n[PER_EFG], [PER_DCN], is a [PER_IQC] born in 1960. [PER_ULI] lives in [LOC_YMB], [LOC_WUD]. On 14 [DATE_UEG] [PER_PAN], armed with a shotgun and a knife, carried out a robbery at a [ORG_MZL] in [LOC_KSW], [LOC_OHR], [LOC_WUD], in the course of which they assaulted [PER_HFD]. They also caused damage to a motor car. Following investigations, [PER_WNU] and [PER_PIE] were arrested and remanded in custody. The [PER_OTN] was indicted on a charge of assault and armed robbery, a charge of wilful damage and three charges relating to firearms. Between 29 March and 10 [DATE_GTO] [PER_ULI] stood trial in the [ORG_GQV] sitting in [LOC_CII].\n\nThe [PER_OTN] received legal aid for the preparation of his defence and for his representation by [PER_MFM] at the trial.\n\nDuring the trial a [PER_RZU], [PER_ECF], entered the [LOC_IYO] prior to giving evidence and spoke to one of the [PER_OTN]’s co-accused, against whom charges had been dropped. When [PER_ECF] was called to give evidence, the [PER_OTN]’s counsel objected on the basis of her earlier presence in court. [PER_BXA] adjourned the case and instructed [ORG_MJX] to make further inquiries into the matter so that it could be determined whether [PER_ECF]’s attendance was due to any negligence or failure on the part of the [ORG_VXV]. [ORG_MJX] informed the [PER_YDJ] that inquiries had revealed no fault on the part of [PER_QGV] for whom the [ORG_VXV] bore responsibility. This was not disputed by the [PER_OTN]’s counsel, who, moreover, was unable to give any indication as to how [PER_ECF]’s evidence could be affected by her earlier presence in court. [PER_BXA] accordingly took the view that no injustice would be done by [PER_FVK].’s examination. Finding that the relevant legal conditions were satisfied (see paragraph 17 below), [PER_ULI] therefore exercised his discretion and permitted [PER_VDS] to give evidence. Subsequently, [ORG_QED] had the opportunity to cross-examine [PER_FVK]. on the matter of her attendance in court. In her evidence, [PER_FVK]. stated that the [PER_OTN] had been at her [LOC_HUI] the evening before the robbery and had spoken of robbing the [LOC_YVL]. The following morning [PER_ULI] had left the house and returned later with a bag, in a state of nervousness. Other evidence against the [PER_OTN] included the fact that a shotgun and various items stolen from the [ORG_MZL] were found on the [PER_OTN]’s premises. In addition, a [PER_XTT] identified [PER_WNU] as being one of the robbers and [PER_FVK].’s statement was supported by her [PER_GAB].\n\nThe jury found the [PER_OTN] guilty on all the charges. Taking account of his numerous previous convictions, the [PER_YDJ] sentenced [PER_MLU] to eight years’ imprisonment.\n\nOn 17 [DATE_GTO] the [PER_OTN], through his solicitor, lodged an intimation of intention to appeal against conviction.\n\n[PER_WNU] instructed [ORG_XRK], who asked a different counsel to advise on the prospects of an appeal and to draft a note of appeal. In his opinion dated 10 [DATE_MBV] [PER_MFM] stated his view that the only possible ground of appeal related to the “admissibility of the evidence of [PER_FVK].“ and to the question “that the [PER_QLK] erred in exercising discretion in allowing her to be present“. However, [PER_ULI] conceded that [PER_ULI] had not been provided with sufficient information to be able properly to base an opinion or to frame grounds of appeal. Notwithstanding this acknowledgement [PER_ULI] did draft a note of appeal which contained six grounds, the first two of which concerned the [PER_QLK]’s decision to admit the [PER_UQK]. This note of appeal was filed by the [PER_OTN]’s solicitors on 13 [DATE_MBV].\n\nUp to this point all the work had been covered by the [ORG_LBF] granted for the trial. An application to extend legal aid to the appeal proceedings had been submitted in [DATE_QDJ]. On 25 [DATE_QJL] the [ORG_CIL] (“the [ORG_XZU]“) asked the [PER_OTN] to provide an opinion from counsel on the prospects of success. The earlier opinion dated 10 [DATE_MBV] was accordingly forwarded to the [ORG_XZU], together with a supplementary opinion from the same counsel dated 6 [DATE_LIW]. In this latter opinion [PER_MFM] reiterated the view that the appeal rested on the question whether [PER_FVK].’s evidence was admissible. However, [PER_ULI] again stated that [PER_ULI] had not been provided with sufficient material on which to assess the merits of the appeal. “[PER_FLQ] regret meantime [PER_FLQ] am unable to answer the fundamental question in this case“, [PER_ULI] concluded.\n\nOn 27 [DATE_LIW] the [PER_OTN]’s [ORG_RFF] informed the [ORG_XZU] by [TELEPHONE_SAH] that [PER_MFM] had finally decided that he could not support the application for legal aid or the appeal; that they were of the same view; and that, consequently, they could no longer act for the [PER_OTN]. The terms of that telephone call were confirmed in a letter dated 2 [DATE_KCL] from the [ORG_RFF] to the [ORG_XZU].\n\nOn 14 [DATE_KCL] the [ORG_CIL] notified [PER_WNU]’s [ORG_RFF] that his application for legal aid had been refused as the [ORG_XZU] was not satisfied, as it was required to be under the relevant legislation (see paragraph 26 below), that [PER_ULI] had substantial grounds for taking an appeal and that it was reasonable that [PER_ULI] should receive legal aid. In a letter of 11 [DATE_IKG] to the [PER_OTN] the [ORG_XZU] added that it could not see any merit in the appeal. Despite the advice of his solicitors and counsel, [PER_WNU] decided to proceed with the appeal.\n\n[PER_EFG], who had no legal knowledge and had no assistance with his submissions, presented his own case on 24 [DATE_BNP] before the [ORG_GQV], sitting in [LOC_CII] and acting as an [ORG_RQK]. [ORG_XKS] was represented by [ORG_OEN]. There is no indication in the record that the [ORG_GMK] required counsel for the [ORG_VXV] to address it.\n\nThe [ORG_ZAR] considered the first two grounds of appeal relating to [PER_FVK]. and held that these were ill-founded and that the [PER_QLK] had approached the matter properly. As the [PER_OTN] did not address the [ORG_GMK] on the remaining grounds of appeal, these were not considered by the [ORG_GMK]. [ORG_YPG] did however examine other points raised by the [PER_OTN], but reached “the clear conclusion that there was no miscarriage of justice in the case“. The appeal against conviction was unanimously dismissed.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Maxwell",
+                "Baka",
+                "Palm",
+                "J. YBW",
+                "FZK",
+                "XCI",
+                "VPK",
+                "OTN",
+                "ULI",
+                "HDK"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 5.324456691741943
+          },
+          "rupta": {
+            "anonymized_text": "PROCEDURE\n\nThe case was referred to the [ORG_VSF] on 12 [DATE_FLE] by the [ORG_GCM] (“the [ORG_ZVC]“) and on 3 [DATE_SPF] by the [ORG_DCP] (“the [ORG_QYM]“), within the three-month period laid down by [CODE_BCO] para. 1 and [CODE_PKI] ([CODE_YOD]-1, [CODE_XMW]) of the Convention. It originated in an application ([CODE_BKC]) against the [LOC_HKH] lodged with the [ORG_ZVC] under [CODE_IXY] ([CODE_QOQ]) on 4 [DATE_YEO] by a [PER_EVB], [PER_IRM]. [ORG_WZU]’s request referred to Articles 44 and 48 ([CODE_IXH], [CODE_EVO]) and to the declaration whereby the [ORG_OTV] recognised the compulsory jurisdiction of the [ORG_VSF] ([CODE_WSP]) ([CODE_NNA]); the [ORG_QYM]’s application referred to [CODE_RKP] ([CODE_EVO]). The object of the request and the application was to obtain a decision as to whether the facts of the case disclosed a breach by the [PER_JHJ] State of its obligations under [CODE_YXR] para. 3 (c) ([CODE_POW]-3-c).\n\nIn response to the enquiry made in accordance with Rule 33 para. 3 (d) of Rules of Court A, the [PER_CHI] stated that [PER_ZPJ] wished to take part in the proceedings and designated the [PER_VTN] who would represent him (Rule 30).\n\nOn 23 [DATE_SPF], the [PER_HGS] decided that in the interests of the [ORG_DGV] this case and the case of Maxwell v. the United Kingdom ([CODE_AJU]/426/505) should be heard by the same [ORG_AMC] (Rule 21 para. 6). The [ORG_AMC] to be constituted included ex officio [PER_CXO], the elected judge of British nationality ([CODE_FGT] of the Convention) ([CODE_QMV]), and [PER_DWJ]. [PER_EVS], the President of the [ORG_VSF] (Rule 21 para. 3 (b)). On 25 [DATE_SPF], in the presence of the [PER_PTJ], the [PER_TME] drew by lot the names of the other seven members, namely [PER_DWJ]. [PER_VVL], [PER_PHP]. [PER_MGG], [PER_GWX]. Palm, [PER_PHP].[PER_FYS], [PER_DSA]. [PER_MYV], [PER_SWW].B. Baka and Mr J. [PER_OWX] ([CODE_FGT] in fine of the Convention and Rule 21 para. 4) ([CODE_QMV]).\n\nAs [ORG_VTT] (Rule 21 para. 5), [PER_PHI], acting through the [PER_PTJ], consulted the [PER_YQI], the [PER_LWL] and the [PER_VWA] on the organisation of the proceedings (Rules 37 para. 1 and 38). Pursuant to the order made in consequence, the [ORG_ZQF] received the [PER_CHI]’s memorial on 31 [DATE_WPZ] and the [ORG_QYM]’s memorial on 10 [DATE_DKZ]. On 5 [DATE_AHH] the [ORG_QYM] submitted their written reply to the [PER_CHI]’s claims for just satisfaction under [CODE_IDJ] ([CODE_CLZ]) of the Convention. On 15 [DATE_AHH] the [PER_CXO] to the [ORG_ZVC] informed the [PER_PTJ] that the [PER_NVB] would not submit written observations in reply.\n\nIn accordance with the [PER_TME]’s decision, the hearing took place in public in the [LOC_FVJ], [LOC_PKN], on 18 [DATE_AHH]. [ORG_SOB] had held a preparatory meeting beforehand. There appeared before the Court:\n\nfor the Government [PER_OLC]. [PER_QUT], [ORG_SEL], [PER_NUH], [PER_AMW], [PER_BYQ], [PER_YAW], [PER_DWJ]. [PER_KPW], Counsel, [PER_OLC]. [PER_VYP], [PER_SWW]. [PER_LKR], Advisers;\n\nfor the Commission [PER_RTV]. [PER_ZCI], [PER_NVB];\n\nfor the applicant [PER_MJC]. [PER_TTJ], QC, Counsel, [PER_DDA].[PER_JNM], Solicitor. [ORG_SOB] heard addresses by [PER_VFF], [PER_NSE] and [PER_NAR] as well as replies to its questions.\n\nAS TO THE FACTS\n\nI. CIRCUMSTANCES OF THE CASE\n\n[PER_TAI], [PER_IRM], is a [PER_EVB] born in 1960. [PER_ZPJ] lives in [LOC_CMM], [LOC_TIM]. On 14 [DATE_ERJ] [PER_KCP], armed with a shotgun and a knife, carried out a robbery at a [ORG_KCN] in [LOC_SHC], [LOC_ADJ], [LOC_TIM], in the course of which they assaulted [PER_BTI]. They also caused damage to a motor car. Following investigations, [PER_LZA] and [PER_EHM] were arrested and remanded in custody. The [PER_CHI] was indicted on a charge of assault and armed robbery, a charge of wilful damage and three charges relating to firearms. Between 29 March and 10 [DATE_HGD] [PER_ZPJ] stood trial in the [ORG_JUJ] sitting in [LOC_AMT].\n\nThe [PER_CHI] received legal aid for the preparation of his defence and for his representation by [PER_NRN] at the trial.\n\nDuring the trial a [PER_GPE], [PER_SUW], entered the [LOC_LQK] prior to giving evidence and spoke to one of the [PER_CHI]’s co-accused, against whom charges had been dropped. When [PER_SUW] was called to give evidence, the [PER_CHI]’s counsel objected on the basis of her earlier presence in court. [PER_YLP] adjourned the case and instructed [ORG_MTT] to make further inquiries into the matter so that it could be determined whether [PER_SUW]’s attendance was due to any negligence or failure on the part of the [ORG_ISQ]. [ORG_MTT] informed the [PER_CLQ] that inquiries had revealed no fault on the part of [PER_ZIW] for whom the [ORG_ISQ] bore responsibility. This was not disputed by the [PER_CHI]’s counsel, who, moreover, was unable to give any indication as to how [PER_SUW]’s evidence could be affected by her earlier presence in court. [PER_YLP] accordingly took the view that no injustice would be done by [PER_TMH].’s examination. Finding that the relevant legal conditions were satisfied (see paragraph 17 below), [PER_ZPJ] therefore exercised his discretion and permitted [PER_MPW] to give evidence. Subsequently, [ORG_NWB] had the opportunity to cross-examine [PER_TMH]. on the matter of her attendance in court. In her evidence, [PER_TMH]. stated that the [PER_CHI] had been at her [LOC_FZO] the evening before the robbery and had spoken of robbing the [LOC_FWG]. The following morning [PER_ZPJ] had left the house and returned later with a bag, in a state of nervousness. Other evidence against the [PER_CHI] included the fact that a shotgun and various items stolen from the [ORG_KCN] were found on the [PER_CHI]’s premises. In addition, a [PER_NNI] identified [PER_LZA] as being one of the robbers and [PER_TMH].’s statement was supported by her [PER_XTW].\n\nThe jury found the [PER_CHI] guilty on all the charges. Taking account of his numerous previous convictions, the [PER_CLQ] sentenced [PER_UBP] to eight years’ imprisonment.\n\nOn 17 [DATE_HGD] the [PER_CHI], through his solicitor, lodged an intimation of intention to appeal against conviction.\n\n[PER_LZA] instructed [ORG_DTY], who asked a different counsel to advise on the prospects of an appeal and to draft a note of appeal. In his opinion dated 10 [DATE_UXU] [PER_NRN] stated his view that the only possible ground of appeal related to the “admissibility of the evidence of [PER_TMH].“ and to the question “that the [PER_OQP] erred in exercising discretion in allowing her to be present“. However, [PER_ZPJ] conceded that [PER_ZPJ] had not been provided with sufficient information to be able properly to base an opinion or to frame grounds of appeal. Notwithstanding this acknowledgement [PER_ZPJ] did draft a note of appeal which contained six grounds, the first two of which concerned the [PER_OQP]’s decision to admit the [PER_VPZ]. This note of appeal was filed by the [PER_CHI]’s solicitors on 13 [DATE_UXU].\n\nUp to this point all the work had been covered by the [ORG_BQX] granted for the trial. An application to extend legal aid to the appeal proceedings had been submitted in [DATE_BNL]. On 25 [DATE_MPP] the [ORG_ZEZ] (“the [ORG_PQK]“) asked the [PER_CHI] to provide an opinion from counsel on the prospects of success. The earlier opinion dated 10 [DATE_UXU] was accordingly forwarded to the [ORG_PQK], together with a supplementary opinion from the same counsel dated 6 [DATE_DYQ]. In this latter opinion [PER_NRN] reiterated the view that the appeal rested on the question whether [PER_TMH].’s evidence was admissible. However, [PER_ZPJ] again stated that [PER_ZPJ] had not been provided with sufficient material on which to assess the merits of the appeal. “[PER_QJZ] regret meantime [PER_QJZ] am unable to answer the fundamental question in this case“, [PER_ZPJ] concluded.\n\nOn 27 [DATE_DYQ] the [PER_CHI]’s [ORG_AUW] informed the [ORG_PQK] by [TELEPHONE_NIT] that [PER_NRN] had finally decided that he could not support the application for legal aid or the appeal; that they were of the same view; and that, consequently, they could no longer act for the [PER_CHI]. The terms of that telephone call were confirmed in a letter dated 2 [DATE_CKH] from the [ORG_AUW] to the [ORG_PQK].\n\nOn 14 [DATE_CKH] the [ORG_ZEZ] notified [PER_LZA]’s [ORG_AUW] that his application for legal aid had been refused as the [ORG_PQK] was not satisfied, as it was required to be under the relevant legislation (see paragraph 26 below), that [PER_ZPJ] had substantial grounds for taking an appeal and that it was reasonable that [PER_ZPJ] should receive legal aid. In a letter of 11 [DATE_ZNH] to the [PER_CHI] the [ORG_PQK] added that it could not see any merit in the appeal. Despite the advice of his solicitors and counsel, [PER_LZA] decided to proceed with the appeal.\n\n[PER_TAI], who had no legal knowledge and had no assistance with his submissions, presented his own case on 24 [DATE_FCS] before the [ORG_JUJ], sitting in [LOC_AMT] and acting as an [ORG_QCQ]. [ORG_YLO] was represented by [ORG_VGT]. There is no indication in the record that the [ORG_VSF] required counsel for the [ORG_ISQ] to address it.\n\nThe [ORG_KZC] considered the first two grounds of appeal relating to [PER_TMH]. and held that these were ill-founded and that the [PER_OQP] had approached the matter properly. As the [PER_CHI] did not address the [ORG_VSF] on the remaining grounds of appeal, these were not considered by the [ORG_VSF]. [ORG_HHI] did however examine other points raised by the [PER_CHI], but reached “the clear conclusion that there was no miscarriage of justice in the case“. The appeal against conviction was unanimously dismissed.",
+            "privacy": {
+              "rank": 999,
+              "confirmation": "No",
+              "sensitive_entities": [],
+              "candidates": [
+                "Gordon Brown",
+                "Tony Blair",
+                "David Cameron",
+                "Boris Johnson",
+                "Theresa May",
+                "Jeremy Corbyn",
+                "Rishi Sunak",
+                "Ed Miliband",
+                "Nick Clegg",
+                "George Osborne"
+              ],
+              "confidence": 0.0
+            },
+            "utility": {
+              "confidence_score": 100,
+              "confirmation": "Yes",
+              "confused_entities": [],
+              "utility_preserved": true
+            },
+            "runtime_seconds": 5.192049026489258
+          }
+        }
+      ],
+      "summary": {
+        "baseline": {
+          "samples": 10,
+          "avg_privacy_rank": 999.0,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 100.0,
+          "utility_preserved_rate": 1.0,
+          "avg_runtime_seconds": 2.771150231361389
+        },
+        "rupta": {
+          "samples": 10,
+          "avg_privacy_rank": 999.0,
+          "privacy_non_identified_rate": 0.0,
+          "avg_utility_confidence": 100.0,
+          "utility_preserved_rate": 1.0,
+          "avg_runtime_seconds": 2.712114429473877
+        }
+      }
+    }
+  },
+  "generated_at": "2025-10-28T22:33:22",
+  "output_path": "/mnt/f/IA/Anonymisation/results/pipeline/all-test_L0_20251028-223322.json"
+}

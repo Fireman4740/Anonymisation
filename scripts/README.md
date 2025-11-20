@@ -4,6 +4,28 @@ Ce dossier contient les scripts d'évaluation, de test et d'automatisation.
 
 ## 📜 Scripts Disponibles
 
+### Suite de benchmarks
+
+**`run_benchmarks.py`**
+
+- Point d'entrée unique (sous-commandes `ner`, `pipeline`, `compare`, `quick`)
+- Support des jeux DB-Bio, PersonalReddit, TAB
+- Génération optionnelle de rapports JSON/Markdown
+
+```bash
+# Comparer NER standard vs GPU
+python scripts/run_benchmarks.py ner --mode both --text-size mediumr
+
+# Évaluer une politique complète
+python scripts/run_benchmarks.py pipeline --dataset all --samples 10 --policy L1 --output results/eval_all.json
+
+# Générer un rapport comparatif
+python scripts/run_benchmarks.py compare --baseline results/baseline.json --rupta results/rupta.json --output results/report.md
+
+# Workflow rapide (NER + DB-Bio)
+python scripts/run_benchmarks.py quick --samples 3 --policy L1
+```
+
 ### Téléchargement de Datasets
 
 **`download_datasets.py`**
@@ -14,21 +36,6 @@ Ce dossier contient les scripts d'évaluation, de test et d'automatisation.
 
 ```bash
 python scripts/download_datasets.py
-```
-
-### Comparaison Baseline vs RUPTA
-
-**`compare_baseline_rupta.py`**
-
-- Compare les résultats baseline et RUPTA
-- Génère un rapport markdown détaillé
-- Calcule les améliorations privacy/utility
-
-```bash
-python scripts/compare_baseline_rupta.py \
-  --baseline results/old/baseline.json \
-  --rupta results/old/rupta.json \
-  --output comparison_report.md
 ```
 
 ### Exemples RUPTA
@@ -55,7 +62,7 @@ python scripts/examples_rupta.py
 python scripts/test_python311_compat.py
 ```
 
-### Scripts Bash
+### Script Bash
 
 **`quickstart.sh`** - Démarrage interactif
 
@@ -66,16 +73,6 @@ python scripts/test_python311_compat.py
 - Vérifie l'environnement
 - Télécharge les datasets si nécessaire
 - Lance un test rapide
-
-**`run_eval.sh`** - Évaluation complète
-
-```bash
-./scripts/run_eval.sh
-```
-
-- Évaluation baseline (10 exemples)
-- Évaluation RUPTA (10 exemples)
-- Génération du rapport comparatif
 
 ## ⚙️ Configuration Requise
 
@@ -112,8 +109,9 @@ pip install -r requirements.txt
    ```
 
 4. **Évaluation complète**
+
    ```bash
-   ./scripts/run_eval.sh
+   python scripts/run_benchmarks.py pipeline --dataset all --samples 10 --policy L1 --output results/eval_all.json
    ```
 
 ## 🔗 Scripts Principaux (Racine)

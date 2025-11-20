@@ -68,7 +68,7 @@ echo "2️⃣  Évaluation RUPTA (10 exemples, ~5 minutes)"
 echo "    python eval_rupta_dbbio.py --split test --n_samples 10 --output results_rupta.json"
 echo ""
 echo "3️⃣  Comparaison Baseline vs RUPTA"
-echo "    python compare_baseline_rupta.py --baseline results_baseline.json --rupta results_rupta.json --detailed"
+echo "    python scripts/run_benchmarks.py compare --baseline results_baseline.json --rupta results_rupta.json --output rapport_final.md"
 echo ""
 echo "📚 Documentation :"
 echo "   - Guide complet : README_RUPTA.md"
@@ -101,7 +101,7 @@ case $choice in
         echo ""
         python eval_rupta_dbbio.py --split test --n_samples 10 --output results_rupta.json
         echo ""
-        python compare_baseline_rupta.py --baseline results_baseline.json --rupta results_rupta.json --detailed
+    python scripts/run_benchmarks.py compare --baseline results_baseline.json --rupta results_rupta.json --output rapport_final.md
         ;;
     4)
         echo "Au revoir ! 👋"

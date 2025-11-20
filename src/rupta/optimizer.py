@@ -9,12 +9,12 @@ from typing import Dict, Any, Optional
 import logging
 
 try:
-    from ..openrouter_client import OpenRouterClient
+    from ..openrouter_client import OpenRouterClient, load_llm_settings
     from .privacy_evaluator import evaluate_reidentification_risk
     from .utility_evaluator import evaluate_classification_utility
     from .prompts_multilang import REINFORCEMENT_FR, GENERAL_SYSTEM_FR
 except ImportError:
-    from src.openrouter_client import OpenRouterClient
+    from src.openrouter_client import OpenRouterClient, load_llm_settings
     from src.rupta.privacy_evaluator import evaluate_reidentification_risk
     from src.rupta.utility_evaluator import evaluate_classification_utility  
     from src.rupta.prompts_multilang import REINFORCEMENT_FR, GENERAL_SYSTEM_FR
@@ -32,7 +32,7 @@ def optimize_anonymization(
     p_threshold: int = 10,
     privacy_target_rank: int = 11,
     utility_min_confidence: int = 80,
-    model: str = "openai/gpt-4-turbo"
+    model: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Boucle d'optimisation itérative pour améliorer l'anonymisation.
@@ -69,6 +69,17 @@ def optimize_anonymization(
     """
     
     logger.info("Démarrage de l'optimisation RUPTA")
+
+    resolved_model = model
+    if not resolved_model:
+        try:
+            settings = load_llm_settings()
+            models = settings.get("models", {}) if isinstance(settings.get("models"), dict) else {}
+            resolved_model = models.get("paraphrase") or models.get("detect") or settings.get("fallback_model")
+        except Exception:
+            resolved_model = None
+        if not resolved_model:
+            resolved_model = "openai/gpt-4.1-mini"
     
     current_text = initial_anonymized_text
     history = []
@@ -82,7 +93,7 @@ def optimize_anonymization(
             anonymized_text=current_text,
             ground_truth_people=ground_truth_people,
             p_threshold=p_threshold,
-            model=model
+            model=resolved_model
         )
         
         # Évaluation Utility
@@ -91,7 +102,7 @@ def optimize_anonymization(
             anonymized_text=current_text,
             ground_truth_label=ground_truth_label,
             original_text=original_text,
-            model=model,
+            model=resolved_model,
             confidence_threshold=utility_min_confidence
         )
         
@@ -151,7 +162,7 @@ def optimize_anonymization(
             response_data = client.call_json(
                 system_prompt=GENERAL_SYSTEM_FR,
                 user_prompt=prompt_with_suggestion,
-                model=model,
+                model=resolved_model,
                 temperature=0.0
             )
             

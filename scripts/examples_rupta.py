@@ -20,13 +20,11 @@ from src.rupta.utility_evaluator import evaluate_classification_utility
 from src.rupta.optimizer import optimize_anonymization
 
 
-def example_privacy_evaluation():
+def example_privacy_evaluation(client: OpenRouterClient) -> None:
     """Exemple d'évaluation de privacy"""
     print("=" * 60)
     print("EXEMPLE 1 : Évaluation de Privacy")
     print("=" * 60)
-    
-    client = OpenRouterClient()
     
     # Texte original (exemple fictif)
     original_text = """
@@ -47,8 +45,7 @@ def example_privacy_evaluation():
         client=client,
         anonymized_text=anonymized_text,
         ground_truth_people="Marie Curie",
-        p_threshold=10,
-        model="qwen/qwen3-30b-a3b-instruct-2507"  # Modèle moins coûteux pour l'exemple
+        p_threshold=10
     )
     
     print(f"\nRésultats :")
@@ -59,13 +56,11 @@ def example_privacy_evaluation():
     print(f"  Score de risque : {result['confidence']:.2%}")
 
 
-def example_utility_evaluation():
+def example_utility_evaluation(client: OpenRouterClient) -> None:
     """Exemple d'évaluation d'utility"""
     print("\n" + "=" * 60)
     print("EXEMPLE 2 : Évaluation d'Utility")
     print("=" * 60)
-    
-    client = OpenRouterClient()
     
     anonymized_text = """
     Une personne travaille dans le développement de logiciels. Elle écrit du code
@@ -76,8 +71,7 @@ def example_utility_evaluation():
     result = evaluate_classification_utility(
         client=client,
         anonymized_text=anonymized_text,
-        ground_truth_label="Software Engineer",
-        model="qwen/qwen3-30b-a3b-instruct-2507"
+        ground_truth_label="Software Engineer"
     )
     
     print(f"\nRésultats :")
@@ -88,13 +82,11 @@ def example_utility_evaluation():
         print(f"  Entités confuses : {result['confused_entities']}")
 
 
-def example_optimization():
+def example_optimization(client: OpenRouterClient) -> None:
     """Exemple de boucle d'optimisation complète"""
     print("\n" + "=" * 60)
     print("EXEMPLE 3 : Boucle d'Optimisation RUPTA")
     print("=" * 60)
-    
-    client = OpenRouterClient()
     
     original_text = """
     Albert Einstein est né à Ulm en Allemagne en 1879. Il a développé la théorie
@@ -115,8 +107,7 @@ def example_optimization():
         ground_truth_people="Albert Einstein",
         ground_truth_label="Physicist",
         max_iterations=3,  # Limite pour l'exemple
-        p_threshold=10,
-        model="qwen/qwen3-30b-a3b-instruct-2507"
+        p_threshold=10
     )
     
     print(f"\nRésultats :")
@@ -132,27 +123,28 @@ def example_optimization():
         print(f"  - Itération {h['iteration']}: Privacy={h['privacy_rank']}, Utility={h['utility_confidence']}%")
 
 
-def main():
+def main() -> None:
     """Point d'entrée principal"""
     
-    # Vérifier la clé API
-    if not os.getenv("OPENROUTER_API_KEY"):
-        print("⚠️  OPENROUTER_API_KEY non définie !")
-        print("   Définissez-la avec : export OPENROUTER_API_KEY=sk-...")
+    client = OpenRouterClient.from_config()
+    if client.requires_api_key and not client.api_key:
+        missing = client.api_key_env or "OPENROUTER_API_KEY"
+        print(f"⚠️  Variable d'environnement {missing} non définie !")
+        print("   Définissez-la ou configurez un fournisseur local dans config.json.")
         return
     
     print("\n🚀 Exemples d'utilisation du module RUPTA\n")
     
     try:
         # Exemple 1 : Privacy
-        example_privacy_evaluation()
-        
+        example_privacy_evaluation(client)
+
         # Exemple 2 : Utility
-        example_utility_evaluation()
-        
+        example_utility_evaluation(client)
+
         # Exemple 3 : Optimization (commenté par défaut car coûteux)
-        # example_optimization()
-        
+        # example_optimization(client)
+
         print("\n✅ Exemples terminés avec succès !")
         print("\n💡 Pour tester l'optimisation complète, décommentez example_optimization() dans main()")
         

@@ -5,18 +5,18 @@ Utility Evaluator pour RUPTA
 Adapté de : generators/generator_utils.py::generic_utility_reflection
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import logging
 
 try:
-    from ..openrouter_client import OpenRouterClient
+    from ..openrouter_client import OpenRouterClient, load_llm_settings
     from .prompts_multilang import (
         UTILITY_REFLECTION_FR_1,
         UTILITY_CONFUSED_ENTITIES_FR,
         GENERAL_SYSTEM_FR
     )
 except ImportError:
-    from src.openrouter_client import OpenRouterClient
+    from src.openrouter_client import OpenRouterClient, load_llm_settings
     from src.rupta.prompts_multilang import (
         UTILITY_REFLECTION_FR_1,
         UTILITY_CONFUSED_ENTITIES_FR,
@@ -31,7 +31,7 @@ def evaluate_classification_utility(
     anonymized_text: str,
     ground_truth_label: str,
     original_text: str = "",
-    model: str = "openai/gpt-4-turbo",
+    model: Optional[str] = None,
     confidence_threshold: int = 80
 ) -> Dict[str, Any]:
     """
@@ -61,6 +61,16 @@ def evaluate_classification_utility(
     """
     
     logger.info(f"Évaluation de l'utilité pour la classification : {ground_truth_label}")
+
+    if not model:
+        try:
+            settings = load_llm_settings()
+            models = settings.get("models", {}) if isinstance(settings.get("models"), dict) else {}
+            model = models.get("paraphrase") or models.get("detect") or settings.get("fallback_model")
+        except Exception:
+            model = None
+        if not model:
+            model = "openai/gpt-4.1-mini"
     
     prompt = UTILITY_REFLECTION_FR_1.format(
         anonymized_text=anonymized_text,
@@ -204,7 +214,7 @@ def evaluate_utility_preservation(
     anonymized_text: str,
     ground_truth_label: str,
     language: str = "auto",
-    model: str = "qwen/qwen3-30b-a3b-instruct-2507"
+    model: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Alias vers evaluate_classification_utility pour compatibilité.

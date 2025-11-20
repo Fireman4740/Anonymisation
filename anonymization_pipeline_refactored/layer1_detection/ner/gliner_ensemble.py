@@ -1,0 +1,436 @@
+# -*- coding: utf-8 -*-
+"""
+NER ensemble utilities (GLiNER only - HF legacy removed)
+
+Provides GLiNER pipelines with GPU optimization support.
+All dependencies are optional; if a library is missing the corresponding
+function will return an empty list instead of failing.
+
+GPU optimisation:
+ - Auto-detect CUDA / MPS (Apple) if PyTorch is available.
+ - Move GLiNER models to the best device when possible.
+ - Optional float16 on CUDA (configurable) with safe fallback.
+"""
+from __future__ import annotations
+
+from typing import List, Tuple, Dict, Any, Optional, Union
+import os
+import warnings
+
+# ---------------- Logging ----------------
+_DEF_DEBUG = os.getenv("NER_DEBUG", "0").lower() in {"1", "true", "yes"}
+
+
+def _log(msg: str) -> None:
+    if _DEF_DEBUG:
+        print(f"[ner_ensemble] {msg}")
+
+
+# ---------------- Optional imports (guarded) ----------------
+try:
+    from gliner import GLiNER
+    _GLINER_AVAILABLE = True
+except Exception:
+    _GLINER_AVAILABLE = False
+    GLiNER = None
+
+warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
+
+# Optional torch import for device / dtype selection
+try:
+    import torch
+except Exception:
+    torch = None
+
+# ---------------- Device & dtype helpers ----------------
+_GLN_DEVICE: Optional[Union[str, int]] = None
+_HALF_PRECISION = False
+
+
+def _detect_devices() -> None:
+    """
+    Detect the best available device (cuda > mps > cpu) and set globals.
+
+    Environment variables:
+      NER_FORCE_DEVICE in {"cuda","mps","cpu"} to force a device
+      NER_HALF_PRECISION in {"1","true","yes"} to enable float16 on CUDA
+    """
+    global _GLN_DEVICE, _HALF_PRECISION
+    forced = os.getenv("NER_FORCE_DEVICE", "").strip().lower()
+    use_half = os.getenv("NER_HALF_PRECISION", "0").lower() in {"1", "true", "yes"}
+
+    # Defaults
+    _GLN_DEVICE = "cpu"
+
+    if torch is not None:
+        # Forced selection
+        if forced == "cuda" and torch.cuda.is_available():
+            _GLN_DEVICE = "cuda"
+        elif (
+            forced == "mps"
+            and getattr(torch.backends, "mps", None)
+            and torch.backends.mps.is_available()
+        ):
+            _GLN_DEVICE = "mps"
+        elif forced == "cpu":
+            _GLN_DEVICE = "cpu"
+        # Auto detection when not forced
+        elif forced == "":
+            if torch.cuda.is_available():
+                _GLN_DEVICE = "cuda"
+            elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+                _GLN_DEVICE = "mps"
+
+    _HALF_PRECISION = bool(use_half and _GLN_DEVICE == "cuda")
+
+
+_detect_devices()
+
+# ---------------- Sentence splitting helpers ----------------
+_ABBR = {
+    # FR
+    "m.", "mme.", "mlle.", "dr.", "pr.", "art.", "n°", "p. ex.", "cf.", "etc.",
+    # EN
+    "mr.", "mrs.", "ms.", "dr.", "prof.", "art.", "no.", "nos.", "vol.", "inc.",
+    "jr.", "sr.", "co.", "vs.", "st.", "e.g.", "i.e.", "cf.", "u.s.", "u.k.",
+    # months abbr
+    "jan.", "feb.", "mar.", "apr.", "aug.", "sept.", "oct.", "nov.", "dec.",
+    "janv.", "févr.", "avr.", "juil.", "sept.", "oct.", "nov.", "déc.",
+}
+
+
+def split_sentences(text: str) -> List[Tuple[int, int]]:
+    """Split text into sentences with offset spans."""
+    spans: List[Tuple[int, int]] = []
+    n = len(text)
+    start = 0
+    i = 0
+    while i < n:
+        ch = text[i]
+        # Hard break on double newline
+        if ch == "\n":
+            j = i
+            while j < n and text[j] == "\n":
+                j += 1
+            if j - i >= 2:
+                if start < i:
+                    spans.append((start, i))
+                start = j
+                i = j
+                continue
+        # Soft break on sentence punctuation
+        if ch in ".!?":
+            j = i - 1
+            while j >= start and text[j].isalpha():
+                j -= 1
+            token = text[j + 1 : i + 1].lower()
+            if token in _ABBR:
+                i += 1
+                continue
+            m = i + 1
+            while m < n and text[m].isspace():
+                m += 1
+            if m >= n or (m < n and (text[m].isupper() or text[m] in "\"'([""'')")):
+                spans.append((start, m))
+                start = m
+                i = m
+                continue
+        i += 1
+    if start < n:
+        spans.append((start, n))
+    return [(s, e) for s, e in spans if e - s > 0]
+
+
+# ---------------- GLiNER presets, labels, options ----------------
+_GLINER_PRESETS: Dict[str, List[str]] = {
+    "fast": ["urchade/gliner_small-v2.1"],
+    "balanced": ["urchade/gliner_medium-v2.1"],
+    "accuracy": ["urchade/gliner_large-v2.1", "urchade/gliner_multi-v2.1"],
+    "pii": ["urchade/gliner_multi_pii-v1"],
+    "multitask": ["knowledgator/gliner-multitask-v1.0"],
+    # High-perf combo
+    "best": [
+        "EmergentMethods/gliner_medium_news-v2.1",
+        "numind/NuNER_Zero-span",
+        "urchade/gliner_large-v2.1",
+        "urchade/gliner_multi-v2.1",
+    ],
+}
+
+# Model weights (higher weight = stronger vote)
+_GLINER_MODEL_WEIGHTS: Dict[str, float] = {
+    "EmergentMethods/gliner_medium_news-v2.1": 1.25,
+    "numind/NuNER_Zero-span": 1.20,
+    "urchade/gliner_large-v2.1": 1.10,
+    "urchade/gliner_multi-v2.1": 1.05,
+    "urchade/gliner_medium-v2.1": 1.00,
+    "urchade/gliner_small-v2.1": 0.90,
+    "urchade/gliner_multi_pii-v1": 1.15,
+    "knowledgator/gliner-multitask-v1.0": 1.05,
+}
+
+_GLINER_WEIGHTING = os.getenv("GLINER_WEIGHTING", "1").lower() in {"1", "true", "yes", "weighted"}
+_GLINER_PRESET = os.getenv("GLINER_PRESET", "balanced").lower()
+if _GLINER_PRESET not in _GLINER_PRESETS:
+    _GLINER_PRESET = "balanced"
+_GLINER_ONNX = os.getenv("GLINER_ONNX", "0").lower() in {"1", "true", "yes"}
+_GLINER_ATTENTION = os.getenv("GLINER_ATTENTION", "").lower()  # "eager" or ""
+_GLINER_FORCE_HALF = os.getenv("GLINER_HALF", "0").lower() in {"1", "true", "yes"}
+
+# Helpful label sets
+_GLINER_PII_LABELS = [
+    "Person", "Organization", "Location",
+    "Email address", "Phone number", "Address",
+    "Bank account number", "Credit card number", "IBAN",
+    "Passport number", "Driver's license number",
+    "National ID number", "Username", "IP address",
+    "Date", "Time",
+]
+
+# Extended label list (generic NER + frequent PII)
+GLINER_ALL_LABELS: List[str] = [
+    # Generic NER
+    "Person", "Organization", "Location", "GPE", "Facility",
+    "Product", "Event", "Work of Art", "Law", "Language",
+    "Date", "Time", "Percent", "Money", "Quantity", "Ordinal", "Cardinal",
+    # PII / Sensitive
+    "Email address", "URL", "IP address", "Username", "Social media handle",
+    "Phone number", "Mobile phone number", "Landline phone number",
+    "Address", "Postal code",
+    "Bank account number", "IBAN", "Credit card number",
+    "Credit card brand", "CVV", "CVC", "Credit card expiration date",
+    "Passport number", "Passport expiration date",
+    "Driver's license number", "Identity card number",
+    "National ID number", "Tax identification number",
+    "Social security number", "National health insurance number",
+    "Health insurance id number", "Health insurance number",
+    "Date of birth", "Medical condition", "Medication",
+    "Registration number", "Student id number",
+    "Insurance number", "Insurance company",
+    "License plate number", "Vehicle registration number",
+    "Serial number", "Transaction number", "Digital signature",
+    "Flight number", "Train ticket number", "Visa number",
+    # Country-specific
+    "CPF", "CNPJ",
+]
+
+
+def _normalize_gliner_label(lbl: str) -> Optional[str]:
+    """Normalize GLiNER label to uppercase."""
+    lab = (lbl or "").strip()
+    if not lab:
+        return None
+    return lab.upper()
+
+
+# ---------------- GLiNER ----------------
+_GLINER_MODELS = None
+
+
+def _move_gliner_model_to_device(mdl):
+    """Move GLiNER model to best available device."""
+    if torch is None:
+        return mdl
+    try:
+        device = _GLN_DEVICE or "cpu"
+        if device in {"cuda", "mps"}:
+            target = getattr(mdl, "model", mdl)
+            if hasattr(target, "to"):
+                try:
+                    target.to(device)
+                except Exception as e:
+                    _log(f"GLiNER .to() failed, staying on CPU ({e})")
+            if _HALF_PRECISION and device == "cuda":
+                try:
+                    target.half()
+                except Exception:
+                    _log("GLiNER half() failed")
+    except Exception as e:
+        _log(f"GLiNER move error: {e}")
+    return mdl
+
+
+def _load_gliner_models(model_names: List[str]):
+    """Load GLiNER models on best device."""
+    global _GLINER_MODELS
+    if not _GLINER_AVAILABLE:
+        return []
+
+    if _GLINER_MODELS is None:
+        _GLINER_MODELS = []
+
+    loaded_names = {name for name, _ in _GLINER_MODELS}
+    models = list(_GLINER_MODELS)
+
+    for name in model_names:
+        if name in loaded_names:
+            continue
+        kwargs: Dict[str, Any] = {}
+        if _GLINER_ATTENTION == "eager":
+            kwargs["_attn_implementation"] = "eager"
+        if _GLINER_ONNX:
+            kwargs["load_onnx_model"] = True
+        try:
+            mdl = GLiNER.from_pretrained(name, **kwargs)
+        except Exception:
+            try:
+                mdl = GLiNER.from_pretrained(name)
+            except Exception:
+                continue
+
+        mdl = _move_gliner_model_to_device(mdl)
+        if torch is not None and _GLN_DEVICE == "cuda" and (_HALF_PRECISION or _GLINER_FORCE_HALF):
+            try:
+                getattr(mdl, "model", mdl).half()
+            except Exception:
+                pass
+
+        models.append((name, mdl))
+
+    _GLINER_MODELS = models
+    return models
+
+
+def run_gliner(
+    text: str,
+    model_names: Optional[List[str]] = None,
+    labels: Optional[List[str]] = None,
+    threshold: float = 0.35,
+    device: Optional[str] = None,  # unused; kept for API compatibility
+    preset: Optional[str] = None,
+    auto_labels: bool = True,
+) -> List[Dict[str, Any]]:
+    """
+    Run one or more GLiNER models and vote across models.
+    
+    Args:
+        text: Input text
+        model_names: List of model names to use
+        labels: Entity labels to detect
+        threshold: Confidence threshold
+        device: (unused, kept for compatibility)
+        preset: Preset name from _GLINER_PRESETS
+        auto_labels: Use automatic labels if none provided
+        
+    Returns:
+        List of entities with start, end, entity_group, votes
+    """
+    if preset is None:
+        preset = _GLINER_PRESET
+    if model_names is None:
+        model_names = _GLINER_PRESETS.get(preset, _GLINER_PRESETS["balanced"])
+
+    if labels is None and auto_labels:
+        labels = _GLINER_PII_LABELS if preset == "pii" else ["Person", "Organization", "Location"]
+
+    if not _GLINER_AVAILABLE:
+        return []
+
+    models = _load_gliner_models(model_names)
+    if not models:
+        return []
+
+    spans = split_sentences(text)
+    votes: Dict[Tuple[int, int, str], float] = {}
+
+    for name, mdl in models:
+        weight = _GLINER_MODEL_WEIGHTS.get(name, 1.0) if _GLINER_WEIGHTING else 1.0
+
+        for s, e in spans:
+            chunk = text[s:e]
+            try:
+                ents = mdl.predict_entities(chunk, labels, threshold=threshold)
+            except Exception as e:
+                msg = str(e).lower()
+                if any(k in msg for k in ["cuda", "oom", "out of memory"]) and torch is not None and _GLN_DEVICE in {"cuda", "mps"}:
+                    _log("GLiNER OOM/device error -> trying CPU for this model")
+                    try:
+                        # Reload on CPU
+                        new_mdl = GLiNER.from_pretrained(name)
+                        models.append((f"{name}_cpu", new_mdl))
+                        ents = new_mdl.predict_entities(chunk, labels, threshold=threshold)
+                    except Exception:
+                        ents = []
+                else:
+                    ents = []
+
+            for ent in ents or []:
+                start = ent.get("start")
+                end = ent.get("end")
+                label = ent.get("label") or ent.get("type")
+                if (start is None or end is None) and ent.get("text"):
+                    idx = chunk.find(ent["text"])
+                    if idx != -1:
+                        start = idx
+                        end = idx + len(ent["text"])
+                if not isinstance(start, int) or not isinstance(end, int) or end <= start:
+                    continue
+                g_label = _normalize_gliner_label(str(label))
+                if not g_label:
+                    continue
+                gs, ge = s + int(start), s + int(end)
+                key = (gs, ge, g_label)
+                votes[key] = votes.get(key, 0.0) + weight
+
+    results = [{"start": s, "end": e, "entity_group": lab, "votes": v} for (s, e, lab), v in votes.items()]
+    results.sort(key=lambda x: (x["start"], x["end"]))
+    return results
+
+
+# ---------------- Merge helper ----------------
+def merge_ner_lists(*ner_lists) -> List[Dict[str, Any]]:
+    """Merge multiple NER lists, removing duplicates."""
+    seen = set()
+    out = []
+    for lst in ner_lists:
+        for ent in lst or []:
+            s, e = int(ent.get("start", -1)), int(ent.get("end", -1))
+            lab = str(ent.get("entity_group", "")).upper()
+            if not (0 <= s < e) or not lab:
+                continue
+            key = (s, e, lab)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "start": s,
+                "end": e,
+                "entity_group": lab,
+                **{k: v for k, v in ent.items() if k not in {"start", "end", "entity_group"}},
+            })
+    out.sort(key=lambda x: (x["start"], x["end"]))
+    return out
+
+
+# ---------------- Warm-up helper ----------------
+def warm_up_models(
+    gliner_preset: Optional[str] = None,
+    gliner_labels: Optional[List[str]] = None,
+    gliner_threshold: float = 0.35,
+) -> None:
+    """
+    Preload GLiNER models to reduce cold-start latency.
+
+    Args:
+        gliner_preset: one of _GLINER_PRESETS keys (e.g. "balanced", "pii")
+        gliner_labels: labels to use for a small GLiNER warm-up call
+        gliner_threshold: threshold for the warm-up call
+    """
+    try:
+        preset = gliner_preset or _GLINER_PRESET
+        model_names = _GLINER_PRESETS.get(preset, _GLINER_PRESETS["balanced"])
+        _load_gliner_models(model_names)
+        # Prime internal caches with a tiny run
+        if gliner_labels is None:
+            gliner_labels = ["Person", "Organization", "Location"]
+        _ = run_gliner("Warmup text.", model_names=model_names, labels=gliner_labels, threshold=gliner_threshold)
+    except Exception as e:
+        _log(f"Warm-up GLiNER failed: {e}")
+
+
+__all__ = [
+    "run_gliner",
+    "merge_ner_lists",
+    "warm_up_models",
+    "GLINER_ALL_LABELS",
+]

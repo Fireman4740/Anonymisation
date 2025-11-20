@@ -4,12 +4,16 @@ __pycache__/
 *$py.class
 *.pyc
 *.so
+*.egg-info/
+dist/
+build/
 
 # Virtual environments
 venv/
 env/
 ENV/
 anno/
+.conda/
 
 # IDE
 .vscode/
@@ -25,24 +29,48 @@ anno/
 # Environment variables
 /.env
 .env.local
+.env.*.local
 
 # Jupyter
 .ipynb_checkpoints/
 
 # Datasets (volumineux)
-/Dataset/text-anonymization-benchmark/*
-Dataset/evaluation/DB-Bio/*.tar.gz
-Dataset/evaluation/PersonalReddit/*.tar.gz
+/Dataset/
+datasets/*.tar.gz
+datasets/*.zip
+datasets/**/synthetic_dataset.jsonl
 
-# Résultats temporaires
+# Résultats (tous sauf archive/)
 results/*.json
-!results/old/.gitkeep
+results/*.md
+results/*.html
+!results/archive/.gitkeep
+
+# Debug et logs
 debug_dump/
 *.log
+logs/
 
 # Scripts temporaires
 cleanup.sh
+.restructure.sh
 
 # Fichiers de test
 test_*.json
 preds_*.json
+
+# Configuration locale (sauf templates)
+config/local.json
+config/*.local.json
+!config/default.json
+
+# Cache modèles
+.cache/
+models/
+*.pt
+*.pth
+*.safetensors
+
+# Documentation générée
+docs/_build/
+site/

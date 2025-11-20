@@ -9,7 +9,7 @@ from typing import Dict, Any, List, Optional
 import logging
 
 try:
-    from ..openrouter_client import OpenRouterClient
+    from ..openrouter_client import OpenRouterClient, load_llm_settings
     from .prompts_multilang import (
         PRIVACY_REFLECTION_FR_1,
         PRIVACY_REFLECTION_FR_2,
@@ -17,7 +17,7 @@ try:
         GENERAL_SYSTEM_FR
     )
 except ImportError:
-    from src.openrouter_client import OpenRouterClient
+    from src.openrouter_client import OpenRouterClient, load_llm_settings
     from src.rupta.prompts_multilang import (
         PRIVACY_REFLECTION_FR_1,
         PRIVACY_REFLECTION_FR_2,
@@ -33,7 +33,7 @@ def evaluate_reidentification_risk(
     anonymized_text: str,
     ground_truth_people: str,
     p_threshold: int = 10,
-    model: str = "openai/gpt-4-turbo",
+    model: Optional[str] = None,
     language: str = "auto"
 ) -> Dict[str, Any]:
     """
@@ -64,6 +64,16 @@ def evaluate_reidentification_risk(
     """
     
     logger.info(f"Évaluation du risque de ré-identification pour : {ground_truth_people[:50]}...")
+
+    if not model:
+        try:
+            settings = load_llm_settings()
+            models = settings.get("models", {}) if isinstance(settings.get("models"), dict) else {}
+            model = models.get("audit") or models.get("detect") or settings.get("fallback_model")
+        except Exception:
+            model = None
+        if not model:
+            model = "openai/gpt-4.1-mini"
     
     # Étape 1 : Générer les candidats
     prompt_1 = PRIVACY_REFLECTION_FR_1.format(
@@ -162,7 +172,7 @@ def evaluate_confidence_score(
     client: OpenRouterClient,
     anonymized_text: str,
     candidate_person: str,
-    model: str = "openai/gpt-4-turbo"
+    model: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Évalue le score de confiance pour associer le texte anonymisé à une personne candidate.
@@ -180,6 +190,16 @@ def evaluate_confidence_score(
         }
     """
     
+    if not model:
+        try:
+            settings = load_llm_settings()
+            models = settings.get("models", {}) if isinstance(settings.get("models"), dict) else {}
+            model = models.get("audit") or models.get("detect") or settings.get("fallback_model")
+        except Exception:
+            model = None
+        if not model:
+            model = "openai/gpt-4.1-mini"
+
     prompt = PRIVACY_CONFIDENCE_FR.format(
         anonymized_text=anonymized_text,
         people=candidate_person,
