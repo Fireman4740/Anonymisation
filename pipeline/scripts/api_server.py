@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -17,12 +18,20 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.core.orchestrator import anonymize_text
+from src.core.policy import preset
+from src.services.detection.detection import create_detection_service
+from src.services.generalization.generalizer import GeneralizationService
 
 DEFAULT_LEVEL = os.getenv("PIPELINE_DEFAULT_LEVEL", "L0")
 DEFAULT_SECRET = os.getenv("PIPELINE_SECRET_SALT", "change_me")
 DEFAULT_SCOPE_PREFIX = os.getenv("PIPELINE_SCOPE_PREFIX", "scope")
 DEFAULT_OVERRIDES = os.getenv("PIPELINE_DEFAULT_OVERRIDES", "{}")
 
+# Global services cache
+_SERVICES = {
+    "detection": None,
+    "generalization": None
+}
 
 def _load_default_overrides(raw: str) -> Dict[str, Any]:
     try:
@@ -33,9 +42,7 @@ def _load_default_overrides(raw: str) -> Dict[str, Any]:
         pass
     return {}
 
-
 PIPELINE_OVERRIDES = _load_default_overrides(DEFAULT_OVERRIDES)
-
 
 class AnonymizeRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Texte à anonymiser")
@@ -48,48 +55,63 @@ class AnonymizeRequest(BaseModel):
         description="Résultats NER externes compatibles",
     )
 
-
 class AnonymizeResponse(BaseModel):
     anonymized_text: str
     audit: Dict[str, Any]
     evaluation: Dict[str, Any]
     policy: Dict[str, Any]
 
-
 class HealthResponse(BaseModel):
     status: str
     default_level: str
-
 
 def _generate_scope_id() -> str:
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     suffix = uuid.uuid4().hex[:6]
     return f"{DEFAULT_SCOPE_PREFIX}-{timestamp}-{suffix}"
 
-
 def _merge_overrides(request_overrides: Dict[str, Any]) -> Dict[str, Any]:
     merged = PIPELINE_OVERRIDES.copy()
     merged.update(request_overrides or {})
     return merged
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Load services once
+    print("Loading pipeline services...")
+    try:
+        policy = preset(DEFAULT_LEVEL)
+        _SERVICES["detection"] = create_detection_service(policy, PIPELINE_OVERRIDES)
+        _SERVICES["generalization"] = GeneralizationService(policy)
+        print("Pipeline services loaded successfully.")
+    except Exception as e:
+        print(f"Error loading services: {e}")
+    
+    yield
+    
+    # Shutdown: Clean up if needed
+    _SERVICES.clear()
 
 app = FastAPI(
     title="Anonymisation Pipeline API",
     description="Expose le pipeline via une API REST minimale",
     version="1.0.0",
+    lifespan=lifespan,
 )
-
 
 @app.get("/health", response_model=HealthResponse, tags=["meta"])
 def healthcheck() -> HealthResponse:
     return HealthResponse(status="ok", default_level=DEFAULT_LEVEL)
-
 
 @app.post("/anonymize", response_model=AnonymizeResponse, tags=["anonymisation"])
 def anonymize(payload: AnonymizeRequest) -> AnonymizeResponse:
     scope_id = payload.scope_id or _generate_scope_id()
     level = payload.level or DEFAULT_LEVEL
     secret = payload.secret_salt or DEFAULT_SECRET
+    
+    # Use cached services if level matches default, otherwise create new (but models are cached now!)
+    detection_service = _SERVICES["detection"] if level == DEFAULT_LEVEL else None
+    generalization_service = _SERVICES["generalization"] if level == DEFAULT_LEVEL else None
 
     try:
         result = anonymize_text(
@@ -99,15 +121,15 @@ def anonymize(payload: AnonymizeRequest) -> AnonymizeResponse:
             level=level,
             overrides=_merge_overrides(payload.overrides),
             ner_results=payload.ner_results,
+            detection_service=detection_service,
+            generalization_service=generalization_service,
         )
         return AnonymizeResponse(**result)
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     import uvicorn
-
     host = os.getenv("API_HOST", "0.0.0.0")
     port = int(os.getenv("API_PORT", "8000"))
     uvicorn.run("scripts.api_server:app", host=host, port=port, reload=os.getenv("API_RELOAD", "0") == "1")
