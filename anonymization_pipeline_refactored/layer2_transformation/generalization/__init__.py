@@ -1,2 +1,0 @@
-
-"""Généralisation policy-driven."""

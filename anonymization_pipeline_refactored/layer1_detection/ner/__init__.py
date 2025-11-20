@@ -1,2 +1,0 @@
-
-"""Détection NER avec GLiNER."""

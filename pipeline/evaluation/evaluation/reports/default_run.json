@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "dataset_name": "Embedded demo dataset",
+    "dataset_source": "embedded",
+    "scope_prefix": "test",
+    "cases_total": 12,
+    "cases_executed": 2,
+    "cases_passed": 0,
+    "cases_failed": 2,
+    "success_rate": 0.0,
+    "duration_seconds": 63.173,
+    "generated_at": "2025-11-20T18:26:48Z",
+    "entities_detected_total": 0,
+    "replacements_total": 0,
+    "generalizations_total": 0,
+    "llm_error_events": 0
+  },
+  "results": [
+    {
+      "test_id": "case_1_regex_pii",
+      "success": false,
+      "error": "Échec de l'appel API http://localhost:8000/anonymize: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=30.0)"
+    },
+    {
+      "test_id": "case_5_tech_patterns",
+      "success": false,
+      "error": "Échec de l'appel API http://localhost:8000/anonymize: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=30.0)"
+    }
+  ]
+}

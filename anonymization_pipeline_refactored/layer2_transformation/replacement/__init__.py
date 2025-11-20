@@ -1,2 +1,0 @@
-
-"""Remplacement par placeholders."""
