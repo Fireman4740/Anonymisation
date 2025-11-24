@@ -1,7 +1,7 @@
 {
 	"llm": {
-		"provider": "openrouter",
-		"base_url": "https://openrouter.ai/api/v1",  
+		"provider": "Lmstudio",
+		"base_url": "http://10.10.153.169:1234/v1",  
 		"retry_count": 1,
 		"fallback_model": null,
 		"models": {
@@ -41,7 +41,7 @@
 		"max_iterations": 5,
 		"privacy_threshold": null,
 		"utility_threshold": 80,
-		"model": "qwen/qwen3-30b-a3b-instruct-2507",
+		"model": "openai/gpt-oss-20b",
 		"temperature": 0.1
 	},
 	"runtime": {

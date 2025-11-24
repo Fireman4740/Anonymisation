@@ -27,7 +27,7 @@ DEFAULT_SECRET = os.getenv("PIPELINE_SECRET_SALT", "change_me")
 DEFAULT_SCOPE_PREFIX = os.getenv("PIPELINE_SCOPE_PREFIX", "scope")
 DEFAULT_OVERRIDES = os.getenv("PIPELINE_DEFAULT_OVERRIDES", "{}")
 
-# Global services cache
+# --- GLOBAL SERVICES CACHE ---
 _SERVICES = {
     "detection": None,
     "generalization": None
@@ -75,17 +75,19 @@ def _merge_overrides(request_overrides: Dict[str, Any]) -> Dict[str, Any]:
     merged.update(request_overrides or {})
     return merged
 
+# --- LIFESPAN MANAGER ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Load services once
-    print("Loading pipeline services...")
+    print("[API] Loading pipeline services...")
     try:
         policy = preset(DEFAULT_LEVEL)
+        # On crée les services une seule fois ici
         _SERVICES["detection"] = create_detection_service(policy, PIPELINE_OVERRIDES)
         _SERVICES["generalization"] = GeneralizationService(policy)
-        print("Pipeline services loaded successfully.")
+        print("[API] Pipeline services loaded successfully.")
     except Exception as e:
-        print(f"Error loading services: {e}")
+        print(f"[API] Error loading services: {e}")
     
     yield
     
@@ -109,7 +111,8 @@ def anonymize(payload: AnonymizeRequest) -> AnonymizeResponse:
     level = payload.level or DEFAULT_LEVEL
     secret = payload.secret_salt or DEFAULT_SECRET
     
-    # Use cached services if level matches default, otherwise create new (but models are cached now!)
+    # Utiliser les services pré-chargés si on est sur le niveau par défaut
+    # Sinon, on recrée (mais grâce aux caches dans les classes, c'est rapide et sans fuite)
     detection_service = _SERVICES["detection"] if level == DEFAULT_LEVEL else None
     generalization_service = _SERVICES["generalization"] if level == DEFAULT_LEVEL else None
 

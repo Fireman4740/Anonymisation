@@ -1,0 +1,382 @@
+doc_id,precision,recall,f2,pred_count,truth_count,leaks_count,text_snippet
+0,0.3026315789473684,0.7419354838709677,0.5750000000000001,76,31,4,"PROCEDURE
+
+The case originated in an application (no. 36110/97) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+1,0.5181818181818182,0.6951219512195121,0.6506849315068493,110,82,25,"PROCEDURE
+
+The case originated in two applications (nos. 43185/98 and 43186/98) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“t"
+2,0.2112676056338028,0.8823529411764706,0.539568345323741,71,17,2,"PROCEDURE
+
+The case originated in an application (no. 42552/98) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+3,0.38271604938271603,0.5636363636363636,0.5149501661129567,81,55,24,"PROCEDURE
+
+The case originated in an application (no. 5136/11) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+4,0.48333333333333334,0.4172661870503597,0.42899408284023677,120,139,75,"PROCEDURE
+
+The case originated in an application (no. 57836/00) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+5,0.543859649122807,0.2743362831858407,0.30451866404715133,114,226,170,"PROCEDURE
+
+The case originated in an application (no. 36705/97) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+6,0.362962962962963,0.8596491228070176,0.674931129476584,135,57,6,"PROCEDURE
+
+The case originated in an application (no. 36619/03) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+7,0.37209302325581395,0.5517241379310345,0.5031446540880503,86,58,19,"PROCEDURE
+
+The case originated in an application (no. 19365/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+8,0.25,0.8103448275862069,0.5595238095238094,188,58,7,"PROCEDURE
+
+The case originated in an application (no. 38629/97) against the Kingdom of Sweden lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Conv"
+9,0.37916666666666665,0.7459016393442623,0.625,240,122,4,"PROCEDURE
+
+The case was referred to the Court on 12 July 1993 by the European Commission of Human Rights (“the Commission“) and on 3 August 1993 by the Government of the United Kingdom of Great Britai"
+10,0.25287356321839083,0.8461538461538461,0.5759162303664921,87,26,7,"PROCEDURE
+
+The case originated in an application (no. 31881/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+11,0.4975609756097561,0.5151515151515151,0.5115346038114342,205,198,58,"PROCEDURE
+
+The case originated in an application (no. 26390/95) against the Kingdom of Norway lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Conv"
+12,0.16,0.8571428571428571,0.45801526717557256,75,14,1,"PROCEDURE
+
+The case originated in an application (no. 19582/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+13,0.27232142857142855,0.6288659793814433,0.4983660130718954,224,97,38,"PROCEDURE
+
+The case originated in an application (no. 60286/09) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+14,0.40458015267175573,0.7910447761194029,0.6641604010025063,131,67,10,"PROCEDURE
+
+The case originated in an application (no. 57592/08) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+15,0.4,0.8571428571428571,0.6976744186046512,60,28,6,"PROCEDURE
+
+The case originated in an application (no. 21377/04) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+16,0.3064516129032258,0.8636363636363636,0.6333333333333333,62,22,3,"PROCEDURE
+
+The case originated in an application (no. 45288/99) against the Republic of Poland lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+17,0.2835820895522388,0.95,0.6462585034013606,67,20,1,"PROCEDURE
+
+The case originated in an application (no. 44521/04) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+18,0.4857142857142857,0.6666666666666666,0.6204379562043795,70,51,18,"PROCEDURE
+
+The cases originated in applications (nos. 28309/06 and 48102/06) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights "
+19,0.24675324675324675,0.9047619047619048,0.5900621118012422,77,21,3,"PROCEDURE
+
+The case originated in an application (no. 34030/07) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+20,0.43820224719101125,0.9069767441860465,0.7471264367816092,89,43,11,"PROCEDURE
+
+The case originated in an application (no. 38426/03) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+21,0.3333333333333333,0.96,0.6976744186046511,72,25,1,"PROCEDURE
+
+The case originated in an application (no. 59738/00) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+22,0.3333333333333333,0.96,0.6976744186046511,72,25,0,"PROCEDURE
+
+The case originated in an application (no. 63131/00) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+23,0.4583333333333333,0.5076923076923077,0.49698795180722893,72,65,33,"PROCEDURE
+
+The case originated in an application (no. 1303/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protect"
+24,0.32272727272727275,0.7717391304347826,0.6037414965986394,220,92,7,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission“) on 19 February 1993, within the three-month period laid down in Article 32 para. 1 and Artic"
+25,0.20270270270270271,0.9375,0.5434782608695652,74,16,1,"PROCEDURE
+
+The case originated in an application (no. 47328/99) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+26,0.2717391304347826,0.5102040816326531,0.43402777777777785,92,49,20,"PROCEDURE
+
+The case originated in an application (no. 31721/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+27,0.45930232558139533,0.5895522388059702,0.5579096045197741,172,134,36,"PROCEDURE
+
+The case originated in an application (no. 55853/00) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+28,0.44324324324324327,0.7522935779816514,0.6602254428341385,185,109,18,"PROCEDURE
+
+The case originated in an application (no. 47335/06) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+29,0.2804878048780488,0.5609756097560976,0.467479674796748,82,41,16,"PROCEDURE
+
+The case originated in an application (no. 8866/04) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protect"
+30,0.41304347826086957,0.7307692307692307,0.6333333333333333,92,52,13,"PROCEDURE
+
+The case originated in an application (no. 21865/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+31,0.23943661971830985,0.8947368421052632,0.5782312925170069,71,19,2,"PROCEDURE
+
+The case originated in an application (no. 10262/04) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+32,0.37280701754385964,0.6390977443609023,0.5592105263157896,228,133,36,"PROCEDURE
+
+The case was referred to the Court on 23 January 1995 by the European Commission of Human Rights (“the Commission“) and on 26 January 1995 by the Government of the United Kingdom of Great B"
+33,0.47244094488188976,0.7100591715976331,0.6451612903225806,254,169,41,"PROCEDURE
+
+The case was brought before the Court on 13 July 1989 by the European Commission of Human Rights (“the Commission“) and on 8 September 1989 by the Government of the Kingdom of Sweden (“the "
+34,0.4,0.7272727272727273,0.6250000000000001,80,44,4,"PROCEDURE
+
+The case originated in an application (no. 46284/99) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+35,0.29411764705882354,0.78125,0.5868544600938967,85,32,10,"PROCEDURE
+
+The case originated in an application (no. 22088/03) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+36,0.3684210526315789,0.875,0.6862745098039216,76,32,2,"PROCEDURE
+
+The case originated in an application (no. 43452/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+37,0.5918367346938775,0.7631578947368421,0.7213930348258707,98,76,6,"PROCEDURE
+
+The case originated in an application (no. 74318/01) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+38,0.19767441860465115,1.0,0.551948051948052,86,17,0,"PROCEDURE
+
+The case originated in an application (no. 38414/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+39,0.20567375886524822,0.90625,0.5390334572490707,141,32,3,"PROCEDURE
+
+The case originated in an application (no. 28426/06) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+40,0.4157303370786517,0.925,0.7429718875502007,89,40,3,"PROCEDURE
+
+The case originated in an application (no. 64212/01) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+41,0.4732824427480916,0.6458333333333334,0.6019417475728155,131,96,16,"PROCEDURE
+
+The case originated in an application (no. 1820/08) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protect"
+42,0.3275862068965517,0.7037037037037037,0.5722891566265059,116,54,0,"PROCEDURE
+
+The case originated in an application (no. 29545/95) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+43,0.21311475409836064,0.8666666666666667,0.537190082644628,61,15,2,"PROCEDURE
+
+The case originated in two applications (nos. 29537/95 and 35453/97) against the Republic of Poland lodged with the European Commission of Human Rights (“the Commission”) under former Artic"
+44,0.3177570093457944,0.7906976744186046,0.6093189964157706,107,43,6,"PROCEDURE
+
+The case originated in an application (no. 18404/91) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+45,0.42028985507246375,0.8285714285714286,0.69377990430622,69,35,11,"PROCEDURE
+
+The case originated in an application (no. 38190/05) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+46,0.3522727272727273,0.7560975609756098,0.6150793650793651,88,41,9,"PROCEDURE
+
+The case originated in an application (no. 30326/03) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+47,0.4939759036144578,0.7884615384615384,0.7044673539518899,83,52,14,"PROCEDURE
+
+The case originated in an application (no. 39958/02) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+48,0.5360824742268041,0.8524590163934426,0.7624633431085043,97,61,2,"PROCEDURE
+
+The case originated in an application (no. 59645/00) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+49,0.46153846153846156,0.8,0.6976744186046511,78,45,13,"PROCEDURE
+
+The case originated in an application (no. 8713/03) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+50,0.2571428571428571,0.9473684210526315,0.6164383561643836,70,19,1,"PROCEDURE
+
+The case originated in an application (no. 31246/02) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+51,0.36363636363636365,0.6666666666666666,0.5714285714285715,66,36,18,"PROCEDURE
+
+The case originated in an application (no. 32008/05) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+52,0.4357142857142857,0.6224489795918368,0.5733082706766917,140,98,38,"PROCEDURE
+
+The case originated in an application (no. 44362/04) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+53,0.35526315789473684,0.84375,0.6617647058823528,76,32,7,"PROCEDURE
+
+The case originated in an application (no. 4064/03) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+54,0.3333333333333333,0.88,0.6626506024096386,66,25,3,"PROCEDURE
+
+The case originated in an application (no. 37252/05) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+55,0.37037037037037035,0.8333333333333334,0.6666666666666666,54,24,4,"PROCEDURE
+
+The case originated in an application (no. 39712/05) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+56,0.49710982658959535,0.7350427350427351,0.6708268330733229,173,117,13,"PROCEDURE
+
+The case originated in an application (no. 39197/98) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+57,0.3851851851851852,0.7428571428571429,0.6265060240963856,135,70,17,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission”) on 24 November 1998, within the three-month period laid down by former Articles 32 § 1 and 4"
+58,0.5526315789473685,0.7241379310344828,0.6818181818181819,76,58,19,"PROCEDURE
+
+The case originated in an application (no. 35615/03) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+59,0.275,0.9565217391304348,0.6395348837209303,80,23,1,"PROCEDURE
+
+The case originated in an application (no. 40555/04) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+60,0.33098591549295775,0.7966101694915254,0.6216931216931216,142,59,17,"PROCEDURE
+
+The case originated in an application (no. 62324/00) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+61,0.40298507462686567,0.5625,0.5212355212355212,67,48,16,"PROCEDURE
+
+The case originated in an application (no. 57592/08) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+62,0.39759036144578314,0.673469387755102,0.5913978494623656,83,49,13,"PROCEDURE
+
+The case originated in two applications against the United Kingdom lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Convention for the P"
+63,0.41818181818181815,0.5575757575757576,0.5227272727272726,220,165,56,"PROCEDURE
+
+The case originated in an application (no. 11375/02) against the Republic of Poland lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+64,0.408,0.7611940298507462,0.648854961832061,250,134,17,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission“) on 11 September 1992, within the three-month period laid down by Article 32 para. 1 and Arti"
+65,0.3380281690140845,0.46153846153846156,0.4301075268817204,71,52,24,"PROCEDURE
+
+The case originated in an application (no. 42735/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+66,0.4558139534883721,0.7596899224806202,0.6703146374829001,215,129,9,"PROCEDURE
+
+The case originated in an application (no. 68693/01) against the Kingdom of Denmark lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+67,0.36363636363636365,0.5714285714285714,0.5128205128205127,88,56,19,"PROCEDURE
+
+The case originated in an application (no. 13378/05) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+68,0.4318181818181818,0.48717948717948717,0.475,44,39,23,"PROCEDURE
+
+The case originated in an application (no. 63679/00) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+69,0.4226190476190476,0.6893203883495146,0.6120689655172414,168,103,14,"PROCEDURE
+
+The case originated in an application (no. 28226/04) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+70,0.3404255319148936,0.7529411764705882,0.606060606060606,188,85,1,"PROCEDURE
+
+The case originated in an application (no. 28867/03) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+71,0.2222222222222222,0.7307692307692307,0.5013192612137203,171,52,3,"PROCEDURE
+
+The case originated in an application (no. 36936/05) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+72,0.4268292682926829,0.6862745098039216,0.6118881118881119,82,51,12,"PROCEDURE
+
+The case originated in two applications against the United Kingdom lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Convention for the P"
+73,0.4230769230769231,0.7333333333333333,0.6395348837209303,52,30,5,"PROCEDURE
+
+The case originated in an application (no. 28091/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+74,0.46987951807228917,0.7090909090909091,0.6435643564356436,83,55,16,"PROCEDURE
+
+The cases originated in two applications (nos. 42949/98 and 53134/99) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Conventi"
+75,0.41818181818181815,0.71875,0.628415300546448,55,32,6,"PROCEDURE
+
+The case originated in an application (no. 63476/00) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+76,0.3,1.0,0.6818181818181818,40,12,0,"PROCEDURE
+
+The case originated in an application (no. 14549/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+77,0.5344827586206896,0.8157894736842105,0.7380952380952381,58,38,9,"PROCEDURE
+
+The case originated in an application (no. 64735/01) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+78,0.44680851063829785,0.8076923076923077,0.6953642384105959,47,26,1,"PROCEDURE
+
+The case originated in an application (no. 19840/09) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+79,0.3974358974358974,0.38271604938271603,0.38557213930348255,78,81,48,"PROCEDURE
+
+The case originated in an application (no. 65507/01) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+80,0.24630541871921183,0.7352941176470589,0.5263157894736842,203,68,21,"PROCEDURE
+
+The case originated in an application (no. 23883/06) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+81,0.954954954954955,0.08811305070656691,0.10765793215518993,222,2406,2301,"PROCEDURE
+
+The case originated in an application (no. 32848/06) against the Kingdom of Denmark lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+82,0.275,0.7415730337078652,0.5536912751677853,240,89,16,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission“) on 11 December 1992, within the three-month period laid down by Article 32 para. 1 and Artic"
+83,0.5,0.9130434782608695,0.7835820895522387,42,23,3,"PROCEDURE
+
+The case originated in an application (no. 25379/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+84,0.4482758620689655,0.6227544910179641,0.5777777777777778,232,167,73,"PROCEDURE
+
+The case originated in two applications (nos. 8319/07 and 11449/07) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention"
+85,0.3333333333333333,0.8235294117647058,0.6363636363636364,42,17,2,"PROCEDURE
+
+The case originated in an application (no. 27961/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+86,0.375,0.75,0.625,48,24,5,"PROCEDURE
+
+The case originated in an application (no. 42711/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+87,0.3617021276595745,0.7391304347826086,0.6115107913669066,47,23,5,"PROCEDURE
+
+The case originated in an application (no. 28095/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+88,0.4444444444444444,0.7741935483870968,0.6741573033707864,54,31,1,"PROCEDURE
+
+The case originated in an application (no. 2895/07) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protect"
+89,0.36923076923076925,0.5581395348837209,0.5063291139240507,65,43,13,"PROCEDURE
+
+The case originated in an application (no. 75362/01) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+90,0.3,0.6923076923076923,0.548780487804878,90,39,6,"PROCEDURE
+
+The case originated in an application (no. 37212/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+91,0.5614035087719298,0.6666666666666666,0.642570281124498,57,48,17,"PROCEDURE
+
+The case originated in an application (no. 65723/01) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+92,0.34615384615384615,0.782608695652174,0.625,52,23,5,"PROCEDURE
+
+The case originated in an application (no. 47289/99) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+93,0.42105263157894735,0.6666666666666666,0.5970149253731344,57,36,1,"PROCEDURE
+
+The case originated in an application (no. 61391/00) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+94,0.43103448275862066,0.8620689655172413,0.7183908045977011,58,29,4,"PROCEDURE
+
+The case originated in an application (no. 12895/02) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+95,0.30726256983240224,0.5851063829787234,0.49549549549549554,179,94,39,"PROCEDURE
+
+The case originated in an application (no. 41534/98) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+96,0.47692307692307695,0.7153846153846154,0.6503496503496504,195,130,8,"PROCEDURE
+
+The case originated in an application (no. 44306/98) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+97,0.4258064516129032,0.7096774193548387,0.6261859582542695,155,93,17,"PROCEDURE
+
+The case originated in an application (no. 28212/95) against the United Kingdom of Great Britain and Northern Ireland lodged with the European Commission of Human Rights (“the Commission”) "
+98,0.38311688311688313,0.7108433734939759,0.6069958847736624,154,83,29,"PROCEDURE
+
+The case originated in an application (no. 38978/97) against the Kingdom of Sweden lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Conv"
+99,0.4090909090909091,0.5727272727272728,0.5303030303030304,154,110,25,"PROCEDURE
+
+The case originated in an application (no. 36887/97) against Ireland lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Convention for the"
+100,0.4807692307692308,0.6637168141592921,0.6167763157894737,156,113,38,"PROCEDURE
+
+The case originated in an application (no. 55863/11) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+101,0.38095238095238093,0.6746987951807228,0.5845511482254697,147,83,25,"PROCEDURE
+
+The case originated in an application (no. 13229/03) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+102,0.4111111111111111,0.7628865979381443,0.6514084507042253,180,97,20,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission“) on 12 July 1993, within the three-month period laid down by Article 32 para. 1 and Article 4"
+103,0.3556701030927835,0.8414634146341463,0.660919540229885,194,82,12,"PROCEDURE
+
+The case was referred to the Court on 13 April 1993 by the European Commission of Human Rights (“the Commission“) and on 24 May 1993 by the Government of the Kingdom of Sweden (“the Governm"
+104,0.3835616438356164,0.7567567567567568,0.6334841628959276,146,74,14,"PROCEDURE
+
+The case originated in three applications (nos. 45825/99, 45826/99 and 45827/99) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of t"
+105,0.3087248322147651,0.7540983606557377,0.5852417302798982,149,61,10,"PROCEDURE
+
+The case originated in an application (no. 74025/01) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+106,0.3872340425531915,0.6319444444444444,0.561035758323058,235,144,45,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission”) on 28 May 1996, within the three-month period laid down by Article 32 § 1 and Article 47 of "
+107,0.34355828220858897,0.8,0.6320541760722348,163,70,13,"PROCEDURE
+
+The case originated in an application (no. 24265/94) against the United Kingdom lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Convent"
+108,0.4863013698630137,0.5772357723577236,0.5564263322884012,146,123,36,"PROCEDURE
+
+The case originated in an application (no. 36689/02) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+109,0.33116883116883117,0.7727272727272727,0.6100478468899522,154,66,8,"PROCEDURE
+
+The case originated in an application (no. 28394/95) against the Kingdom of Sweden lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Conv"
+110,0.25,0.7894736842105263,0.5514705882352942,120,38,2,"PROCEDURE
+
+The case originated in an application (no. 30034/04) against the United Kingdom of Great Britain and Northern Ireland lodged with the Court under Article 34 of the Convention for the Protec"
+111,0.3595505617977528,0.7441860465116279,0.6130268199233716,89,43,16,"PROCEDURE
+
+The case originated in an application (no. 8610/02) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"
+112,0.40404040404040403,0.8,0.6688963210702342,99,50,4,"PROCEDURE
+
+The case originated in an application (no. 74321/01) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+113,0.4397905759162304,0.6131386861313869,0.5683355886332883,191,137,30,"PROCEDURE
+
+The case was referred to the Court by the European Commission of Human Rights (“the Commission”) on 16 September 1996, within the three-month period laid down by Article 32 § 1 and Article "
+114,0.3956043956043956,0.6666666666666666,0.5863192182410423,91,54,26,"PROCEDURE
+
+The case originated in an application (no. 10424/05) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+115,0.5229357798165137,0.7916666666666666,0.7178841309823678,109,72,14,"PROCEDURE
+
+The case originated in an application (no. 39428/98) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+116,0.358974358974359,0.8235294117647058,0.6542056074766356,195,85,14,"PROCEDURE
+
+The case was referred to the Court on 12 July 1993 by the European Commission of Human Rights (“the Commission“) and on 3 August 1993 by the Government of the United Kingdom of Great Britai"
+117,0.38235294117647056,0.639344262295082,0.5635838150289018,102,61,27,"PROCEDURE
+
+The case originated in an application (no. 53672/00) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+118,0.49523809523809526,0.7761194029850746,0.6970509383378015,105,67,16,"PROCEDURE
+
+The case originated in an application (no. 31880/96) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+119,0.2826086956521739,0.6666666666666666,0.5241935483870966,92,39,15,"PROCEDURE
+
+The case originated in an application (no. 40498/98) against the Republic of Turkey lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Con"
+120,0.2717391304347826,0.746268656716418,0.5530973451327434,184,67,9,"PROCEDURE
+
+The case originated in an application (no. 33274/96) against the United Kingdom lodged with the European Commission of Human Rights (“the Commission”) under former Article 25 of the Convent"
+121,0.4639175257731959,0.6818181818181818,0.6232686980609418,97,66,18,"PROCEDURE
+
+The case originated in an application (no. 29840/03) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+122,0.43373493975903615,0.8571428571428571,0.7171314741035858,83,42,8,"PROCEDURE
+
+The case originated in an application (no. 68446/01) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+123,0.32142857142857145,0.6792452830188679,0.5555555555555556,112,53,21,"PROCEDURE
+
+The case originated in an application (no. 22922/03) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+124,0.3333333333333333,0.6153846153846154,0.5263157894736842,96,52,14,"PROCEDURE
+
+The case originated in an application (no. 48083/99) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+125,0.3711340206185567,0.9,0.7003891050583659,97,40,4,"PROCEDURE
+
+The case originated in an application (no. 56497/00) against the Republic of Turkey lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundament"
+126,0.2027491408934708,0.7108433734939759,0.4735152487961477,291,83,36,"PROCEDURE
+
+The case originated in an application (no. 75252/01) against the Kingdom of Sweden lodged with the Court under Article 34 of the Convention for the Protection of Human Rights and Fundamenta"

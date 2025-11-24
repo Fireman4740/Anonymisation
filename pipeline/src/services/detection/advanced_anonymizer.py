@@ -1,11 +1,5 @@
 """Advanced anonymization detector combining regex, Schwifty, phonenumbers and Flair.
-
-This module implements the two-phase pipeline described in the implementation guide:
-- Phase 1: deterministic detection via regex/libraries (including secrets, IBAN/BIC, phones).
-- Phase 2: contextual NER via Flair (with graceful fallbacks when models are missing).
-
-It exposes a light API used by the DetectionService to enrich the entity list
-before pseudonymisation.
+FIX: Singleton pattern robuste pour éviter le rechargement des modèles et les fuites de mémoire.
 """
 from __future__ import annotations
 
@@ -14,38 +8,55 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import re
+import logging
 
-try:  # pragma: no cover - external dependency
-    import yaml  # type: ignore
-except Exception:  # pragma: no cover
-    yaml = None  # type: ignore
+# Configuration du logger
+logger = logging.getLogger("AdvancedAnonymizer")
 
-try:  # pragma: no cover - optional dependency
-    from schwifty import IBAN  # type: ignore
-except Exception:  # pragma: no cover
-    IBAN = None  # type: ignore
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
-try:  # pragma: no cover - optional dependency
-    import phonenumbers  # type: ignore
-except Exception:  # pragma: no cover
-    phonenumbers = None  # type: ignore
+try:
+    from schwifty import IBAN
+except ImportError:
+    IBAN = None
 
-try:  # pragma: no cover - optional dependency
-    from flair.models import SequenceTagger  # type: ignore
-    from flair.data import Sentence  # type: ignore
-except Exception:  # pragma: no cover
-    SequenceTagger = None  # type: ignore
-    Sentence = None  # type: ignore
+try:
+    import phonenumbers
+except ImportError:
+    phonenumbers = None
 
-try:  # pragma: no cover - optional dependency
-    import spacy  # type: ignore
-except Exception:  # pragma: no cover
-    spacy = None  # type: ignore
+try:
+    from flair.models import SequenceTagger
+    from flair.data import Sentence
+except ImportError:
+    SequenceTagger = None
+    Sentence = None
 
-try:  # pragma: no cover - local dependency
-    from ..regex import text_sanitizer  # type: ignore
-except Exception:  # pragma: no cover
-    text_sanitizer = None  # type: ignore
+try:
+    import spacy
+except ImportError:
+    spacy = None
+
+try:
+    from ..regex import text_sanitizer
+except ImportError:
+    text_sanitizer = None
+
+
+# --- GLOBAL CACHE & STATE ---
+# Stocke les modèles chargés pour éviter de les recharger
+_MODEL_CACHE = {
+    "flair": None,
+    "spacy": None
+}
+# Stocke l'état des tentatives pour ne pas réessayer si ça a échoué
+_LOAD_ATTEMPTED = {
+    "flair": False,
+    "spacy": False
+}
 
 
 @dataclass
@@ -83,25 +94,29 @@ class AdvancedAnonymizer:
         self._explicit_config = deepcopy(config_data) if config_data is not None else None
         self.config: Dict[str, Any] = {"patterns": {}}
         self.pattern_specs: List[tuple[str, Dict[str, Any]]] = []
+        
+        # Références locales vers les modèles globaux
         self.flair_tagger = None
         self.spacy_nlp = None
+        
         self._load_config()
         self._prepare_patterns()
-        self._load_models()
+        self._load_models_singleton()
 
-    # ------------------------------------------------------------------
-    # Initialisation helpers
-    # ------------------------------------------------------------------
     def _load_config(self) -> None:
         if self._explicit_config is not None:
             self.config = deepcopy(self._explicit_config)
             return
         if yaml and self.config_path.exists():
-            with open(self.config_path, "r", encoding="utf-8") as handle:
-                data = yaml.safe_load(handle) or {}
-            if isinstance(data, dict):
-                self.config = data
+            try:
+                with open(self.config_path, "r", encoding="utf-8") as handle:
+                    data = yaml.safe_load(handle) or {}
+                    if isinstance(data, dict):
+                        self.config = data
                 return
+            except Exception as e:
+                logger.warning(f"Failed to load config file: {e}")
+        
         if text_sanitizer and hasattr(text_sanitizer, "get_patterns_config"):
             try:
                 self.config = text_sanitizer.get_patterns_config()
@@ -119,23 +134,54 @@ class AdvancedAnonymizer:
             key=lambda item: item[1].get("priority", 999),
         )
 
-    def _load_models(self) -> None:
+    def _load_models_singleton(self) -> None:
+        """Charge les modèles une seule fois pour toute l'application."""
         if not self.enable_ner:
             return
-        if SequenceTagger is not None and Sentence is not None:
-            try:  # pragma: no cover - heavy model
-                self.flair_tagger = SequenceTagger.load("flair/ner-french")
-            except Exception:
-                self.flair_tagger = None
-        if spacy is not None:
-            try:  # pragma: no cover - heavy model
-                self.spacy_nlp = spacy.load("fr_core_news_sm")
-            except Exception:
-                self.spacy_nlp = None
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+        # --- CHARGEMENT FLAIR ---
+        if SequenceTagger is not None and Sentence is not None:
+            if not _LOAD_ATTEMPTED["flair"]:
+                _LOAD_ATTEMPTED["flair"] = True
+                try:
+                    logger.info("Loading Flair model (once)...")
+                    _MODEL_CACHE["flair"] = SequenceTagger.load("flair/ner-french")
+                    logger.info("Flair model loaded successfully.")
+                except Exception as e:
+                    logger.error(f"Failed to load Flair: {e}")
+                    _MODEL_CACHE["flair"] = None
+            
+            self.flair_tagger = _MODEL_CACHE["flair"]
+        else:
+            self.flair_tagger = None
+
+        # --- CHARGEMENT SPACY ---
+        if spacy is not None:
+            if not _LOAD_ATTEMPTED["spacy"]:
+                _LOAD_ATTEMPTED["spacy"] = True
+                try:
+                    logger.info("Loading SpaCy model (once)...")
+                    # Essayer de charger le modèle, sinon fallback
+                    try:
+                        _MODEL_CACHE["spacy"] = spacy.load("fr_core_news_sm")
+                        logger.info("SpaCy model 'fr_core_news_sm' loaded successfully.")
+                    except OSError:
+                        logger.warning("Model 'fr_core_news_sm' not found. Trying 'fr_core_news_md'...")
+                        try:
+                            _MODEL_CACHE["spacy"] = spacy.load("fr_core_news_md")
+                        except OSError:
+                            logger.error("No French SpaCy model found. Run: python -m spacy download fr_core_news_sm")
+                            _MODEL_CACHE["spacy"] = None
+                except Exception as e:
+                    logger.error(f"Unexpected error loading SpaCy: {e}")
+                    _MODEL_CACHE["spacy"] = None
+            
+            self.spacy_nlp = _MODEL_CACHE["spacy"]
+        else:
+            self.spacy_nlp = None
+
+    # ---- Public API ----
+
     def detect_entities(self, text: str) -> List[Dict[str, Any]]:
         entities: List[AdvancedEntity] = []
         entities.extend(self._phase1_regex_detection(text))
@@ -149,7 +195,6 @@ class AdvancedAnonymizer:
         return [ent.to_dict() for ent in merged]
 
     def anonymize(self, text: str) -> tuple[str, List[Dict[str, Any]]]:
-        """Return a naive anonymized string plus metadata (utility helper)."""
         entities = self.detect_entities(text)
         replacements: List[Dict[str, Any]] = []
         offset = 0
@@ -170,35 +215,36 @@ class AdvancedAnonymizer:
             })
         return new_text, replacements
 
-    # ------------------------------------------------------------------
-    # Phase 1 – Regex / deterministic patterns
-    # ------------------------------------------------------------------
+    # ---- Phase 1 ----
+
     def _phase1_regex_detection(self, text: str) -> List[AdvancedEntity]:
         entities: List[AdvancedEntity] = []
         for name, spec in self.pattern_specs:
             if not spec.get("enabled", True):
                 continue
             if spec.get("type") == "library":
-                # couvert par les méthodes dédiées
                 continue
             regex = spec.get("regex")
             if not isinstance(regex, str):
                 continue
             entity_type = str(spec.get("entity_type", name)).upper()
-            pattern = re.compile(regex)
-            for match in pattern.finditer(text):
-                value = match.group()
-                if not self._validate_optional(spec, value):
-                    continue
-                entities.append(
-                    AdvancedEntity(
-                        start=match.start(),
-                        end=match.end(),
-                        value=value,
-                        etype=entity_type,
-                        source=f"advanced-regex:{name}",
+            try:
+                pattern = re.compile(regex)
+                for match in pattern.finditer(text):
+                    value = match.group()
+                    if not self._validate_optional(spec, value):
+                        continue
+                    entities.append(
+                        AdvancedEntity(
+                            start=match.start(),
+                            end=match.end(),
+                            value=value,
+                            etype=entity_type,
+                            source=f"advanced-regex:{name}",
+                        )
                     )
-                )
+            except re.error:
+                continue
         return entities
 
     def _phase1_iban_detection(self, text: str) -> List[AdvancedEntity]:
@@ -211,30 +257,30 @@ class AdvancedAnonymizer:
             candidate = raw.replace(" ", "")
             try:
                 iban = IBAN(candidate)
+                entities.append(
+                    AdvancedEntity(
+                        start=match.start(),
+                        end=match.end(),
+                        value=raw,
+                        etype="IBAN",
+                        source="advanced-iban",
+                    )
+                )
+                if getattr(iban, "bic", None):
+                    bic = iban.bic
+                    idx = text.find(bic)
+                    if idx != -1:
+                        entities.append(
+                            AdvancedEntity(
+                                start=idx,
+                                end=idx + len(bic),
+                                value=bic,
+                                etype="BIC",
+                                source="advanced-iban",
+                            )
+                        )
             except Exception:
                 continue
-            entities.append(
-                AdvancedEntity(
-                    start=match.start(),
-                    end=match.end(),
-                    value=raw,
-                    etype="IBAN",
-                    source="advanced-iban",
-                )
-            )
-            if getattr(iban, "bic", None):
-                bic = iban.bic
-                idx = text.find(bic)
-                if idx != -1:
-                    entities.append(
-                        AdvancedEntity(
-                            start=idx,
-                            end=idx + len(bic),
-                            value=bic,
-                            etype="BIC",
-                            source="advanced-iban",
-                        )
-                    )
         return entities
 
     def _phase1_phone_detection(self, text: str) -> List[AdvancedEntity]:
@@ -249,10 +295,7 @@ class AdvancedAnonymizer:
                 if not phonenumbers.is_valid_number(parsed):
                     continue
                 country = phonenumbers.region_code_for_number(parsed)
-            except Exception:
-                continue
-            entities.append(
-                AdvancedEntity(
+                ent = AdvancedEntity(
                     start=match.start(),
                     end=match.end(),
                     value=match.group(),
@@ -260,8 +303,11 @@ class AdvancedAnonymizer:
                     source="advanced-phone",
                     score=1.0,
                 )
-            )
-            entities[-1].source += f"::{country}" if country else ""
+                if country:
+                    ent.source += f"::{country}"
+                entities.append(ent)
+            except Exception:
+                continue
         return entities
 
     def _validate_optional(self, spec: Dict[str, Any], value: str) -> bool:
@@ -276,40 +322,39 @@ class AdvancedAnonymizer:
                 n = int(digit)
                 if idx % 2 == 1:
                     n *= 2
-                    if n > 9:
-                        n -= 9
+                if n > 9:
+                    n -= 9
                 checksum += n
             return checksum % 10 == 0
         return True
 
-    # ------------------------------------------------------------------
-    # Phase 2 – Flair NER
-    # ------------------------------------------------------------------
+    # ---- Phase 2 ----
+
     def _phase2_ner_detection(self, text: str) -> List[AdvancedEntity]:
         if not self.flair_tagger or not Sentence:
             return []
-        sentence = Sentence(text)
         try:
+            sentence = Sentence(text)
             self.flair_tagger.predict(sentence)
-        except Exception:
-            return []
-        entities: List[AdvancedEntity] = []
-        for span in sentence.get_spans("ner"):
-            entities.append(
-                AdvancedEntity(
-                    start=span.start_position,
-                    end=span.end_position,
-                    value=span.text,
-                    etype=span.tag.upper(),
-                    source="advanced-ner",
-                    score=float(span.score or 0.0),
+            entities: List[AdvancedEntity] = []
+            for span in sentence.get_spans("ner"):
+                entities.append(
+                    AdvancedEntity(
+                        start=span.start_position,
+                        end=span.end_position,
+                        value=span.text,
+                        etype=span.tag.upper(),
+                        source="advanced-ner",
+                        score=float(span.score or 0.0),
+                    )
                 )
-            )
-        return entities
+            return entities
+        except Exception as e:
+            logger.error(f"Error during Flair prediction: {e}")
+            return []
 
-    # ------------------------------------------------------------------
-    # Helpers
-    # ------------------------------------------------------------------
+    # ---- Helpers ----
+
     def _merge_overlaps(self, entities: List[AdvancedEntity]) -> List[AdvancedEntity]:
         if not entities:
             return []
