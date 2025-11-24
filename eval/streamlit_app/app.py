@@ -10,12 +10,14 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Union
 
 import streamlit as st
 
 # Ajouter le répertoire parent au path pour importer metrics
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+SCRIPT_DIR = Path(__file__).parent
+EVAL_DIR = SCRIPT_DIR.parent
+sys.path.insert(0, str(EVAL_DIR))
 
 # Configuration de la page
 st.set_page_config(
@@ -26,30 +28,27 @@ st.set_page_config(
 )
 
 # Constantes
-# Déterminer le chemin du répertoire des rapports de manière robuste
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPORTS_DIR = os.path.join(SCRIPT_DIR, "..", "evaluation", "reports")
+REPORTS_DIR = EVAL_DIR / "evaluation" / "reports"
 
 
 def load_available_reports() -> List[str]:
     """Charge la liste des rapports JSON disponibles."""
-    if not os.path.exists(REPORTS_DIR):
+    if not REPORTS_DIR.exists():
         return []
     
     reports = []
-    for filename in os.listdir(REPORTS_DIR):
-        if filename.endswith("_details.json"):
-            dataset_name = filename.replace("report_", "").replace("_details.json", "")
-            reports.append(dataset_name)
+    for file_path in REPORTS_DIR.glob("*_details.json"):
+        dataset_name = file_path.stem.replace("report_", "").replace("_details", "")
+        reports.append(dataset_name)
     
     return reports
 
 
 def load_report_data(dataset_name: str) -> List[Dict[str, Any]]:
     """Charge les données d'un rapport JSON."""
-    report_path = os.path.join(REPORTS_DIR, f"report_{dataset_name}_details.json")
+    report_path = REPORTS_DIR / f"report_{dataset_name}_details.json"
     
-    if not os.path.exists(report_path):
+    if not report_path.exists():
         st.error(f"Rapport introuvable: {report_path}")
         return []
     
@@ -57,11 +56,34 @@ def load_report_data(dataset_name: str) -> List[Dict[str, Any]]:
         return json.load(f)
 
 
+def _has_overlap(span1: Tuple[int, int], span2: Tuple[int, int]) -> bool:
+    """Vérifie si deux spans se chevauchent."""
+    return max(0, min(span1[1], span2[1]) - max(span1[0], span2[0])) > 0
+
+
+def _normalize_leak(leak: Union[Tuple, List, str]) -> str:
+    """Normalise le format d'une fuite en extrayant le texte."""
+    if isinstance(leak, (list, tuple)) and len(leak) >= 1:
+        return leak[0] if isinstance(leak[0], str) else str(leak)
+    return str(leak) if leak else ""
+
+
+def _escape_html(text: str) -> str:
+    """Échappe les caractères HTML."""
+    return (text
+            .replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;')
+            .replace("'", '&#39;')
+            .replace('\n', '<br>'))
+
+
 def highlight_text_with_entities(
     text: str,
     ground_truth: List[Tuple[int, int, str]],
     predictions: List[Tuple[int, int, str]],
-    leaks: List[str] = None
+    leaks: Union[List[Union[Tuple[str, str], str]], None] = None
 ) -> str:
     """
     Génère du HTML avec mise en évidence des entités:
@@ -127,8 +149,8 @@ def highlight_text_with_entities(
     # Ajouter les fuites
     if leaks:
         for leak in leaks:
-            if isinstance(leak, (list, tuple)) and len(leak) >= 1:
-                leak_text = leak[0] if isinstance(leak[0], str) else str(leak)
+            leak_text = _normalize_leak(leak)
+            if leak_text:
                 # Trouver toutes les occurrences de la fuite dans le texte
                 start = 0
                 while True:
@@ -194,11 +216,6 @@ def highlight_text_with_entities(
     return ''.join(html_parts)
 
 
-def _has_overlap(span1: Tuple[int, int], span2: Tuple[int, int]) -> bool:
-    """Vérifie si deux spans se chevauchent."""
-    return max(0, min(span1[1], span2[1]) - max(span1[0], span2[0])) > 0
-
-
 def _merge_overlapping_annotations(annotations: List[Dict]) -> List[Dict]:
     """Fusionne les annotations qui se chevauchent, en priorisant les fuites et FN."""
     if not annotations:
@@ -224,17 +241,6 @@ def _merge_overlapping_annotations(annotations: List[Dict]) -> List[Dict]:
         i = j if j > i + 1 else i + 1
     
     return result
-
-
-def _escape_html(text: str) -> str:
-    """Échappe les caractères HTML."""
-    return (text
-            .replace('&', '&amp;')
-            .replace('<', '&lt;')
-            .replace('>', '&gt;')
-            .replace('"', '&quot;')
-            .replace("'", '&#39;')
-            .replace('\n', '<br>'))
 
 
 def calculate_metrics_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:
