@@ -36,6 +36,7 @@ TEXT_FIELDS = [
     "raw_text",
     "source",
     "source_text",
+    "response",
 ]
 LABEL_FIELDS_BASE = [
     "spans",
@@ -64,7 +65,7 @@ NESTED_LABEL_FIELDS = [
 
 DATASET_SPECIFIC_LABEL_KEYS = {
     "TAB": ["labels", "sensitive_entities", "gt_entities", "masked_entities"],
-    "PERSONALREDDIT": ["entities", "ground_truth_entities"],
+    "PERSONALREDDIT": ["personality", "entities", "ground_truth_entities"],
     "DB-BIO": ["entities", "ground_truth_entities"],
 }
 
@@ -258,6 +259,13 @@ def _normalize_label_entry(
         # Fallback for string-only lists (like TAB masked_entities)
         label = label_hint or "SENSITIVE"
         spans.extend(_spans_from_surface(text, entry, label))
+        return spans
+
+    if _is_number(entry):
+        label = label_hint or "SENSITIVE"
+        spans.extend(_spans_from_surface(text, str(entry), label))
+        return spans
+
     return spans
 
 
@@ -364,6 +372,7 @@ def run_evaluation(dataset_name: str, file_path: str) -> None:
                 "truth_count": len(ground_truth),
                 "leaks_count": len(leaks),
                 # Added for detailed analysis
+                "full_text": text,
                 "text_snippet": text[:200],
                 "ground_truth": ground_truth,
                 "predictions": pred_entities,
@@ -461,9 +470,9 @@ def _print_doc_debug(
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     datasets = [
-        ("TAB", "datasets/TAB/test.jsonl"),
+        # ("TAB", "datasets/TAB/test.jsonl"),
         # ("PersonalReddit", "datasets/PersonalReddit/Reddit_synthetic/test.jsonl"),
-        # ("DB-Bio", "datasets/DB-bio/test.jsonl"),
+        ("DB-Bio", "datasets/DB-bio/test.jsonl"),
     ]
 
     try:

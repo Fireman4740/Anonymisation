@@ -111,10 +111,11 @@ def anonymize(payload: AnonymizeRequest) -> AnonymizeResponse:
     level = payload.level or DEFAULT_LEVEL
     secret = payload.secret_salt or DEFAULT_SECRET
     
-    # Utiliser les services pré-chargés si on est sur le niveau par défaut
+    # Utiliser les services pré-chargés si on est sur le niveau par défaut ET qu'il n'y a pas d'overrides
     # Sinon, on recrée (mais grâce aux caches dans les classes, c'est rapide et sans fuite)
-    detection_service = _SERVICES["detection"] if level == DEFAULT_LEVEL else None
-    generalization_service = _SERVICES["generalization"] if level == DEFAULT_LEVEL else None
+    use_cached = (level == DEFAULT_LEVEL) and (not payload.overrides)
+    detection_service = _SERVICES["detection"] if use_cached else None
+    generalization_service = _SERVICES["generalization"] if use_cached else None
 
     try:
         result = anonymize_text(

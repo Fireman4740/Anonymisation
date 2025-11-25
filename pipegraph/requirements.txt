@@ -1,0 +1,11 @@
+langgraph
+langchain
+langchain-core
+pydantic
+# Dépendances héritées du pipeline original
+torch
+gliner
+spacy
+flair
+phonenumbers
+pyyaml

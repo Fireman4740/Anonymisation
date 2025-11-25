@@ -1,0 +1,232 @@
+patterns:
+  # --- API KEYS & SECRETS ---
+  stripe_secret:
+    regex: "sk_(?:live|test|adm)_[0-9a-zA-Z]{24,}"
+    enabled: true
+    entity_type: "API_KEY"
+    priority: 1
+
+  aws_key_id:
+    regex: "AKIA[0-9A-Z]{16}"
+    enabled: true
+    entity_type: "AWS_KEY"
+    priority: 1
+
+  google_api:
+    regex: 'AIza[0-9A-Za-z\-_]{35}'
+    enabled: true
+    entity_type: "API_KEY"
+    priority: 1
+
+  generic_secret:
+    regex: "sk_[0-9A-Za-z]{16,64}"
+    enabled: true
+    entity_type: "SECRET"
+    priority: 1
+
+  # --- IDENTIFIERS ---
+  iban:
+    type: "library"
+    regex: '(?i)\b[A-Z]{2}\d{2}(?:[ -]?[A-Z0-9]){11,30}\b'
+    enabled: true
+    entity_type: "IBAN"
+    priority: 2
+    validate_with: "iban"
+
+  bic:
+    regex: '(?i)\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b'
+    enabled: true
+    entity_type: "BIC"
+    priority: 2
+    validate_with: "bic"
+
+  nir_ssn:
+    regex: '(?i)\b[12](?:[ -]?)[0-9]{2}(?:[ -]?)(0[1-9]|1[0-2])(?:[ -]?)(2[AB]|[0-9]{2})(?:[ -]?)[0-9]{3}(?:[ -]?)[0-9]{3}(?:[ -]?)([0-9]{2})\b'
+    enabled: true
+    entity_type: "NIR"
+    priority: 2
+    validate_with: "ssn"
+
+  credit_card:
+    regex: '\b(?:\d[ -]?){13,19}\b'
+    enabled: true
+    entity_type: "CARD"
+    priority: 2
+    validate_with: "luhn"
+
+  uuid:
+    regex: '\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b'
+    enabled: true
+    entity_type: "UUID"
+    priority: 3
+
+  mac_address:
+    regex: '\b[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}\b'
+    enabled: true
+    entity_type: "MAC"
+    priority: 3
+
+  ticket_id:
+    regex: '\b[A-Z][A-Z0-9]{1,9}-\d+\b'
+    enabled: true
+    entity_type: "TICKET"
+    priority: 3
+
+  # --- NETWORK & WEB ---
+  ipv4:
+    regex: '(?<!\d)(?:\d{1,3}\.){3}\d{1,3}(?!\d)'
+    enabled: true
+    entity_type: "IP"
+    priority: 2
+
+  ipv6:
+    regex: "(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}"
+    enabled: true
+    entity_type: "IP"
+    priority: 2
+
+  url_http:
+    regex: '(?i)\bhttps?://[\w\-._~:/?#\[\]@!$&''()*+,;=%]+'
+    enabled: true
+    entity_type: "URL"
+    priority: 2
+
+  url_nonhttp:
+    regex: '(?i)(?:sftp|ssh|s3|gs|git\+ssh|scp)://\S+'
+    enabled: true
+    entity_type: "URL"
+    priority: 2
+
+  hostname:
+    regex: '\b(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}\b'
+    enabled: true
+    entity_type: "HOST"
+    priority: 3
+
+  # --- CONTACT INFO ---
+  email_strict:
+    regex: '(?<![\w@])[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}'
+    enabled: true
+    entity_type: "MAIL"
+    priority: 3
+
+  phone_international:
+    regex: '(?:\+|00)[1-9]\d{1,14}|(?:\+33|0)[1-9]\d{8}'
+    enabled: true
+    entity_type: "TELEPHONE"
+    priority: 3
+    validate_with: "phone"
+
+  phone_fr_loose:
+    regex: '(?i)(?<!\w)(?:\+\d{1,3}|0{1,2}\s?-?\d{1,3}|0)[\s.-]?\d(?:[\s.-]?\d{2}){4}(?!\w)'
+    enabled: true
+    entity_type: "TELEPHONE"
+    priority: 3
+    validate_with: "phone"
+
+  # --- FILESYSTEM ---
+  path_unix:
+    regex: '(?<!\w)/(?!/)[^\s]+'
+    enabled: true
+    entity_type: "PATH"
+    priority: 4
+
+  path_windows:
+    regex: '\b[A-Za-z]:\\(?:[^\\\s]+\\)*[^\\\s]*'
+    enabled: true
+    entity_type: "PATH"
+    priority: 4
+
+  # --- DATES ---
+  date_iso:
+    regex: '\b\d{4}-\d{2}-\d{2}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_en_full:
+    regex: '(?i)\b\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_en_comma:
+    regex: '(?i)\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s*\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_en_month_year:
+    regex: '(?i)\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_fr_full:
+    regex: '(?i)\b(\d{1,2}|1er)\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv\.?,?|févr\.?,?|fevr\.?,?|avr\.?,?|juil\.?,?|sept\.?,?|oct\.?,?|nov\.?,?|déc\.?,?|dec\.?)\s+\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_fr_month_year:
+    regex: '(?i)\b(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre|janv\.?|févr\.?|fevr\.?|avr\.?|juil\.?|sept\.?|oct\.?|nov\.?|déc\.?|dec\.?)\s+\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  date_numeric:
+    regex: '\b\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
+  # --- MISC ---
+  username_keyval:
+    regex: '(?i)\b(?:user|username|login|utilisateur)\s*[:=]\s*([A-Za-z0-9._-]{3,64})'
+    enabled: true
+    entity_type: "USERNAME"
+    priority: 3
+    group_index: 1
+
+  username_linux:
+    regex: '\buid=\d+\(([^)]+)\)'
+    enabled: true
+    entity_type: "USERNAME"
+    priority: 3
+    group_index: 1
+
+  amount_currency_prefix:
+    regex: '(?i)\b(?:EUR|USD|SEK|GBP|CHF|CAD|AUD|JPY|CNY)\s+\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\b'
+    enabled: true
+    entity_type: "MONTANT"
+    priority: 3
+
+  amount_symbol_prefix:
+    regex: '(?i)(?<![\w<])(?:€|\$|£)\s?\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\b'
+    enabled: true
+    entity_type: "MONTANT"
+    priority: 3
+
+  amount_suffix:
+    regex: '(?i)\b\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\s?(?:€|euros?|EUR|USD|dollars?|SEK|GBP|pounds?|livres|CHF|CAD|AUD|JPY|CNY)\b'
+    enabled: true
+    entity_type: "MONTANT"
+    priority: 3
+
+  code_legal:
+    regex: '(?i)\b(?:Article|Art\.?)\s+\d+[A-Za-z]?\b'
+    enabled: true
+    entity_type: "CODE"
+    priority: 3
+
+  code_law:
+    regex: '(?i)\b(?:Law|Decree|Act)\s+no\.?\s*\d+[A-Za-z]?\b'
+    enabled: true
+    entity_type: "CODE"
+    priority: 3
+
+forbidden_defaults:
+  - "@"
+  - "sk_"
+  - "AKIA"
+  - "+33"

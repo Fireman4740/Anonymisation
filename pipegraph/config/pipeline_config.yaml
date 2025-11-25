@@ -1,0 +1,75 @@
+pipeline:
+  name: "Anonymisation Pipeline"
+  version: "2.0"
+
+  # Configuration globale
+  global:
+    debug: true
+    log_level: "INFO"
+    work_dir: "./workspace"
+
+  # Configuration des Noeuds
+  nodes:
+    # --- DETECTION NODE ---
+    detection:
+      enabled: true
+      execution_mode: "serial" # "serial" ou "parallel"
+      
+      # Sous-module: Détection Déterministe (Regex/Algo)
+      deterministic:
+        enabled: true
+        patterns_config_path: "config/patterns_config.yaml" # Fichier externe pour les regex
+        # Les patterns spécifiques sont définis dans patterns_config.yaml
+
+      # Sous-module: Détection IA (NER)
+      ai_ner:
+        enabled: false
+        provider: "gliner" # Choix: "gliner", "flair", "spacy"
+        threshold: 0.35
+        warmup: true
+        
+        # Config spécifique GLiNER (si provider = "gliner")
+        gliner:
+          preset: "best" # "fast", "balanced", "accuracy", "best"
+          use_gpu: true
+          gpu_config:
+            vram_gb: 24
+            batch_size: 64
+            max_parallel_models: 3
+            use_fp16: true
+            use_torch_compile: false
+            optimization_level: "high"
+            prefetch_models: true
+        
+        # Config spécifique Flair (si provider = "flair")
+        flair:
+          model_path: "flair/ner-french"
+        
+        # Config spécifique Spacy (si provider = "spacy")
+        spacy:
+          model_name: "fr_core_news_sm"
+
+    # --- ANONYMIZATION NODE ---
+    anonymization:
+      enabled: true
+      strategy: "pseudo" # "pseudo", "mask", "redact"
+      
+      # Configuration de la pseudonymisation (consistante)
+      pseudonymization:
+        salt: "my-secret-salt" # À changer en prod
+        format: "[{type}_{hash}]" # ex: [PER_A1B]
+      
+      # Politique par type d'entité (override la stratégie globale)
+      policy:
+        PER: 
+          action: "pseudo"
+        LOC: 
+          action: "generalize" # Paris -> [VILLE]
+        DATE: 
+          action: "generalize" # 12/05/2023 -> [DATE]
+        PHONE: 
+          action: "mask" # 06 12 34 56 78 -> 06 ** ** ** 78
+        EMAIL:
+          action: "mask" # jean.dupont@email.com -> j***@email.com
+        IBAN:
+          action: "redact" # -> [IBAN]

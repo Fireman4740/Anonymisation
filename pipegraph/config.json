@@ -1,0 +1,62 @@
+{
+	"llm": {
+		"provider": "Lmstudio",
+		"base_url": "http://10.10.153.169:1234/v1",  
+		"retry_count": 1,
+		"fallback_model": null,
+		"models": {
+			"detect": "openai/gpt-oss-20b",
+			"paraphrase": "openai/gpt-oss-20b",
+			"audit": "openai/gpt-oss-20b"
+		},
+		"supports_response_format": false,
+		"require_api_key": false,
+		"allow_fallback": false,
+		"timeout_seconds": 90
+	},
+	"openrouter": {
+		"base_url": "https://openrouter.ai/api/v1",
+		"retry_count": 2,
+		"fallback_model": "openai/gpt-oss-20b",
+		"models": {
+			"detect": "openai/gpt-oss-20b",
+			"paraphrase": "openai/gpt-oss-20b",
+			"audit": "openai/gpt-oss-20b"
+		}
+	},
+	"features": {
+		"llm_detection": true,
+		"llm_paraphrase": true,
+		"llm_audit": true
+	},
+	"policy_defaults": {
+		"paraphrase_intensity": 1,
+		"paraphrase_preserve_multiplicity": true,
+		"rupta_preserve_entity_counts": true,
+		"risk_threshold": 45
+	},
+	"rupta": {
+		"enabled": false,
+		"p_threshold": 10,
+		"max_iterations": 5,
+		"privacy_threshold": null,
+		"utility_threshold": 80,
+		"model": "openai/gpt-oss-20b",
+		"temperature": 0.1
+	},
+	"runtime": {
+		"log_level": "INFO",
+		"timeout_seconds": 60
+	},
+	"ner_gpu": {
+		"enabled": true,
+		"vram_gb": 24,
+		"batch_size": 64,
+		"max_parallel_models": 3,
+		"use_fp16": true,
+		"use_torch_compile": false,
+		"gliner_preset": "best",
+		"prefetch_models": true,
+		"optimization_level": "high"
+	}
+}
