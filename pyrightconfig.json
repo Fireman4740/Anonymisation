@@ -1,0 +1,9 @@
+{
+  "include": ["pipeline", "pipegraph", "eval"],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [".", "eval/streamlit_app"]
+    }
+  ]
+}

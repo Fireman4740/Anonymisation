@@ -1,0 +1,1698 @@
+{
+    "examples": [
+        {
+            "id": "hard_001",
+            "langue": "FR",
+            "original_text": "L'ancien CEO de la startup qui a inventé le distributeur de croquettes connecté en 2018 à Nantes, maintenant consultant en IA pour le secteur portuaire, a demandé un accès VPN.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 79,
+                    "text": "ancien CEO de la startup qui a inventé le distributeur de croquettes connecté",
+                    "replacement": "[ROLE_FOUNDER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": "Description de poste unique via un produit spécifique"
+                },
+                {
+                    "type": "DATE",
+                    "start": 83,
+                    "end": 87,
+                    "text": "2018",
+                    "replacement": "[DATE_YEAR]",
+                    "coref_id": null,
+                    "risk_note": "Année de création/évènement"
+                },
+                {
+                    "type": "LOC",
+                    "start": 90,
+                    "end": 96,
+                    "text": "Nantes",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": "Ville"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 109,
+                    "end": 151,
+                    "text": "consultant en IA pour le secteur portuaire",
+                    "replacement": "[ROLE_NICHE]",
+                    "coref_id": null,
+                    "risk_note": "Métier actuel très spécifique"
+                }
+            ],
+            "anonymized_text": "L'[ROLE_FOUNDER_UNIQUE] en [DATE_YEAR] à [LOC_CITY], maintenant [ROLE_NICHE], a demandé un accès VPN.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 95,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "startup_entrepreneur"
+            }
+        },
+        {
+            "id": "hard_002",
+            "langue": "FR",
+            "original_text": "Le seul habitant de l'île aux Moines possédant une Tesla Model S Plaid rouge a signalé une panne de recharge sur la borne publique du port.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 76,
+                    "text": "seul habitant de l'île aux Moines possédant une Tesla Model S Plaid rouge",
+                    "replacement": "[INDIVIDUAL_UNIQUE_ASSET]",
+                    "coref_id": null,
+                    "risk_note": "Identification par possession unique dans une petite zone géographique"
+                }
+            ],
+            "anonymized_text": "Un [INDIVIDUAL_UNIQUE_ASSET] a signalé une panne de recharge sur la borne publique du port.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_small_loc"
+            }
+        },
+        {
+            "id": "hard_003",
+            "langue": "FR",
+            "original_text": "Une femme de 45 ans, marathonienne, qui a subi une triple fracture du métatarse lors du Marathon de Paris 2023, demande le remboursement de ses semelles orthopédiques de chez Podoplus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 13,
+                    "end": 19,
+                    "text": "45 ans",
+                    "replacement": "[AGE]",
+                    "coref_id": null,
+                    "risk_note": "Âge"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 21,
+                    "end": 34,
+                    "text": "marathonienne",
+                    "replacement": "[ACTIVITY]",
+                    "coref_id": null,
+                    "risk_note": "Activité physique"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 51,
+                    "end": 79,
+                    "text": "triple fracture du métatarse",
+                    "replacement": "[MEDICAL_SPECIFIC]",
+                    "coref_id": null,
+                    "risk_note": "Blessure précise"
+                },
+                {
+                    "type": "EVENT",
+                    "start": 88,
+                    "end": 110,
+                    "text": "Marathon de Paris 2023",
+                    "replacement": "[EVENT_DATE]",
+                    "coref_id": null,
+                    "risk_note": "Événement daté"
+                },
+                {
+                    "type": "ORG",
+                    "start": 175,
+                    "end": 183,
+                    "text": "Podoplus",
+                    "replacement": "[ORG_PROVIDER]",
+                    "coref_id": null,
+                    "risk_note": "Fournisseur spécialisé"
+                }
+            ],
+            "anonymized_text": "Une personne de [AGE], [ACTIVITY], ayant subi une [MEDICAL_SPECIFIC] lors d'un [EVENT_DATE], demande le remboursement de matériel chez [ORG_PROVIDER].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_event_combo"
+            }
+        },
+        {
+            "id": "hard_004",
+            "langue": "FR",
+            "original_text": "Le développeur qui a maintenu le code legacy du module COBOL 'Z-TRANS-99' chez BanquePopulaire de 1995 à 2005 pense qu'il y a une faille de sécurité.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 73,
+                    "text": "développeur qui a maintenu le code legacy du module COBOL 'Z-TRANS-99'",
+                    "replacement": "[ROLE_OLD_TECH]",
+                    "coref_id": null,
+                    "risk_note": "Expertise sur un module interne obscur"
+                },
+                {
+                    "type": "ORG",
+                    "start": 79,
+                    "end": 94,
+                    "text": "BanquePopulaire",
+                    "replacement": "[ORG_COMPANY]",
+                    "coref_id": null,
+                    "risk_note": "Entreprise"
+                },
+                {
+                    "type": "DATE",
+                    "start": 98,
+                    "end": 109,
+                    "text": "1995 à 2005",
+                    "replacement": "[DATE_RANGE]",
+                    "coref_id": null,
+                    "risk_note": "Période d'activité précise"
+                }
+            ],
+            "anonymized_text": "Un [ROLE_OLD_TECH] chez [ORG_COMPANY] durant [DATE_RANGE] pense qu'il y a une faille de sécurité.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "legacy_tech_expert"
+            }
+        },
+        {
+            "id": "hard_005",
+            "langue": "FR",
+            "original_text": "Le propriétaire du garage incendié lors des émeutes de la rue de Rivoli le 1er mai dernier a contacté son assurance pour un véhicule de collection Jaguar Type E.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 34,
+                    "text": "propriétaire du garage incendié",
+                    "replacement": "[VICTIM_INCIDENT]",
+                    "coref_id": null,
+                    "risk_note": "Statut lié à un fait divers"
+                },
+                {
+                    "type": "LOC",
+                    "start": 58,
+                    "end": 71,
+                    "text": "rue de Rivoli",
+                    "replacement": "[LOC_STREET]",
+                    "coref_id": null,
+                    "risk_note": "Localisation précise"
+                },
+                {
+                    "type": "DATE",
+                    "start": 75,
+                    "end": 90,
+                    "text": "1er mai dernier",
+                    "replacement": "[DATE_EVENT]",
+                    "coref_id": null,
+                    "risk_note": "Date précise"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 147,
+                    "end": 160,
+                    "text": "Jaguar Type E",
+                    "replacement": "[RARE_VEHICLE]",
+                    "coref_id": null,
+                    "risk_note": "Véhicule rare"
+                }
+            ],
+            "anonymized_text": "Une personne [VICTIM_INCIDENT] à [LOC_STREET] le [DATE_EVENT] a contacté son assurance pour un [RARE_VEHICLE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 98,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "news_event_link"
+            }
+        },
+        {
+            "id": "hard_006",
+            "langue": "FR",
+            "original_text": "La seule cardiologue pédiatrique de Villeneuve-sur-Lot, âgée de 39 ans, a signalé un manque de pacemakers infantiles au service de nuit.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 54,
+                    "text": "seule cardiologue pédiatrique de Villeneuve-sur-Lot",
+                    "replacement": "[ROLE_MED_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": "Poste médical unique dans une petite ville"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 64,
+                    "end": 70,
+                    "text": "39 ans",
+                    "replacement": "[AGE_39]",
+                    "coref_id": null,
+                    "risk_note": "Âge précis"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 95,
+                    "end": 116,
+                    "text": "pacemakers infantiles",
+                    "replacement": "[MED_DEVICE]",
+                    "coref_id": null,
+                    "risk_note": "Dispositif médical rare"
+                }
+            ],
+            "anonymized_text": "Une [ROLE_MED_UNIQUE], âgée de [AGE_39], a signalé un manque de [MED_DEVICE] au service de nuit.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 97,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_unique_city"
+            }
+        },
+        {
+            "id": "hard_007",
+            "langue": "FR",
+            "original_text": "À l'Île-aux-Oiseaux, le seul propriétaire d'une Aston Martin DB5 verte a demandé une expertise après un vol suspect sur le port local.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 24,
+                    "end": 70,
+                    "text": "seul propriétaire d'une Aston Martin DB5 verte",
+                    "replacement": "[UNIQUE_CAR_OWNER]",
+                    "coref_id": null,
+                    "risk_note": "Possession unique d'un véhicule de collection dans une petite île"
+                },
+                {
+                    "type": "LOC",
+                    "start": 4,
+                    "end": 19,
+                    "text": "Île-aux-Oiseaux",
+                    "replacement": "[LOC_ISLAND]",
+                    "coref_id": null,
+                    "risk_note": "Localité très petite"
+                }
+            ],
+            "anonymized_text": "Un [UNIQUE_CAR_OWNER] à [LOC_ISLAND] a demandé une expertise après un vol suspect.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_island"
+            }
+        },
+        {
+            "id": "hard_008",
+            "langue": "FR",
+            "original_text": "Le maître-chien bénévole, instructeur du seul club cynophile de la ZAC des Mimosas, ancien champion de pistage, a été contacté par la gendarmerie locale.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 82,
+                    "text": "maître-chien bénévole, instructeur du seul club cynophile de la ZAC des Mimosas",
+                    "replacement": "[ROLE_VOLUNTEER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": "Combinaison métier/activité unique localement"
+                },
+                {
+                    "type": "LOC",
+                    "start": 67,
+                    "end": 82,
+                    "text": "ZAC des Mimosas",
+                    "replacement": "[LOC_NEIGH]",
+                    "coref_id": null,
+                    "risk_note": "Quartier spécifique"
+                }
+            ],
+            "anonymized_text": "Un [ROLE_VOLUNTEER_UNIQUE] du [LOC_NEIGH] a été contacté par la gendarmerie.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 88,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "volunteer_unique_activity"
+            }
+        },
+        {
+            "id": "hard_009",
+            "langue": "FR",
+            "original_text": "Doctorante en cryptographie post-quantique, membre d'un groupe de recherche de 5 personnes à Clermont, âgée de 27 ans, cherche un hébergement collaboratif sur campus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 0,
+                    "end": 42,
+                    "text": "Doctorante en cryptographie post-quantique",
+                    "replacement": "[ROLE_PHD_CRYPTO]",
+                    "coref_id": null,
+                    "risk_note": "Domaine académique très spécifique"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 56,
+                    "end": 90,
+                    "text": "groupe de recherche de 5 personnes",
+                    "replacement": "[GROUP_SMALL]",
+                    "coref_id": null,
+                    "risk_note": "Taille d'équipe très réduite"
+                },
+                {
+                    "type": "LOC",
+                    "start": 93,
+                    "end": 101,
+                    "text": "Clermont",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": "Ville universitaire"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 111,
+                    "end": 117,
+                    "text": "27 ans",
+                    "replacement": "[AGE_27]",
+                    "coref_id": null,
+                    "risk_note": "Âge précis"
+                }
+            ],
+            "anonymized_text": "Une [ROLE_PHD_CRYPTO] membre d'un [GROUP_SMALL] à [LOC_CITY], âgée de [AGE_27], cherche un hébergement.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 93,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "academic_niche_small_group"
+            }
+        },
+        {
+            "id": "hard_010",
+            "langue": "FR",
+            "original_text": "Le caviste et conseiller municipal de 52 ans, propriétaire du bar-épicerie 'Le Cep Romain' à Montrouge, a annoncé une fermeture temporaire suite à un contrôle sanitaire.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 34,
+                    "text": "caviste et conseiller municipal",
+                    "replacement": "[ROLE_POLITICO_BUSINESS]",
+                    "coref_id": null,
+                    "risk_note": "Cumul de rôle local visible"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 38,
+                    "end": 44,
+                    "text": "52 ans",
+                    "replacement": "[AGE_52]",
+                    "coref_id": null,
+                    "risk_note": "Âge"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 75,
+                    "end": 90,
+                    "text": "'Le Cep Romain'",
+                    "replacement": "[BUSINESS_NAME]",
+                    "coref_id": null,
+                    "risk_note": "Nom commercial local"
+                },
+                {
+                    "type": "LOC",
+                    "start": 93,
+                    "end": 102,
+                    "text": "Montrouge",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": "Ville/commune"
+                }
+            ],
+            "anonymized_text": "Un [ROLE_POLITICO_BUSINESS] de [AGE_52], propriétaire d'un [BUSINESS_NAME] à [LOC_TOWN], a annoncé une fermeture.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "local_politician_business"
+            }
+        },
+        {
+            "id": "hard_001_en",
+            "langue": "EN",
+            "original_text": "The former CEO of the startup that invented the connected kibble dispenser in 2018 in Nantes, now an AI consultant for the port sector, requested VPN access.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 74,
+                    "text": "former CEO of the startup that invented the connected kibble dispenser",
+                    "replacement": "[ROLE_FOUNDER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 78,
+                    "end": 82,
+                    "text": "2018",
+                    "replacement": "[DATE_YEAR]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 86,
+                    "end": 92,
+                    "text": "Nantes",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 101,
+                    "end": 134,
+                    "text": "AI consultant for the port sector",
+                    "replacement": "[ROLE_NICHE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "The [ROLE_FOUNDER_UNIQUE] in [DATE_YEAR] in [LOC_CITY], now an [ROLE_NICHE], requested VPN access.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 95,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "startup_entrepreneur"
+            }
+        },
+        {
+            "id": "hard_001_es",
+            "langue": "ES",
+            "original_text": "El ex CEO de la startup que inventó el dispensador de croquetas conectado en 2018 en Nantes, ahora consultor de IA para el sector portuario, solicitó acceso VPN.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 73,
+                    "text": "ex CEO de la startup que inventó el dispensador de croquetas conectado",
+                    "replacement": "[ROLE_FOUNDER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": "Descripción única"
+                },
+                {
+                    "type": "DATE",
+                    "start": 77,
+                    "end": 81,
+                    "text": "2018",
+                    "replacement": "[DATE_YEAR]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 85,
+                    "end": 91,
+                    "text": "Nantes",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 99,
+                    "end": 139,
+                    "text": "consultor de IA para el sector portuario",
+                    "replacement": "[ROLE_NICHE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "El [ROLE_FOUNDER_UNIQUE] en [DATE_YEAR] en [LOC_CITY], ahora [ROLE_NICHE], solicitó acceso VPN.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 95,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "startup_entrepreneur"
+            }
+        },
+        {
+            "id": "hard_001_it",
+            "langue": "IT",
+            "original_text": "L'ex CEO della startup che ha inventato il distributore di croccantini connesso nel 2018 a Nantes, ora consulente IA per il settore portuale, ha richiesto un accesso VPN.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 79,
+                    "text": "ex CEO della startup che ha inventato il distributore di croccantini connesso",
+                    "replacement": "[ROLE_FOUNDER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 84,
+                    "end": 88,
+                    "text": "2018",
+                    "replacement": "[DATE_YEAR]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 91,
+                    "end": 97,
+                    "text": "Nantes",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 103,
+                    "end": 140,
+                    "text": "consulente IA per il settore portuale",
+                    "replacement": "[ROLE_NICHE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "L'[ROLE_FOUNDER_UNIQUE] nel [DATE_YEAR] a [LOC_CITY], ora [ROLE_NICHE], ha richiesto accesso VPN.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 95,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "startup_entrepreneur"
+            }
+        },
+        {
+            "id": "hard_002_en",
+            "langue": "EN",
+            "original_text": "The only inhabitant of Île aux Moines owning a red Tesla Model S Plaid reported a charging failure at the port's public terminal.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 70,
+                    "text": "only inhabitant of Île aux Moines owning a red Tesla Model S Plaid",
+                    "replacement": "[INDIVIDUAL_UNIQUE_ASSET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [INDIVIDUAL_UNIQUE_ASSET] reported a charging failure.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_small_loc"
+            }
+        },
+        {
+            "id": "hard_002_es",
+            "langue": "ES",
+            "original_text": "El único habitante de Île aux Moines que posee un Tesla Model S Plaid rojo informó de un fallo de carga en la terminal pública del puerto.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 74,
+                    "text": "único habitante de Île aux Moines que posee un Tesla Model S Plaid rojo",
+                    "replacement": "[INDIVIDUAL_UNIQUE_ASSET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [INDIVIDUAL_UNIQUE_ASSET] informó de un fallo de carga.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_small_loc"
+            }
+        },
+        {
+            "id": "hard_002_it",
+            "langue": "IT",
+            "original_text": "L'unico abitante dell'Île aux Moines che possiede una Tesla Model S Plaid rossa ha segnalato un guasto alla ricarica presso il terminal pubblico del porto.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 79,
+                    "text": "unico abitante dell'Île aux Moines che possiede una Tesla Model S Plaid rossa",
+                    "replacement": "[INDIVIDUAL_UNIQUE_ASSET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [INDIVIDUAL_UNIQUE_ASSET] ha segnalato un guasto.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_small_loc"
+            }
+        },
+        {
+            "id": "hard_003_en",
+            "langue": "EN",
+            "original_text": "A 45-year-old woman, a marathon runner, who suffered a triple metatarsal fracture during the 2023 Paris Marathon, is requesting reimbursement for her orthopedic insoles from Podoplus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 13,
+                    "text": "45-year-old",
+                    "replacement": "[AGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 23,
+                    "end": 38,
+                    "text": "marathon runner",
+                    "replacement": "[ACTIVITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 55,
+                    "end": 81,
+                    "text": "triple metatarsal fracture",
+                    "replacement": "[MEDICAL_SPECIFIC]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EVENT",
+                    "start": 93,
+                    "end": 112,
+                    "text": "2023 Paris Marathon",
+                    "replacement": "[EVENT_DATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 174,
+                    "end": 182,
+                    "text": "Podoplus",
+                    "replacement": "[ORG_PROVIDER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [AGE] person, [ACTIVITY], who suffered a [MEDICAL_SPECIFIC] during a [EVENT_DATE], is requesting reimbursement for equipment from [ORG_PROVIDER].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_event_combo"
+            }
+        },
+        {
+            "id": "hard_003_es",
+            "langue": "ES",
+            "original_text": "Una mujer de 45 años, corredora de maratón, que sufrió una triple fractura de metatarso durante el Maratón de París 2023, solicita el reembolso de sus plantillas ortopédicas de Podoplus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 13,
+                    "end": 20,
+                    "text": "45 años",
+                    "replacement": "[AGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 22,
+                    "end": 42,
+                    "text": "corredora de maratón",
+                    "replacement": "[ACTIVITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 59,
+                    "end": 87,
+                    "text": "triple fractura de metatarso",
+                    "replacement": "[MEDICAL_SPECIFIC]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EVENT",
+                    "start": 99,
+                    "end": 120,
+                    "text": "Maratón de París 2023",
+                    "replacement": "[EVENT_DATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 177,
+                    "end": 185,
+                    "text": "Podoplus",
+                    "replacement": "[ORG_PROVIDER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una persona de [AGE], [ACTIVITY], que sufrió una [MEDICAL_SPECIFIC] durante el [EVENT_DATE], solicita reembolso de [ORG_PROVIDER].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_event_combo"
+            }
+        },
+        {
+            "id": "hard_003_it",
+            "langue": "IT",
+            "original_text": "Una donna di 45 anni, maratoneta, che ha subito una tripla frattura del metatarso durante la Maratona di Parigi 2023, richiede il rimborso delle sue solette ortopediche da Podoplus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 13,
+                    "end": 20,
+                    "text": "45 anni",
+                    "replacement": "[AGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 22,
+                    "end": 32,
+                    "text": "maratoneta",
+                    "replacement": "[ACTIVITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 52,
+                    "end": 81,
+                    "text": "tripla frattura del metatarso",
+                    "replacement": "[MEDICAL_SPECIFIC]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EVENT",
+                    "start": 93,
+                    "end": 116,
+                    "text": "Maratona di Parigi 2023",
+                    "replacement": "[EVENT_DATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 172,
+                    "end": 180,
+                    "text": "Podoplus",
+                    "replacement": "[ORG_PROVIDER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una persona di [AGE], [ACTIVITY], che ha subito [MEDICAL_SPECIFIC] durante [EVENT_DATE], richiede rimborso da [ORG_PROVIDER].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_event_combo"
+            }
+        },
+        {
+            "id": "hard_004_en",
+            "langue": "EN",
+            "original_text": "The developer who maintained the legacy code for the COBOL module 'Z-TRANS-99' at BanquePopulaire from 1995 to 2005 believes there is a security flaw.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 78,
+                    "text": "developer who maintained the legacy code for the COBOL module 'Z-TRANS-99'",
+                    "replacement": "[ROLE_OLD_TECH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 82,
+                    "end": 97,
+                    "text": "BanquePopulaire",
+                    "replacement": "[ORG_COMPANY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 103,
+                    "end": 115,
+                    "text": "1995 to 2005",
+                    "replacement": "[DATE_RANGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [ROLE_OLD_TECH] at [ORG_COMPANY] during [DATE_RANGE] believes there is a security flaw.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "legacy_tech_expert"
+            }
+        },
+        {
+            "id": "hard_004_es",
+            "langue": "ES",
+            "original_text": "El desarrollador que mantuvo el código heredado del módulo COBOL 'Z-TRANS-99' en BanquePopulaire de 1995 a 2005 cree que hay un fallo de seguridad.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 77,
+                    "text": "desarrollador que mantuvo el código heredado del módulo COBOL 'Z-TRANS-99'",
+                    "replacement": "[ROLE_OLD_TECH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 81,
+                    "end": 96,
+                    "text": "BanquePopulaire",
+                    "replacement": "[ORG_COMPANY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 100,
+                    "end": 111,
+                    "text": "1995 a 2005",
+                    "replacement": "[DATE_RANGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_OLD_TECH] en [ORG_COMPANY] durante [DATE_RANGE] cree que hay un fallo.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "legacy_tech_expert"
+            }
+        },
+        {
+            "id": "hard_004_it",
+            "langue": "IT",
+            "original_text": "Lo sviluppatore che ha mantenuto il codice legacy del modulo COBOL 'Z-TRANS-99' presso BanquePopulaire dal 1995 al 2005 ritiene che ci sia una falla di sicurezza.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 79,
+                    "text": "sviluppatore che ha mantenuto il codice legacy del modulo COBOL 'Z-TRANS-99'",
+                    "replacement": "[ROLE_OLD_TECH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 87,
+                    "end": 102,
+                    "text": "BanquePopulaire",
+                    "replacement": "[ORG_COMPANY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 107,
+                    "end": 119,
+                    "text": "1995 al 2005",
+                    "replacement": "[DATE_RANGE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_OLD_TECH] presso [ORG_COMPANY] durante [DATE_RANGE] ritiene che ci sia una falla.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "legacy_tech_expert"
+            }
+        },
+        {
+            "id": "hard_005_en",
+            "langue": "EN",
+            "original_text": "The owner of the garage burned down during the Rue de Rivoli riots last May 1st contacted his insurance for a Jaguar E-Type collector vehicle.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 35,
+                    "text": "owner of the garage burned down",
+                    "replacement": "[VICTIM_INCIDENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 47,
+                    "end": 60,
+                    "text": "Rue de Rivoli",
+                    "replacement": "[LOC_STREET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 72,
+                    "end": 79,
+                    "text": "May 1st",
+                    "replacement": "[DATE_EVENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 110,
+                    "end": 123,
+                    "text": "Jaguar E-Type",
+                    "replacement": "[RARE_VEHICLE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A person [VICTIM_INCIDENT] at [LOC_STREET] on [DATE_EVENT] contacted his insurance for a [RARE_VEHICLE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 98,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "news_event_link"
+            }
+        },
+        {
+            "id": "hard_005_es",
+            "langue": "ES",
+            "original_text": "El dueño del taller incendiado durante los disturbios de la Rue de Rivoli el pasado 1 de mayo contactó con su seguro por un vehículo de colección Jaguar E-Type.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 30,
+                    "text": "dueño del taller incendiado",
+                    "replacement": "[VICTIM_INCIDENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 60,
+                    "end": 73,
+                    "text": "Rue de Rivoli",
+                    "replacement": "[LOC_STREET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 84,
+                    "end": 93,
+                    "text": "1 de mayo",
+                    "replacement": "[DATE_EVENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 146,
+                    "end": 159,
+                    "text": "Jaguar E-Type",
+                    "replacement": "[RARE_VEHICLE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una persona [VICTIM_INCIDENT] en [LOC_STREET] el [DATE_EVENT] contactó por un [RARE_VEHICLE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 98,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "news_event_link"
+            }
+        },
+        {
+            "id": "hard_005_it",
+            "langue": "IT",
+            "original_text": "Il proprietario del garage bruciato durante le rivolte di Rue de Rivoli lo scorso 1° maggio ha contattato la sua assicurazione per un veicolo da collezione Jaguar E-Type.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 35,
+                    "text": "proprietario del garage bruciato",
+                    "replacement": "[VICTIM_INCIDENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 58,
+                    "end": 71,
+                    "text": "Rue de Rivoli",
+                    "replacement": "[LOC_STREET]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 82,
+                    "end": 91,
+                    "text": "1° maggio",
+                    "replacement": "[DATE_EVENT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 156,
+                    "end": 169,
+                    "text": "Jaguar E-Type",
+                    "replacement": "[RARE_VEHICLE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una persona [VICTIM_INCIDENT] in [LOC_STREET] il [DATE_EVENT] ha contattato per una [RARE_VEHICLE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 98,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "news_event_link"
+            }
+        },
+        {
+            "id": "hard_006_en",
+            "langue": "EN",
+            "original_text": "The only pediatric cardiologist in Villeneuve-sur-Lot, aged 39, reported a lack of infant pacemakers in the night service.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 53,
+                    "text": "only pediatric cardiologist in Villeneuve-sur-Lot",
+                    "replacement": "[ROLE_MED_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 60,
+                    "end": 62,
+                    "text": "39",
+                    "replacement": "[AGE_39]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 83,
+                    "end": 100,
+                    "text": "infant pacemakers",
+                    "replacement": "[MED_DEVICE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [ROLE_MED_UNIQUE], aged [AGE_39], reported a lack of [MED_DEVICE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 97,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_unique_city"
+            }
+        },
+        {
+            "id": "hard_006_es",
+            "langue": "ES",
+            "original_text": "La única cardióloga pediátrica de Villeneuve-sur-Lot, de 39 años, informó de la falta de marcapasos infantiles en el servicio nocturno.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 52,
+                    "text": "única cardióloga pediátrica de Villeneuve-sur-Lot",
+                    "replacement": "[ROLE_MED_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 57,
+                    "end": 59,
+                    "text": "39",
+                    "replacement": "[AGE_39]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 89,
+                    "end": 110,
+                    "text": "marcapasos infantiles",
+                    "replacement": "[MED_DEVICE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una [ROLE_MED_UNIQUE], de [AGE_39], informó de la falta de [MED_DEVICE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 97,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_unique_city"
+            }
+        },
+        {
+            "id": "hard_006_it",
+            "langue": "IT",
+            "original_text": "L'unica cardiologa pediatrica di Villeneuve-sur-Lot, di 39 anni, ha segnalato la mancanza di pacemaker infantili nel servizio notturno.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 51,
+                    "text": "unica cardiologa pediatrica di Villeneuve-sur-Lot",
+                    "replacement": "[ROLE_MED_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 56,
+                    "end": 58,
+                    "text": "39",
+                    "replacement": "[AGE_39]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 93,
+                    "end": 112,
+                    "text": "pacemaker infantili",
+                    "replacement": "[MED_DEVICE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una [ROLE_MED_UNIQUE], di [AGE_39], ha segnalato la mancanza di [MED_DEVICE].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 97,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "medical_unique_city"
+            }
+        },
+        {
+            "id": "hard_007_en",
+            "langue": "EN",
+            "original_text": "On Île-aux-Oiseaux, the only owner of a green Aston Martin DB5 requested an appraisal after a suspicious theft at the local port.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 24,
+                    "end": 62,
+                    "text": "only owner of a green Aston Martin DB5",
+                    "replacement": "[UNIQUE_CAR_OWNER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 3,
+                    "end": 18,
+                    "text": "Île-aux-Oiseaux",
+                    "replacement": "[LOC_ISLAND]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [UNIQUE_CAR_OWNER] on [LOC_ISLAND] requested an appraisal.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_island"
+            }
+        },
+        {
+            "id": "hard_007_es",
+            "langue": "ES",
+            "original_text": "En Île-aux-Oiseaux, el único propietario de un Aston Martin DB5 verde solicitó un peritaje tras un robo sospechoso en el puerto local.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 23,
+                    "end": 69,
+                    "text": "único propietario de un Aston Martin DB5 verde",
+                    "replacement": "[UNIQUE_CAR_OWNER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 3,
+                    "end": 18,
+                    "text": "Île-aux-Oiseaux",
+                    "replacement": "[LOC_ISLAND]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [UNIQUE_CAR_OWNER] en [LOC_ISLAND] solicitó un peritaje.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_island"
+            }
+        },
+        {
+            "id": "hard_007_it",
+            "langue": "IT",
+            "original_text": "Sull'Île-aux-Oiseaux, l'unico proprietario di una Aston Martin DB5 verde ha richiesto una perizia dopo un furto sospetto al porto locale.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 24,
+                    "end": 72,
+                    "text": "unico proprietario di una Aston Martin DB5 verde",
+                    "replacement": "[UNIQUE_CAR_OWNER]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 5,
+                    "end": 20,
+                    "text": "Île-aux-Oiseaux",
+                    "replacement": "[LOC_ISLAND]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [UNIQUE_CAR_OWNER] sull'[LOC_ISLAND] ha richiesto una perizia.",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 100,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "unique_asset_island"
+            }
+        },
+        {
+            "id": "hard_008_en",
+            "langue": "EN",
+            "original_text": "The volunteer dog handler, instructor of the only dog club in the ZAC des Mimosas, former tracking champion, was contacted by the local gendarmerie.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 81,
+                    "text": "volunteer dog handler, instructor of the only dog club in the ZAC des Mimosas",
+                    "replacement": "[ROLE_VOLUNTEER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 66,
+                    "end": 81,
+                    "text": "ZAC des Mimosas",
+                    "replacement": "[LOC_NEIGH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [ROLE_VOLUNTEER_UNIQUE] from [LOC_NEIGH] was contacted.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 88,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "volunteer_unique_activity"
+            }
+        },
+        {
+            "id": "hard_008_es",
+            "langue": "ES",
+            "original_text": "El guía canino voluntario, instructor del único club canino de la ZAC des Mimosas, ex campeón de rastreo, fue contactado por la gendarmería local.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 81,
+                    "text": "guía canino voluntario, instructor del único club canino de la ZAC des Mimosas",
+                    "replacement": "[ROLE_VOLUNTEER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 66,
+                    "end": 81,
+                    "text": "ZAC des Mimosas",
+                    "replacement": "[LOC_NEIGH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_VOLUNTEER_UNIQUE] de [LOC_NEIGH] fue contactado.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 88,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "volunteer_unique_activity"
+            }
+        },
+        {
+            "id": "hard_008_it",
+            "langue": "IT",
+            "original_text": "L'addestratore cinofilo volontario, istruttore dell'unico club cinofilo della ZAC des Mimosas, ex campione di ricerca, è stato contattato dalla gendarmeria locale.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 2,
+                    "end": 93,
+                    "text": "addestratore cinofilo volontario, istruttore dell'unico club cinofilo della ZAC des Mimosas",
+                    "replacement": "[ROLE_VOLUNTEER_UNIQUE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 78,
+                    "end": 93,
+                    "text": "ZAC des Mimosas",
+                    "replacement": "[LOC_NEIGH]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_VOLUNTEER_UNIQUE] della [LOC_NEIGH] è stato contattato.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 88,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "volunteer_unique_activity"
+            }
+        },
+        {
+            "id": "hard_009_en",
+            "langue": "EN",
+            "original_text": "PhD student in post-quantum cryptography, member of a 5-person research group in Clermont, aged 27, looking for collaborative campus housing.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 0,
+                    "end": 40,
+                    "text": "PhD student in post-quantum cryptography",
+                    "replacement": "[ROLE_PHD_CRYPTO]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 81,
+                    "end": 89,
+                    "text": "Clermont",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 96,
+                    "end": 98,
+                    "text": "27",
+                    "replacement": "[AGE_27]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [ROLE_PHD_CRYPTO] member of a [GROUP_SMALL] in [LOC_CITY], aged [AGE_27], is looking for housing.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 93,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "academic_niche_small_group"
+            }
+        },
+        {
+            "id": "hard_009_es",
+            "langue": "ES",
+            "original_text": "Estudiante de doctorado en criptografía post-cuántica, miembro de un grupo de investigación de 5 personas en Clermont, de 27 años, busca alojamiento colaborativo en el campus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 0,
+                    "end": 53,
+                    "text": "Estudiante de doctorado en criptografía post-cuántica",
+                    "replacement": "[ROLE_PHD_CRYPTO]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 69,
+                    "end": 105,
+                    "text": "grupo de investigación de 5 personas",
+                    "replacement": "[GROUP_SMALL]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 109,
+                    "end": 117,
+                    "text": "Clermont",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 122,
+                    "end": 124,
+                    "text": "27",
+                    "replacement": "[AGE_27]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una [ROLE_PHD_CRYPTO] de un [GROUP_SMALL] en [LOC_CITY], de [AGE_27], busca alojamiento.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 93,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "academic_niche_small_group"
+            }
+        },
+        {
+            "id": "hard_009_it",
+            "langue": "IT",
+            "original_text": "Dottoranda in crittografia post-quantistica, membro di un gruppo di ricerca di 5 persone a Clermont, di 27 anni, cerca un alloggio collaborativo nel campus.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 0,
+                    "end": 43,
+                    "text": "Dottoranda in crittografia post-quantistica",
+                    "replacement": "[ROLE_PHD_CRYPTO]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 91,
+                    "end": 99,
+                    "text": "Clermont",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 104,
+                    "end": 106,
+                    "text": "27",
+                    "replacement": "[AGE_27]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Una [ROLE_PHD_CRYPTO] membro di un [GROUP_SMALL] a [LOC_CITY], di [AGE_27], cerca alloggio.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 93,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "academic_niche_small_group"
+            }
+        },
+        {
+            "id": "hard_010_en",
+            "langue": "EN",
+            "original_text": "The wine merchant and city councilor, aged 52, owner of the 'Le Cep Romain' bar-grocery in Montrouge, announced a temporary closure following a health inspection.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 36,
+                    "text": "wine merchant and city councilor",
+                    "replacement": "[ROLE_POLITICO_BUSINESS]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 43,
+                    "end": 45,
+                    "text": "52",
+                    "replacement": "[AGE_52]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 60,
+                    "end": 75,
+                    "text": "'Le Cep Romain'",
+                    "replacement": "[BUSINESS_NAME]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 91,
+                    "end": 100,
+                    "text": "Montrouge",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "A [ROLE_POLITICO_BUSINESS] aged [AGE_52], owner of a [BUSINESS_NAME] in [LOC_TOWN], announced a closure.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "local_politician_business"
+            }
+        },
+        {
+            "id": "hard_010_es",
+            "langue": "ES",
+            "original_text": "El vinatero y concejal de 52 años, dueño de la bodega-tienda 'Le Cep Romain' en Montrouge, anunció un cierre temporal tras una inspección sanitaria.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 22,
+                    "text": "vinatero y concejal",
+                    "replacement": "[ROLE_POLITICO_BUSINESS]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 26,
+                    "end": 28,
+                    "text": "52",
+                    "replacement": "[AGE_52]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 61,
+                    "end": 76,
+                    "text": "'Le Cep Romain'",
+                    "replacement": "[BUSINESS_NAME]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 80,
+                    "end": 89,
+                    "text": "Montrouge",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_POLITICO_BUSINESS] de [AGE_52], dueño de [BUSINESS_NAME] en [LOC_TOWN], anunció un cierre.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "local_politician_business"
+            }
+        },
+        {
+            "id": "hard_010_it",
+            "langue": "IT",
+            "original_text": "Il vestaio e consigliere comunale di 52 anni, titolare del bar-drogheria 'Le Cep Romain' a Montrouge, ha annunciato una chiusura temporanea a seguito di un'ispezione sanitaria.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 33,
+                    "text": "vestaio e consigliere comunale",
+                    "replacement": "[ROLE_POLITICO_BUSINESS]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 37,
+                    "end": 39,
+                    "text": "52",
+                    "replacement": "[AGE_52]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 73,
+                    "end": 88,
+                    "text": "'Le Cep Romain'",
+                    "replacement": "[BUSINESS_NAME]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 91,
+                    "end": 100,
+                    "text": "Montrouge",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Un [ROLE_POLITICO_BUSINESS] di [AGE_52], titolare di [BUSINESS_NAME] a [LOC_TOWN], ha annunciato una chiusura.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 90,
+            "metadata": {
+                "type": "quasi_id_hard",
+                "case": "local_politician_business"
+            }
+        }
+    ]
+}

@@ -7,8 +7,8 @@
             "annotations": [
                 {
                     "type": "PER",
-                    "start": 15,
-                    "end": 26,
+                    "start": 17,
+                    "end": 28,
                     "text": "Jean Dupont",
                     "replacement": "[PER_A]",
                     "coref_id": "entity_1",
@@ -16,8 +16,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 30,
-                    "end": 35,
+                    "start": 32,
+                    "end": 37,
                     "text": "Paris",
                     "replacement": "[LOC_FRANCE]",
                     "coref_id": null,
@@ -25,8 +25,8 @@
                 },
                 {
                     "type": "EMAIL",
-                    "start": 48,
-                    "end": 71,
+                    "start": 53,
+                    "end": 76,
                     "text": "jean.dupont@example.com",
                     "replacement": "[EMAIL_A]",
                     "coref_id": "entity_1",
@@ -34,8 +34,8 @@
                 },
                 {
                     "type": "IP",
-                    "start": 102,
-                    "end": 114,
+                    "start": 104,
+                    "end": 115,
                     "text": "192.168.1.1",
                     "replacement": "[IP_PRIVATE]",
                     "coref_id": null,
@@ -43,8 +43,8 @@
                 },
                 {
                     "type": "TICKET",
-                    "start": 126,
-                    "end": 135,
+                    "start": 128,
+                    "end": 137,
                     "text": "JIRA-1234",
                     "replacement": "[TICKET_A]",
                     "coref_id": null,
@@ -52,8 +52,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 137,
-                    "end": 139,
+                    "start": 139,
+                    "end": 141,
                     "text": "Il",
                     "replacement": "[PER_A]",
                     "coref_id": "entity_1",
@@ -117,7 +117,7 @@
                 {
                     "type": "PHONE",
                     "start": 40,
-                    "end": 57,
+                    "end": 55,
                     "text": "+1-123-456-7890",
                     "replacement": "[PHONE_A]",
                     "coref_id": null,
@@ -125,7 +125,7 @@
                 },
                 {
                     "type": "HOST",
-                    "start": 74,
+                    "start": 77,
                     "end": 104,
                     "text": "internal-server.example.com",
                     "replacement": "[HOST_A]",
@@ -134,8 +134,8 @@
                 },
                 {
                     "type": "UUID",
-                    "start": 111,
-                    "end": 147,
+                    "start": 114,
+                    "end": 150,
                     "text": "123e4567-e89b-12d3-a456-426614174000",
                     "replacement": "[UUID_A]",
                     "coref_id": null,
@@ -143,8 +143,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 153,
-                    "end": 164,
+                    "start": 152,
+                    "end": 165,
                     "text": "The team lead",
                     "replacement": "[PER_C]",
                     "coref_id": "entity_3",
@@ -194,7 +194,7 @@
                 {
                     "type": "API_KEY",
                     "start": 23,
-                    "end": 31,
+                    "end": 32,
                     "text": "sk-abc123",
                     "replacement": "[API_KEY_A]",
                     "coref_id": null,
@@ -221,7 +221,7 @@
                 {
                     "type": "MONTANT",
                     "start": 98,
-                    "end": 106,
+                    "end": 105,
                     "text": "456.78€",
                     "replacement": "[MONTANT_100-500]",
                     "coref_id": null,
@@ -229,8 +229,8 @@
                 },
                 {
                     "type": "PER",
-                    "start": 108,
-                    "end": 118,
+                    "start": 107,
+                    "end": 117,
                     "text": "Mme Martin",
                     "replacement": "[PER_D]",
                     "coref_id": "entity_4",
@@ -294,7 +294,7 @@
                 {
                     "type": "LOC",
                     "start": 37,
-                    "end": 44,
+                    "end": 43,
                     "text": "London",
                     "replacement": "[LOC_UK]",
                     "coref_id": null,
@@ -302,8 +302,8 @@
                 },
                 {
                     "type": "EMAIL",
-                    "start": 54,
-                    "end": 74,
+                    "start": 58,
+                    "end": 77,
                     "text": "support@company.com",
                     "replacement": "[EMAIL_B]",
                     "coref_id": null,
@@ -311,8 +311,8 @@
                 },
                 {
                     "type": "PER",
-                    "start": 89,
-                    "end": 92,
+                    "start": 91,
+                    "end": 94,
                     "text": "Bob",
                     "replacement": "[PER_E]",
                     "coref_id": "entity_5",
@@ -320,8 +320,8 @@
                 },
                 {
                     "type": "TICKET",
-                    "start": 120,
-                    "end": 126,
+                    "start": 131,
+                    "end": 137,
                     "text": "SN-456",
                     "replacement": "[TICKET_B]",
                     "coref_id": null,
@@ -366,8 +366,8 @@
             "annotations": [
                 {
                     "type": "MAC",
-                    "start": 21,
-                    "end": 39,
+                    "start": 25,
+                    "end": 42,
                     "text": "00:1A:2B:3C:4D:5E",
                     "replacement": "[MAC_A]",
                     "coref_id": null,
@@ -375,8 +375,8 @@
                 },
                 {
                     "type": "URL",
-                    "start": 44,
-                    "end": 70,
+                    "start": 50,
+                    "end": 74,
                     "text": "https://internal.api.com",
                     "replacement": "[URL_A]",
                     "coref_id": null,
@@ -384,8 +384,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 78,
-                    "end": 89,
+                    "start": 82,
+                    "end": 92,
                     "text": "2024-02-10",
                     "replacement": "2024-02",
                     "coref_id": null,
@@ -393,7 +393,7 @@
                 },
                 {
                     "type": "TEAM",
-                    "start": 99,
+                    "start": 101,
                     "end": 107,
                     "text": "DevOps",
                     "replacement": "[TEAM_A]",
@@ -411,7 +411,7 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 138,
+                    "start": 139,
                     "end": 147,
                     "text": "1234.56€",
                     "replacement": "[MONTANT_1000+]",
@@ -485,7 +485,7 @@
                 {
                     "type": "ORG",
                     "start": 64,
-                    "end": 71,
+                    "end": 72,
                     "text": "TechCorp",
                     "replacement": "[ORG_TECH]",
                     "coref_id": null,
@@ -493,8 +493,8 @@
                 },
                 {
                     "type": "API",
-                    "start": 113,
-                    "end": 128,
+                    "start": 125,
+                    "end": 142,
                     "text": "API Paiement v2.3",
                     "replacement": "[API_PAIEMENT]",
                     "coref_id": null,
@@ -502,8 +502,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 129,
-                    "end": 140,
+                    "start": 146,
+                    "end": 156,
                     "text": "12/03/2023",
                     "replacement": "2023-Q1",
                     "coref_id": null,
@@ -511,8 +511,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 145,
-                    "end": 157,
+                    "start": 158,
+                    "end": 170,
                     "text": "Son collègue",
                     "replacement": "[PER_G]",
                     "coref_id": "entity_7",
@@ -520,8 +520,8 @@
                 },
                 {
                     "type": "ROLE",
-                    "start": 163,
-                    "end": 176,
+                    "start": 183,
+                    "end": 197,
                     "text": "chef de projet",
                     "replacement": "[ROLE_PROJECT_MANAGER]",
                     "coref_id": "entity_7",
@@ -529,8 +529,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 179,
-                    "end": 185,
+                    "start": 200,
+                    "end": 206,
                     "text": "Nantes",
                     "replacement": "[LOC_FRANCE_OUEST]",
                     "coref_id": null,
@@ -538,8 +538,8 @@
                 },
                 {
                     "type": "EMAIL",
-                    "start": 197,
-                    "end": 218,
+                    "start": 229,
+                    "end": 248,
                     "text": "leclerc@techcorp.fr",
                     "replacement": "[EMAIL_C]",
                     "coref_id": "entity_6",
@@ -547,8 +547,8 @@
                 },
                 {
                     "type": "QUASI_ID",
-                    "start": 220,
-                    "end": 280,
+                    "start": 250,
+                    "end": 305,
                     "text": "Combinaison rare: rôle senior + ville + produit interne",
                     "replacement": "[QUASI_ID_GENERALIZED]",
                     "coref_id": null,
@@ -556,8 +556,8 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 293,
-                    "end": 299,
+                    "start": 325,
+                    "end": 331,
                     "text": "15000€",
                     "replacement": "[MONTANT_10000+]",
                     "coref_id": null,
@@ -565,8 +565,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 301,
-                    "end": 305,
+                    "start": 333,
+                    "end": 337,
                     "text": "Elle",
                     "replacement": "[PER_G]",
                     "coref_id": "entity_7",
@@ -574,8 +574,8 @@
                 },
                 {
                     "type": "TICKET",
-                    "start": 334,
-                    "end": 343,
+                    "start": 373,
+                    "end": 382,
                     "text": "JIRA-5678",
                     "replacement": "[TICKET_C]",
                     "coref_id": null,
@@ -583,8 +583,8 @@
                 },
                 {
                     "type": "DATE_REL",
-                    "start": 347,
-                    "end": 360,
+                    "start": 385,
+                    "end": 401,
                     "text": "il y a deux mois",
                     "replacement": "[DATE_REL_2M]",
                     "coref_id": null,
@@ -657,7 +657,7 @@
                 {
                     "type": "ROLE",
                     "start": 29,
-                    "end": 47,
+                    "end": 46,
                     "text": "marketing manager",
                     "replacement": "[ROLE_MARKETING_MANAGER]",
                     "coref_id": "entity_8",
@@ -665,8 +665,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 51,
-                    "end": 58,
+                    "start": 50,
+                    "end": 57,
                     "text": "Seattle",
                     "replacement": "[LOC_USA_WEST]",
                     "coref_id": null,
@@ -674,8 +674,8 @@
                 },
                 {
                     "type": "ORG",
-                    "start": 67,
-                    "end": 76,
+                    "start": 68,
+                    "end": 77,
                     "text": "GlobalInc",
                     "replacement": "[ORG_GLOBAL]",
                     "coref_id": null,
@@ -683,8 +683,8 @@
                 },
                 {
                     "type": "TOOL",
-                    "start": 104,
-                    "end": 125,
+                    "start": 99,
+                    "end": 126,
                     "text": "internal tool version 4.2.1",
                     "replacement": "[TOOL_INTERNAL]",
                     "coref_id": null,
@@ -692,7 +692,7 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 129,
+                    "start": 130,
                     "end": 140,
                     "text": "2024-05-15",
                     "replacement": "2024-Q2",
@@ -701,8 +701,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 145,
-                    "end": 158,
+                    "start": 142,
+                    "end": 155,
                     "text": "Her assistant",
                     "replacement": "[PER_I]",
                     "coref_id": "entity_9",
@@ -710,8 +710,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 172,
-                    "end": 184,
+                    "start": 170,
+                    "end": 181,
                     "text": "same office",
                     "replacement": "[LOC_SAME]",
                     "coref_id": null,
@@ -719,8 +719,8 @@
                 },
                 {
                     "type": "TEAM",
-                    "start": 215,
-                    "end": 228,
+                    "start": 231,
+                    "end": 243,
                     "text": "finance team",
                     "replacement": "[TEAM_FINANCE]",
                     "coref_id": null,
@@ -728,8 +728,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 232,
-                    "end": 239,
+                    "start": 247,
+                    "end": 254,
                     "text": "Chicago",
                     "replacement": "[LOC_USA_MIDWEST]",
                     "coref_id": null,
@@ -737,8 +737,8 @@
                 },
                 {
                     "type": "DATE_REL",
-                    "start": 240,
-                    "end": 252,
+                    "start": 255,
+                    "end": 267,
                     "text": "last quarter",
                     "replacement": "[DATE_REL_Q-1]",
                     "coref_id": null,
@@ -746,8 +746,8 @@
                 },
                 {
                     "type": "EMAIL",
-                    "start": 261,
-                    "end": 285,
+                    "start": 276,
+                    "end": 298,
                     "text": "jane.doe@globalinc.com",
                     "replacement": "[EMAIL_D]",
                     "coref_id": "entity_8",
@@ -755,8 +755,8 @@
                 },
                 {
                     "type": "QUASI_ID",
-                    "start": 287,
-                    "end": 350,
+                    "start": 300,
+                    "end": 373,
                     "text": "Rare combo: marketing role + branch + tool version + cross-team reference",
                     "replacement": "[QUASI_ID_GENERALIZED]",
                     "coref_id": null,
@@ -764,8 +764,8 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 370,
-                    "end": 377,
+                    "start": 392,
+                    "end": 398,
                     "text": "$25000",
                     "replacement": "[MONTANT_20000+]",
                     "coref_id": null,
@@ -773,8 +773,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 379,
-                    "end": 381,
+                    "start": 400,
+                    "end": 402,
                     "text": "He",
                     "replacement": "[PER_I]",
                     "coref_id": "entity_9",
@@ -782,8 +782,8 @@
                 },
                 {
                     "type": "MAC",
-                    "start": 395,
-                    "end": 413,
+                    "start": 425,
+                    "end": 442,
                     "text": "00:11:22:33:44:55",
                     "replacement": "[MAC_B]",
                     "coref_id": null,
@@ -791,8 +791,8 @@
                 },
                 {
                     "type": "IP",
-                    "start": 418,
-                    "end": 426,
+                    "start": 450,
+                    "end": 458,
                     "text": "10.0.0.1",
                     "replacement": "[IP_PRIVATE]",
                     "coref_id": null,
@@ -855,8 +855,8 @@
             "annotations": [
                 {
                     "type": "HOST",
-                    "start": 26,
-                    "end": 42,
+                    "start": 34,
+                    "end": 48,
                     "text": "prod-eu-west-1",
                     "replacement": "[HOST_PROD_EU]",
                     "coref_id": null,
@@ -864,8 +864,8 @@
                 },
                 {
                     "type": "API_KEY",
-                    "start": 52,
-                    "end": 70,
+                    "start": 62,
+                    "end": 76,
                     "text": "AKIA1234567890",
                     "replacement": "[AWS_KEY_A]",
                     "coref_id": null,
@@ -873,8 +873,8 @@
                 },
                 {
                     "type": "PER",
-                    "start": 84,
-                    "end": 90,
+                    "start": 90,
+                    "end": 96,
                     "text": "Sophie",
                     "replacement": "[PER_J]",
                     "coref_id": "entity_10",
@@ -882,8 +882,8 @@
                 },
                 {
                     "type": "ROLE",
-                    "start": 92,
-                    "end": 100,
+                    "start": 98,
+                    "end": 106,
                     "text": "dev lead",
                     "replacement": "[ROLE_DEV_LEAD]",
                     "coref_id": "entity_10",
@@ -891,8 +891,8 @@
                 },
                 {
                     "type": "TEAM",
-                    "start": 108,
-                    "end": 120,
+                    "start": 112,
+                    "end": 124,
                     "text": "équipe Alpha",
                     "replacement": "[TEAM_ALPHA]",
                     "coref_id": null,
@@ -900,8 +900,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 123,
-                    "end": 131,
+                    "start": 127,
+                    "end": 135,
                     "text": "Toulouse",
                     "replacement": "[LOC_FRANCE_SUD]",
                     "coref_id": null,
@@ -909,8 +909,8 @@
                 },
                 {
                     "type": "ORG",
-                    "start": 156,
-                    "end": 164,
+                    "start": 166,
+                    "end": 174,
                     "text": "BetaCorp",
                     "replacement": "[ORG_CLIENT]",
                     "coref_id": null,
@@ -918,8 +918,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 173,
-                    "end": 178,
+                    "start": 182,
+                    "end": 187,
                     "text": "Lille",
                     "replacement": "[LOC_FRANCE_NORD]",
                     "coref_id": null,
@@ -927,8 +927,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 195,
-                    "end": 206,
+                    "start": 204,
+                    "end": 214,
                     "text": "2023-11-20",
                     "replacement": "2023-Q4",
                     "coref_id": null,
@@ -936,8 +936,8 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 222,
-                    "end": 227,
+                    "start": 231,
+                    "end": 236,
                     "text": "5000€",
                     "replacement": "[MONTANT_1000-10000]",
                     "coref_id": null,
@@ -945,8 +945,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 229,
-                    "end": 240,
+                    "start": 238,
+                    "end": 249,
                     "text": "Son manager",
                     "replacement": "[PER_K]",
                     "coref_id": "entity_11",
@@ -954,8 +954,8 @@
                 },
                 {
                     "type": "PER",
-                    "start": 242,
-                    "end": 251,
+                    "start": 251,
+                    "end": 260,
                     "text": "M. Durand",
                     "replacement": "[PER_K]",
                     "coref_id": "entity_11",
@@ -963,8 +963,8 @@
                 },
                 {
                     "type": "TICKET",
-                    "start": 267,
-                    "end": 275,
+                    "start": 288,
+                    "end": 296,
                     "text": "SERV-999",
                     "replacement": "[TICKET_D]",
                     "coref_id": null,
@@ -972,8 +972,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 287,
-                    "end": 293,
+                    "start": 308,
+                    "end": 314,
                     "text": "Sophie",
                     "replacement": "[PER_J]",
                     "coref_id": "entity_10",
@@ -981,8 +981,8 @@
                 },
                 {
                     "type": "TEAM",
-                    "start": 332,
-                    "end": 343,
+                    "start": 365,
+                    "end": 377,
                     "text": "équipe Gamma",
                     "replacement": "[TEAM_GAMMA]",
                     "coref_id": null,
@@ -990,8 +990,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 346,
-                    "end": 356,
+                    "start": 380,
+                    "end": 390,
                     "text": "Strasbourg",
                     "replacement": "[LOC_FRANCE_EST]",
                     "coref_id": null,
@@ -999,8 +999,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 360,
-                    "end": 367,
+                    "start": 394,
+                    "end": 401,
                     "text": "octobre",
                     "replacement": "2023-Q4",
                     "coref_id": null,
@@ -1008,8 +1008,8 @@
                 },
                 {
                     "type": "UUID",
-                    "start": 382,
-                    "end": 418,
+                    "start": 419,
+                    "end": 455,
                     "text": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
                     "replacement": "[UUID_B]",
                     "coref_id": null,
@@ -1017,8 +1017,8 @@
                 },
                 {
                     "type": "IP",
-                    "start": 423,
-                    "end": 433,
+                    "start": 462,
+                    "end": 472,
                     "text": "172.16.0.1",
                     "replacement": "[IP_PRIVATE]",
                     "coref_id": null,
@@ -1026,8 +1026,8 @@
                 },
                 {
                     "type": "STYLE",
-                    "start": 435,
-                    "end": 478,
+                    "start": 474,
+                    "end": 523,
                     "text": "Style d'écriture formel, avec politesses répétées",
                     "replacement": "[STYLE_NORMALIZED]",
                     "coref_id": null,
@@ -1090,8 +1090,8 @@
             "annotations": [
                 {
                     "type": "ROLE",
-                    "start": 19,
-                    "end": 28,
+                    "start": 11,
+                    "end": 20,
                     "text": "Developer",
                     "replacement": "[ROLE_DEVELOPER]",
                     "coref_id": null,
@@ -1099,8 +1099,8 @@
                 },
                 {
                     "type": "PER",
-                    "start": 29,
-                    "end": 33,
+                    "start": 21,
+                    "end": 25,
                     "text": "Mike",
                     "replacement": "[PER_L]",
                     "coref_id": "entity_12",
@@ -1108,8 +1108,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 43,
-                    "end": 49,
+                    "start": 35,
+                    "end": 41,
                     "text": "Berlin",
                     "replacement": "[LOC_GERMANY]",
                     "coref_id": null,
@@ -1117,8 +1117,8 @@
                 },
                 {
                     "type": "ORG",
-                    "start": 59,
-                    "end": 67,
+                    "start": 52,
+                    "end": 60,
                     "text": "EuroTech",
                     "replacement": "[ORG_EURO]",
                     "coref_id": null,
@@ -1126,8 +1126,8 @@
                 },
                 {
                     "type": "ERROR_CODE",
-                    "start": 102,
-                    "end": 109,
+                    "start": 101,
+                    "end": 108,
                     "text": "ERR-789",
                     "replacement": "ERR-789",
                     "coref_id": null,
@@ -1135,8 +1135,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 113,
-                    "end": 124,
+                    "start": 112,
+                    "end": 122,
                     "text": "2024-01-10",
                     "replacement": "2024-Q1",
                     "coref_id": null,
@@ -1144,8 +1144,8 @@
                 },
                 {
                     "type": "PHONE",
-                    "start": 139,
-                    "end": 155,
+                    "start": 137,
+                    "end": 151,
                     "text": "+49-30-1234567",
                     "replacement": "[PHONE_B]",
                     "coref_id": "entity_12",
@@ -1153,8 +1153,8 @@
                 },
                 {
                     "type": "CONFIG",
-                    "start": 189,
-                    "end": 207,
+                    "start": 198,
+                    "end": 218,
                     "text": "custom plugin v1.0.2",
                     "replacement": "[PLUGIN_CUSTOM]",
                     "coref_id": null,
@@ -1163,7 +1163,7 @@
                 {
                     "type": "QUASI_ID",
                     "start": 219,
-                    "end": 235,
+                    "end": 239,
                     "text": "used only by 3 teams",
                     "replacement": "[RARE_CONFIG]",
                     "coref_id": null,
@@ -1171,8 +1171,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 252,
-                    "end": 259,
+                    "start": 258,
+                    "end": 265,
                     "text": "Germany",
                     "replacement": "[LOC_GERMANY]",
                     "coref_id": null,
@@ -1180,8 +1180,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 268,
-                    "end": 273,
+                    "start": 277,
+                    "end": 282,
                     "text": "Paris",
                     "replacement": "[LOC_FRANCE]",
                     "coref_id": null,
@@ -1189,8 +1189,8 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 287,
-                    "end": 295,
+                    "start": 301,
+                    "end": 308,
                     "text": "€100000",
                     "replacement": "[MONTANT_100000+]",
                     "coref_id": null,
@@ -1198,8 +1198,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 297,
-                    "end": 300,
+                    "start": 310,
+                    "end": 313,
                     "text": "She",
                     "replacement": "[PER_M]",
                     "coref_id": "entity_13",
@@ -1207,8 +1207,8 @@
                 },
                 {
                     "type": "EMAIL",
-                    "start": 309,
-                    "end": 329,
+                    "start": 322,
+                    "end": 338,
                     "text": "mike@eurotech.de",
                     "replacement": "[EMAIL_E]",
                     "coref_id": "entity_12",
@@ -1216,8 +1216,8 @@
                 },
                 {
                     "type": "DATE_REL",
-                    "start": 350,
-                    "end": 358,
+                    "start": 380,
+                    "end": 387,
                     "text": "Q4 2023",
                     "replacement": "2023-Q4",
                     "coref_id": null,
@@ -1225,8 +1225,8 @@
                 },
                 {
                     "type": "HOST",
-                    "start": 379,
-                    "end": 396,
+                    "start": 407,
+                    "end": 423,
                     "text": "berlin-server-01",
                     "replacement": "[HOST_BERLIN]",
                     "coref_id": null,
@@ -1234,8 +1234,8 @@
                 },
                 {
                     "type": "API_KEY",
-                    "start": 410,
-                    "end": 420,
+                    "start": 439,
+                    "end": 448,
                     "text": "secret123",
                     "replacement": "[SECRET_KEY_A]",
                     "coref_id": null,
@@ -1243,8 +1243,8 @@
                 },
                 {
                     "type": "QUASI_ID",
-                    "start": 422,
-                    "end": 499,
+                    "start": 450,
+                    "end": 538,
                     "text": "Indirect link: rare plugin + country + error code could deduce team via sector knowledge",
                     "replacement": "[INDIRECT_LINK_GENERALIZED]",
                     "coref_id": null,
@@ -1307,7 +1307,7 @@
             "annotations": [
                 {
                     "type": "ROLE",
-                    "start": 28,
+                    "start": 22,
                     "end": 43,
                     "text": "utilisateur principal",
                     "replacement": "[ROLE_PRINCIPAL_USER]",
@@ -1317,7 +1317,7 @@
                 {
                     "type": "PER",
                     "start": 45,
-                    "end": 59,
+                    "end": 60,
                     "text": "Dr. Émilie Roux",
                     "replacement": "[PER_N]",
                     "coref_id": "entity_14",
@@ -1325,8 +1325,8 @@
                 },
                 {
                     "type": "ROLE",
-                    "start": 61,
-                    "end": 73,
+                    "start": 62,
+                    "end": 78,
                     "text": "chercheuse en IA",
                     "replacement": "[ROLE_RESEARCHER_AI]",
                     "coref_id": "entity_14",
@@ -1334,8 +1334,8 @@
                 },
                 {
                     "type": "ORG",
-                    "start": 79,
-                    "end": 86,
+                    "start": 84,
+                    "end": 91,
                     "text": "InnoLab",
                     "replacement": "[ORG_LAB]",
                     "coref_id": null,
@@ -1343,8 +1343,8 @@
                 },
                 {
                     "type": "LOC",
-                    "start": 89,
-                    "end": 98,
+                    "start": 94,
+                    "end": 102,
                     "text": "Grenoble",
                     "replacement": "[LOC_FRANCE_EST]",
                     "coref_id": null,
@@ -1352,8 +1352,8 @@
                 },
                 {
                     "type": "MODEL",
-                    "start": 128,
-                    "end": 149,
+                    "start": 131,
+                    "end": 157,
                     "text": "modèle ML version beta-0.9",
                     "replacement": "[MODEL_ML_BETA]",
                     "coref_id": null,
@@ -1361,8 +1361,8 @@
                 },
                 {
                     "type": "DATE",
-                    "start": 166,
-                    "end": 177,
+                    "start": 176,
+                    "end": 186,
                     "text": "2024-07-01",
                     "replacement": "2024-Q3",
                     "coref_id": null,
@@ -1370,8 +1370,8 @@
                 },
                 {
                     "type": "NIR",
-                    "start": 189,
-                    "end": 210,
+                    "start": 200,
+                    "end": 221,
                     "text": "1 85 12 38 123 456 78",
                     "replacement": "[NIR_A]",
                     "coref_id": "entity_14",
@@ -1379,8 +1379,8 @@
                 },
                 {
                     "type": "COREF",
-                    "start": 212,
-                    "end": 216,
+                    "start": 223,
+                    "end": 227,
                     "text": "Elle",
                     "replacement": "[PER_N]",
                     "coref_id": "entity_14",
@@ -1388,8 +1388,8 @@
                 },
                 {
                     "type": "TEAM",
-                    "start": 232,
-                    "end": 245,
+                    "start": 245,
+                    "end": 260,
                     "text": "équipe de Paris",
                     "replacement": "[TEAM_PARIS]",
                     "coref_id": null,
@@ -1397,8 +1397,8 @@
                 },
                 {
                     "type": "ROLE",
-                    "start": 258,
-                    "end": 265,
+                    "start": 277,
+                    "end": 283,
                     "text": "expert",
                     "replacement": "[ROLE_EXPERT]",
                     "coref_id": "entity_15",
@@ -1406,8 +1406,8 @@
                 },
                 {
                     "type": "PROJECT",
-                    "start": 284,
-                    "end": 296,
+                    "start": 307,
+                    "end": 318,
                     "text": "projet Zeta",
                     "replacement": "[PROJECT_ZETA]",
                     "coref_id": null,
@@ -1415,8 +1415,8 @@
                 },
                 {
                     "type": "DATE_REL",
-                    "start": 298,
-                    "end": 308,
+                    "start": 319,
+                    "end": 331,
                     "text": "l'an dernier",
                     "replacement": "[DATE_REL_1Y]",
                     "coref_id": null,
@@ -1424,8 +1424,8 @@
                 },
                 {
                     "type": "MONTANT",
-                    "start": 326,
-                    "end": 334,
+                    "start": 351,
+                    "end": 358,
                     "text": "200000€",
                     "replacement": "[MONTANT_100000+]",
                     "coref_id": null,
@@ -1433,8 +1433,8 @@
                 },
                 {
                     "type": "URL",
-                    "start": 362,
-                    "end": 399,
+                    "start": 393,
+                    "end": 427,
                     "text": "https://innolab-research.fr/api/ml",
                     "replacement": "[URL_INTERNAL]",
                     "coref_id": null,
@@ -1442,8 +1442,8 @@
                 },
                 {
                     "type": "PATH",
-                    "start": 408,
-                    "end": 426,
+                    "start": 441,
+                    "end": 456,
                     "text": "/home/roux/data",
                     "replacement": "[PATH_INTERNAL]",
                     "coref_id": null,
@@ -1451,8 +1451,8 @@
                 },
                 {
                     "type": "QUASI_ID",
-                    "start": 438,
-                    "end": 545,
+                    "start": 458,
+                    "end": 612,
                     "text": "Contexte métier: combinaison de rôle académique + lab rare + grant élevé pourrait permettre une identification par recoupement avec publications publiques",
                     "replacement": "[CONTEXT_METIER_GENERALIZED]",
                     "coref_id": null,
@@ -1460,8 +1460,8 @@
                 },
                 {
                     "type": "STYLE",
-                    "start": 547,
-                    "end": 579,
+                    "start": 614,
+                    "end": 650,
                     "text": "Style: phrases longues et techniques",
                     "replacement": "[STYLE_TECH_NORMALIZED]",
                     "coref_id": null,
@@ -1511,6 +1511,1814 @@
                 "domain": "support_research_complex",
                 "date_creation": "2025-09-03",
                 "complexity": "high"
+            }
+        },
+        {
+            "id": "ticket_011",
+            "langue": "FR",
+            "original_text": "LOGS D'INCIDENT - CRITIQUE\nDate: 2024-08-12 14:35:02\nSignalé par: Marc Lefebvre (m.lefebvre@corp-tech.fr)\nLocalisation: Bureau 402, Lyon\n\nDescription: Impossible de joindre le service de paiement sur le serveur 10.0.45.12. Le timeout se produit à chaque tentative depuis l'URL https://api-internal.payments.corp-tech.fr/v1/auth.\n\nMarc a contacté Sarah Bernard (s.bernard@corp-tech.fr) du département DevOps pour vérifier les accès via la passerelle 192.168.10.254. \nSarah a répondu: 'Je vois des erreurs 403 récurrentes. Marc, est-ce que tu as mis à jour la clé API ?'.\nMarc: 'Oui, j'ai utilisé la clé AKIA-PROD-9988776655. C'est David qui me l'a donnée.'\nDavid est le manager de l'équipe infrastructure à Nantes. Son numéro est +33 6 12 34 56 78.\n\nNote: Le fichier de config /etc/network/interfaces semble corrompu. Voici l'empreinte UUID du disque: 550e8400-e29b-41d4-a716-446655440000.\nMontant des transactions bloquées: 45000€.\nIl faut régler ça avant la fin du trimestre Q3 2024.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "text": "Marc Lefebvre",
+                    "replacement": "[PER_O]",
+                    "risk_note": "Nom complet",
+                    "start": 66,
+                    "end": 79
+                },
+                {
+                    "type": "EMAIL",
+                    "text": "m.lefebvre@corp-tech.fr",
+                    "replacement": "[EMAIL_F]",
+                    "start": 81,
+                    "end": 104
+                },
+                {
+                    "type": "LOC",
+                    "text": "Lyon",
+                    "replacement": "[LOC_FRANCE]",
+                    "start": 132,
+                    "end": 136
+                },
+                {
+                    "type": "IP",
+                    "text": "10.0.45.12",
+                    "replacement": "[IP_PRIVATE]",
+                    "start": 211,
+                    "end": 221
+                },
+                {
+                    "type": "URL",
+                    "text": "https://api-internal.payments.corp-tech.fr/v1/auth",
+                    "replacement": "[URL_INTERNAL]",
+                    "start": 277,
+                    "end": 327
+                },
+                {
+                    "type": "PER",
+                    "text": "Marc",
+                    "replacement": "[PER_O]",
+                    "start": 66,
+                    "end": 70
+                },
+                {
+                    "type": "PER",
+                    "text": "Sarah Bernard",
+                    "replacement": "[PER_P]",
+                    "start": 346,
+                    "end": 359
+                },
+                {
+                    "type": "EMAIL",
+                    "text": "s.bernard@corp-tech.fr",
+                    "replacement": "[EMAIL_G]",
+                    "start": 361,
+                    "end": 383
+                },
+                {
+                    "type": "IP",
+                    "text": "192.168.10.254",
+                    "replacement": "[IP_GATEWAY]",
+                    "start": 449,
+                    "end": 463
+                },
+                {
+                    "type": "PER",
+                    "text": "Sarah",
+                    "replacement": "[PER_P]",
+                    "start": 346,
+                    "end": 351
+                },
+                {
+                    "type": "PER",
+                    "text": "Marc",
+                    "replacement": "[PER_O]",
+                    "start": 66,
+                    "end": 70
+                },
+                {
+                    "type": "PER",
+                    "text": "Marc",
+                    "replacement": "[PER_O]",
+                    "start": 66,
+                    "end": 70
+                },
+                {
+                    "type": "API_KEY",
+                    "text": "AKIA-PROD-9988776655",
+                    "replacement": "[AWS_KEY_B]",
+                    "start": 602,
+                    "end": 622
+                },
+                {
+                    "type": "PER",
+                    "text": "David",
+                    "replacement": "[PER_Q]",
+                    "start": 630,
+                    "end": 635
+                },
+                {
+                    "type": "PER",
+                    "text": "David",
+                    "replacement": "[PER_Q]",
+                    "start": 630,
+                    "end": 635
+                },
+                {
+                    "type": "LOC",
+                    "text": "Nantes",
+                    "replacement": "[LOC_FRANCE_OUEST]",
+                    "start": 706,
+                    "end": 712
+                },
+                {
+                    "type": "PHONE",
+                    "text": "+33 6 12 34 56 78",
+                    "replacement": "[PHONE_C]",
+                    "start": 729,
+                    "end": 746
+                },
+                {
+                    "type": "PATH",
+                    "text": "/etc/network/interfaces",
+                    "replacement": "[PATH_INTERNAL]",
+                    "start": 776,
+                    "end": 799
+                },
+                {
+                    "type": "UUID",
+                    "text": "550e8400-e29b-41d4-a716-446655440000",
+                    "replacement": "[UUID_C]",
+                    "start": 851,
+                    "end": 887
+                },
+                {
+                    "type": "MONTANT",
+                    "text": "45000€",
+                    "replacement": "[MONTANT_10000+]",
+                    "start": 924,
+                    "end": 930
+                },
+                {
+                    "type": "DATE",
+                    "text": "Q3 2024",
+                    "replacement": "2024-Q3",
+                    "start": 976,
+                    "end": 983
+                }
+            ],
+            "anonymized_text": "LOGS D'INCIDENT - CRITIQUE\nDate: 2024-08-12 14:35:02\nSignalé par: [PER_O] ([EMAIL_F])\nLocalisation: Bureau 402, [LOC_FRANCE]\n\nDescription: Impossible de joindre le service de paiement sur le serveur [IP_PRIVATE]. Le timeout se produit à chaque tentative depuis l'URL [URL_INTERNAL].\n\n[PER_O] a contacté [PER_P] ([EMAIL_G]) du département DevOps pour vérifier les accès via la passerelle [IP_GATEWAY]. \n[PER_P] a répondu: 'Je vois des erreurs 403 récurrentes. [PER_O], est-ce que tu as mis à jour la clé API ?'.\n[PER_O]: 'Oui, j'ai utilisé la clé [AWS_KEY_B]. C'est [PER_Q] qui me l'a donnée.'\n[PER_Q] est le manager de l'équipe infrastructure à [LOC_FRANCE_OUEST]. Son numéro est [PHONE_C].\n\nNote: Le fichier de config [PATH_INTERNAL] semble corrompu. Voici l'empreinte UUID du disque: [UUID_C].\nMontant des transactions bloquées: [MONTANT_10000+].\nIl faut régler ça avant la fin du trimestre [DATE_GENERALIZED].",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 45,
+            "metadata": {
+                "domain": "incident_logs",
+                "date_creation": "2026-01-12"
+            }
+        },
+        {
+            "id": "ticket_012",
+            "langue": "EN",
+            "original_text": "VERY LONG TRANSCRIPT - NETWORK TROUBLESHOOTING\nParticipants: Robert Smith (Network Admin), Linda Johnson (Security Analyst), Kevin (ISP Support).\n\nRobert Smith: Hi Linda, I'm seeing weird traffic from 172.217.16.143 hitting our internal database at db-prod-01.company.internal (10.10.1.50).\nLinda Johnson: Let me check the firewall logs. I see an access attempt with credentials for 'user_admin_robert' at 14:00 GMT.\nKevin: This is Kevin from GlobalLink ISP. We noticed a potential DDoS starting from your subnet 203.0.113.0/24.\nRobert Smith: That's strange. Linda, can you block 172.217.16.143 immediately? My email for the report is r.smith@company.com.\nLinda Johnson: Done. I also see requests to https://internal.dev.portal/api/secret-token. The source seems to be Kevin's test machine?\nKevin: No, my IP is 8.8.4.4. Wait, I see another one: 192.168.5.10. \nRobert Smith: Kevin, check the route to our Chicago office. The manager there, Susan, is reporting outages.\nLinda Johnson: Kevin, Susan's email is s.well@company.com and her phone is +1-555-0199. Please coordinate with her.\nKevin: Copy that. I'm investigating the trunk link eth0/1 on the Cisco router model ASR-1001.\nRobert Smith: One more thing, the license key for the firewall is LIC-9988-X-Z. Is it still valid?\nLinda Johnson: Yes, it expires on 2025-12-31. Kevin, what's the status for the Chicago link?\nKevin: Still down. I'm seeing hardware failure on the line. Estimated repair cost: $5000.\nRobert Smith: We need this fixed by Q1 2026 for the audit.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "text": "Robert Smith",
+                    "replacement": "[PER_R]",
+                    "start": 61,
+                    "end": 73
+                },
+                {
+                    "type": "ROLE",
+                    "text": "Network Admin",
+                    "replacement": "[ROLE_ADMIN]",
+                    "start": 75,
+                    "end": 88
+                },
+                {
+                    "type": "PER",
+                    "text": "Linda Johnson",
+                    "replacement": "[PER_S]",
+                    "start": 91,
+                    "end": 104
+                },
+                {
+                    "type": "ROLE",
+                    "text": "Security Analyst",
+                    "replacement": "[ROLE_SECURITY]",
+                    "start": 106,
+                    "end": 122
+                },
+                {
+                    "type": "PER",
+                    "text": "Kevin",
+                    "replacement": "[PER_T]",
+                    "start": 125,
+                    "end": 130
+                },
+                {
+                    "type": "ROLE",
+                    "text": "ISP Support",
+                    "replacement": "[ROLE_ISP]",
+                    "start": 132,
+                    "end": 143
+                },
+                {
+                    "type": "IP",
+                    "text": "172.217.16.143",
+                    "replacement": "[IP_EXTERNAL]",
+                    "start": 201,
+                    "end": 215
+                },
+                {
+                    "type": "HOST",
+                    "text": "db-prod-01.company.internal",
+                    "replacement": "[HOST_INTERNAL]",
+                    "start": 249,
+                    "end": 276
+                },
+                {
+                    "type": "IP",
+                    "text": "10.10.1.50",
+                    "replacement": "[IP_PRIVATE]",
+                    "start": 278,
+                    "end": 288
+                },
+                {
+                    "type": "PER",
+                    "text": "Linda Johnson",
+                    "replacement": "[PER_S]",
+                    "start": 91,
+                    "end": 104
+                },
+                {
+                    "type": "PER",
+                    "text": "Robert Smith",
+                    "replacement": "[PER_R]",
+                    "start": 61,
+                    "end": 73
+                },
+                {
+                    "type": "IP",
+                    "text": "203.0.113.0/24",
+                    "replacement": "[IP_SUBNET]",
+                    "start": 513,
+                    "end": 527
+                },
+                {
+                    "type": "EMAIL",
+                    "text": "r.smith@company.com",
+                    "replacement": "[EMAIL_H]",
+                    "start": 635,
+                    "end": 654
+                },
+                {
+                    "type": "URL",
+                    "text": "https://internal.dev.portal/api/secret-token",
+                    "replacement": "[URL_INTERNAL]",
+                    "start": 700,
+                    "end": 744
+                },
+                {
+                    "type": "IP",
+                    "text": "8.8.4.4",
+                    "replacement": "[IP_KEVIN]",
+                    "start": 811,
+                    "end": 818
+                },
+                {
+                    "type": "IP",
+                    "text": "192.168.5.10",
+                    "replacement": "[IP_PRIVATE]",
+                    "start": 845,
+                    "end": 857
+                },
+                {
+                    "type": "LOC",
+                    "text": "Chicago",
+                    "replacement": "[LOC_USA_CITY]",
+                    "start": 904,
+                    "end": 911
+                },
+                {
+                    "type": "PER",
+                    "text": "Susan",
+                    "replacement": "[PER_U]",
+                    "start": 939,
+                    "end": 944
+                },
+                {
+                    "type": "EMAIL",
+                    "text": "s.well@company.com",
+                    "replacement": "[EMAIL_I]",
+                    "start": 1007,
+                    "end": 1025
+                },
+                {
+                    "type": "PHONE",
+                    "text": "+1-555-0199",
+                    "replacement": "[PHONE_D]",
+                    "start": 1043,
+                    "end": 1054
+                },
+                {
+                    "type": "LICENSE",
+                    "text": "LIC-9988-X-Z",
+                    "replacement": "[LICENSE_A]",
+                    "start": 1244,
+                    "end": 1256
+                },
+                {
+                    "type": "DATE",
+                    "text": "2025-12-31",
+                    "replacement": "2025-Q4",
+                    "start": 1311,
+                    "end": 1321
+                },
+                {
+                    "type": "MONTANT",
+                    "text": "$5000",
+                    "replacement": "[MONTANT_1000-10000]",
+                    "start": 1453,
+                    "end": 1458
+                },
+                {
+                    "type": "DATE",
+                    "text": "Q1 2026",
+                    "replacement": "2026-Q1",
+                    "start": 1496,
+                    "end": 1503
+                }
+            ],
+            "anonymized_text": "...",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 35,
+            "metadata": {
+                "domain": "network_transcript",
+                "date_creation": "2026-01-12",
+                "length": "long"
+            }
+        },
+        {
+            "id": "ticket_013",
+            "langue": "EN",
+            "original_text": "LOG ANALYSIS REPORT - INCIDENT #8829\nTimestamp: 2024-10-05 08:12:44\nSeverity: CRITICAL\nNode: srv-prod-db-master-01.internal.cloud.net\nIP Address: 10.240.15.2\nMaintenance Contact: Arthur Pendragon (a.pendragon@camelot-solutions.fr)\n\n[08:12:40] ERROR: Auth failed for user 'db_admin_svc' from 192.168.100.45.\n[08:12:41] WARNING: Connection limit reached on eth0 (MAC: 00:50:56:AB:CD:EF).\n[08:12:42] CRITICAL: System disk /dev/sda1 is 99% full. Path: /var/lib/mysql/data/camelot_db.\n[08:12:43] ALERT: Secret key 'AKIA_SQL_KEY_SAMPLE_123' exposed in plain text in /etc/mysql/my.cnf.\n[08:12:44] INFO: Escalating to Head of Infrastructure, Morgane LeFay (m.lefay@camelot-solutions.fr, +33 7 88 99 00 11).\n\nDetailed Stack Trace:\njava.sql.SQLException: Access denied for user 'db_admin_svc'@'192.168.100.45' (using password: YES)\n    at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)\n    at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)\n    at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:836)\n    ...\nImpacted Customers:\n- Excalibur Retail (Contract ID: EX-7788)\n- RoundTable Finance (Project: Avalon-v2)\n\nResolution Steps:\n1. Contact Arthur Pendragon for disk cleanup.\n2. Rotate AWS key AKIA_SQL_KEY_SAMPLE_123.\n3. Update firewall rules for 192.168.100.45.\n",
+            "annotations": [
+                {
+                    "type": "HOST",
+                    "start": 93,
+                    "end": 133,
+                    "text": "srv-prod-db-master-01.internal.cloud.net",
+                    "replacement": "[HOST_A]",
+                    "coref_id": null,
+                    "risk_note": "Nom d'hôte interne"
+                },
+                {
+                    "type": "IP",
+                    "start": 146,
+                    "end": 157,
+                    "text": "10.240.15.2",
+                    "replacement": "[IP_INTERNAL]",
+                    "coref_id": null,
+                    "risk_note": "IP de base de données"
+                },
+                {
+                    "type": "PER",
+                    "start": 179,
+                    "end": 195,
+                    "text": "Arthur Pendragon",
+                    "replacement": "[PER_L1]",
+                    "coref_id": null,
+                    "risk_note": "Nom de l'employé"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 197,
+                    "end": 229,
+                    "text": "a.pendragon@camelot-solutions.fr",
+                    "replacement": "[EMAIL_L1]",
+                    "coref_id": null,
+                    "risk_note": "Email professionnel"
+                },
+                {
+                    "type": "ORG",
+                    "start": 209,
+                    "end": 229,
+                    "text": "camelot-solutions.fr",
+                    "replacement": "[ORG_CAMELOT]",
+                    "coref_id": null,
+                    "risk_note": "Société mentionnée dans email"
+                },
+                {
+                    "type": "IP",
+                    "start": 291,
+                    "end": 305,
+                    "text": "192.168.100.45",
+                    "replacement": "[IP_CLIENT]",
+                    "coref_id": null,
+                    "risk_note": "IP source attaquante"
+                },
+                {
+                    "type": "MAC",
+                    "start": 366,
+                    "end": 383,
+                    "text": "00:50:56:AB:CD:EF",
+                    "replacement": "[MAC_L1]",
+                    "coref_id": null,
+                    "risk_note": "Adresse MAC"
+                },
+                {
+                    "type": "PATH",
+                    "start": 448,
+                    "end": 478,
+                    "text": "/var/lib/mysql/data/camelot_db",
+                    "replacement": "[PATH_DB]",
+                    "coref_id": null,
+                    "risk_note": "Chemin système"
+                },
+                {
+                    "type": "AWS_KEY",
+                    "start": 510,
+                    "end": 533,
+                    "text": "AKIA_SQL_KEY_SAMPLE_123",
+                    "replacement": "[AWS_KEY_L1]",
+                    "coref_id": null,
+                    "risk_note": "Clé AWS"
+                },
+                {
+                    "type": "PER",
+                    "start": 634,
+                    "end": 647,
+                    "text": "Morgane LeFay",
+                    "replacement": "[PER_L2]",
+                    "coref_id": null,
+                    "risk_note": "Nom de la responsable"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 649,
+                    "end": 677,
+                    "text": "m.lefay@camelot-solutions.fr",
+                    "replacement": "[EMAIL_L2]",
+                    "coref_id": null,
+                    "risk_note": "Email responsable"
+                },
+                {
+                    "type": "PHONE",
+                    "start": 679,
+                    "end": 696,
+                    "text": "+33 7 88 99 00 11",
+                    "replacement": "[PHONE_L1]",
+                    "coref_id": null,
+                    "risk_note": "Numéro de téléphone"
+                },
+                {
+                    "type": "ORG",
+                    "start": 1119,
+                    "end": 1135,
+                    "text": "Excalibur Retail",
+                    "replacement": "[ORG_EXCALIBUR]",
+                    "coref_id": null,
+                    "risk_note": "Nom du client"
+                },
+                {
+                    "type": "ID",
+                    "start": 1150,
+                    "end": 1157,
+                    "text": "EX-7788",
+                    "replacement": "[CONTRACT_A]",
+                    "coref_id": null,
+                    "risk_note": "ID de contrat"
+                },
+                {
+                    "type": "ORG",
+                    "start": 1161,
+                    "end": 1179,
+                    "text": "RoundTable Finance",
+                    "replacement": "[ORG_ROUNDTABLE]",
+                    "coref_id": null,
+                    "risk_note": "Nom du client"
+                },
+                {
+                    "type": "PROJECT",
+                    "start": 1190,
+                    "end": 1199,
+                    "text": "Avalon-v2",
+                    "replacement": "[PROJECT_A]",
+                    "coref_id": null,
+                    "risk_note": "Nom de projet confidentiel"
+                }
+            ],
+            "anonymized_text": "LOG ANALYSIS REPORT - INCIDENT #8829\nTimestamp: 2024-10-05 08:12:44\nSeverity: CRITICAL\nNode: [HOST_A]\nIP Address: [IP_INTERNAL]\nMaintenance Contact: [PER_L1] ([EMAIL_L1])\n\n[08:12:40] ERROR: Auth failed for user \"db_admin_svc\" from [IP_CLIENT].\n[08:12:41] WARNING: Connection limit reached on eth0 (MAC: [MAC_L1]).\n[08:12:42] CRITICAL: System disk /dev/sda1 is 99% full. Path: [PATH_DB].\n[08:12:43] ALERT: Secret key \"[AWS_KEY_L1]\" exposed in plain text in /etc/mysql/my.cnf.\n[08:12:44] INFO: Escalating to Head of Infrastructure, [PER_L2] ([EMAIL_L2], [PHONE_L1]).\n\nDetailed Stack Trace:\njava.sql.SQLException: Access denied for user \"db_admin_svc\"@\"[IP_CLIENT]\" (using password: YES)\n...\nImpacted Customers:\n- [ORG_EXCALIBUR] (Contract ID: [CONTRACT_A])\n- [ORG_ROUNDTABLE] (Project: [PROJECT_A])\n\nResolution Steps:\n1. Contact [PER_L1] for disk cleanup.\n2. Rotate AWS key [AWS_KEY_L1].\n3. Update firewall rules for [IP_CLIENT].",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 75,
+            "metadata": {
+                "domain": "infrastructure",
+                "date_creation": "2024-10-05"
+            }
+        },
+        {
+            "id": "ticket_014",
+            "langue": "EN",
+            "original_text": "CUSTOMER SUPPORT TRANSCRIPT - TRANSCRIPTION_ID_99012\nDate: 2024-11-20\nParticipants: John (Support Agent), Elena Gilbert (Customer), Stefan (Billing Expert)\n\nJohn [10:00]: Hello! This is John from GlobalNet Support. How can I help you today?\nElena Gilbert [10:01]: Hi John. I'm calling from Mystic Falls. I have an issue with my bill. My account number is ACCT-5544-3322.\nJohn [10:01]: I see. Could you verify your address for security purposes?\nElena Gilbert [10:02]: Sure, it's 2104 Maple Street, Mystic Falls, VA 22101. My phone is 555-010-9988.\nJohn [10:03]: Thank you Elena. I'm looking at your last transaction of $1,250.45 dated 2024-11-15. It seems it was charged to your Visa ending in 4455.\nElena Gilbert [10:04]: Yes, but I was promised a discount because I work for the Salvatore Boarding School as a teacher.\nJohn [10:05]: Let me bring Stefan into this chat. He handles the institutional discounts.\nStefan [10:06]: Hello Elena. Stefan here. John told me about the Salvatore Boarding School discount. \nStefan [10:07]: I see your email registered is elena.g@mystic-high.edu. I will apply a 20% discount. \nElena Gilbert [10:08]: Thank you Stefan!\nStefan [10:09]: You're welcome. The updated amount is $1,000.36. I've sent the confirmation to your IP 172.16.254.1 for your record.\nJohn [10:10]: Is there anything else?\nElena Gilbert [10:10]: No, that's it. Thanks John and Stefan!\n",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 84,
+                    "end": 88,
+                    "text": "John",
+                    "replacement": "[PER_AGENT]",
+                    "coref_id": null,
+                    "risk_note": "Agent support"
+                },
+                {
+                    "type": "PER",
+                    "start": 106,
+                    "end": 119,
+                    "text": "Elena Gilbert",
+                    "replacement": "[PER_CUSTOMER]",
+                    "coref_id": null,
+                    "risk_note": "Nom du client"
+                },
+                {
+                    "type": "PER",
+                    "start": 132,
+                    "end": 138,
+                    "text": "Stefan",
+                    "replacement": "[PER_EXPERT]",
+                    "coref_id": null,
+                    "risk_note": "Expert billing"
+                },
+                {
+                    "type": "LOC",
+                    "start": 290,
+                    "end": 302,
+                    "text": "Mystic Falls",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": "Ville"
+                },
+                {
+                    "type": "ID",
+                    "start": 355,
+                    "end": 369,
+                    "text": "ACCT-5544-3322",
+                    "replacement": "[ACCOUNT_ID]",
+                    "coref_id": null,
+                    "risk_note": "Numéro de compte"
+                },
+                {
+                    "type": "LOC",
+                    "start": 479,
+                    "end": 520,
+                    "text": "2104 Maple Street, Mystic Falls, VA 22101",
+                    "replacement": "[LOC_FULL_ADDRESS]",
+                    "coref_id": null,
+                    "risk_note": "Adresse complète"
+                },
+                {
+                    "type": "PHONE",
+                    "start": 534,
+                    "end": 546,
+                    "text": "555-010-9988",
+                    "replacement": "[PHONE_B]",
+                    "coref_id": null,
+                    "risk_note": "Téléphone"
+                },
+                {
+                    "type": "AMOUNT",
+                    "start": 619,
+                    "end": 628,
+                    "text": "$1,250.45",
+                    "replacement": "[AMOUNT_A]",
+                    "coref_id": null,
+                    "risk_note": "Montant transaction"
+                },
+                {
+                    "type": "DATE",
+                    "start": 635,
+                    "end": 645,
+                    "text": "2024-11-15",
+                    "replacement": "[DATE_A]",
+                    "coref_id": null,
+                    "risk_note": "Date transaction"
+                },
+                {
+                    "type": "ID",
+                    "start": 694,
+                    "end": 698,
+                    "text": "4455",
+                    "replacement": "[CARD_LAST_4]",
+                    "coref_id": null,
+                    "risk_note": "Fin de CB"
+                },
+                {
+                    "type": "ORG",
+                    "start": 781,
+                    "end": 806,
+                    "text": "Salvatore Boarding School",
+                    "replacement": "[ORG_SCHOOL]",
+                    "coref_id": null,
+                    "risk_note": "Lieu de travail"
+                },
+                {
+                    "type": "ROLE",
+                    "start": 812,
+                    "end": 819,
+                    "text": "teacher",
+                    "replacement": "[ROLE_A]",
+                    "coref_id": null,
+                    "risk_note": "Métier"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 1060,
+                    "end": 1083,
+                    "text": "elena.g@mystic-high.edu",
+                    "replacement": "[EMAIL_C]",
+                    "coref_id": null,
+                    "risk_note": "Email personnel"
+                },
+                {
+                    "type": "AMOUNT",
+                    "start": 1210,
+                    "end": 1219,
+                    "text": "$1,000.36",
+                    "replacement": "[AMOUNT_B]",
+                    "coref_id": null,
+                    "risk_note": "Montant réduit"
+                },
+                {
+                    "type": "IP",
+                    "start": 1259,
+                    "end": 1271,
+                    "text": "172.16.254.1",
+                    "replacement": "[IP_PRIVATE]",
+                    "coref_id": null,
+                    "risk_note": "IP client"
+                }
+            ],
+            "anonymized_text": "CUSTOMER SUPPORT TRANSCRIPT - TRANSCRIPTION_ID_99012\nDate: 2024-11-20\nParticipants: [PER_AGENT] (Support Agent), [PER_CUSTOMER] (Customer), [PER_EXPERT] (Billing Expert)\n\n[PER_AGENT] [10:00]: Hello! This is [PER_AGENT] from [ORG_SUPPORT]. How can I help you today?\n[PER_CUSTOMER] [10:01]: Hi [PER_AGENT]. I'm calling from [LOC_TOWN]. I have an issue with my bill. My account number is [ACCOUNT_ID].\n[PER_AGENT] [10:01]: I see. Could you verify your address for security purposes?\n[PER_CUSTOMER] [10:02]: Sure, it's [LOC_FULL_ADDRESS]. My phone is [PHONE_B].\n[PER_AGENT] [10:03]: Thank you [PER_CUSTOMER]. I'm looking at your last transaction of [AMOUNT_A] dated [DATE_A]. It seems it was charged to your Visa ending in [CARD_LAST_4].\n[PER_CUSTOMER] [10:04]: Yes, but I was promised a discount because I work for the [ORG_SCHOOL] as a [ROLE_A].\n[PER_AGENT] [10:05]: Let me bring [PER_EXPERT] into this chat. He handles the institutional discounts.\n[PER_EXPERT] [10:06]: Hello [PER_CUSTOMER]. [PER_EXPERT] here. [PER_AGENT] told me about the [ORG_SCHOOL] discount. \n[PER_EXPERT] [10:07]: I see your email registered is [EMAIL_C]. I will apply a 20% discount. \n[PER_CUSTOMER] [10:08]: Thank you [PER_EXPERT]!\n[PER_EXPERT] [10:09]: You're welcome. The updated amount is [AMOUNT_B]. I've sent the confirmation to your IP [IP_PRIVATE] for your record.\n[PER_AGENT] [10:10]: Is there anything else?\n[PER_CUSTOMER] [10:10]: No, that's it. Thanks [PER_AGENT] and [PER_EXPERT]!",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 65,
+            "metadata": {
+                "domain": "customer_service",
+                "date_creation": "2024-11-20"
+            }
+        },
+        {
+            "id": "ticket_015",
+            "langue": "FR",
+            "original_text": "SECURITY AUDIT LOG - SYSTEM EXTERNAL ACCESS\nDATE: 2025-01-12\nOBJECT: Investigation on unauthorized access from external IP 45.12.33.102.\n\nSummary:\nAn anomalous activity was detected by the security system on Sunday evening. The user account involved belongs to Jean-Pierre Raffarin, a consultant at Elysée Strategy (JP.Raffarin@elysee.fr).\nThe access originated from a residential ISP in Poitiers, France.\n\nEvents Timeline:\n1. 22:15:02 - Login from 45.12.33.102 using valid credentials for 'j_raffarin'.\n2. 22:16:30 - Access to /var/www/internal-portal/secrets/config.php. System path: /mnt/storage/nas-01/backup/sql_dump_2025.zip.\n3. 22:17:45 - Download initiated of 4.5GB of data. \n4. 22:18:10 - Alert triggered on session ID: SID-ABC-990-112.\n\nPersonnel Involved:\n- Security Analyst: Brigitte Macron (b.macron@elysee.fr)\n- IT Director: Emmanuel Macron (e.macron@elysee.fr, +33 1 22 33 44 55)\n\nThe incident was reported to the local police department in Paris 8ème.\nReference case: POLICE-2025-XP-998.\n\nOriginal Log Snippet:\n[2025-01-12 22:15:02] SSHD: Accepted password for j_raffarin from 45.12.33.102 port 54322 ssh2\n[2025-01-12 22:16:15] KERNEL: sda2: write cache: enabled, read cache: enabled, supports DPO and FUA\n[2025-01-12 22:16:30] AUDIT: user=j_raffarin action=read file=/var/www/internal-portal/secrets/config.php\n[2025-01-12 22:17:00] APP: Session SID-ABC-990-112 started background task for /home/j_raffarin/exports/client_list.csv\n\nAdditional Context:\nThe user was using a MacBook Pro with serial number C02XG123XXXX.\nMAC Address: 1A:2B:3C:4D:5E:6F.\nSecondary email listed: raffarin.jp@pro-consulting.com.\nHome address: 12 Rue de l'Eglise, 86000 Poitiers.\n",
+            "annotations": [
+                {
+                    "type": "IP",
+                    "start": 123,
+                    "end": 135,
+                    "text": "45.12.33.102",
+                    "replacement": "[IP_EXTERNAL]",
+                    "coref_id": null,
+                    "risk_note": "IP source suspecte"
+                },
+                {
+                    "type": "PER",
+                    "start": 261,
+                    "end": 281,
+                    "text": "Jean-Pierre Raffarin",
+                    "replacement": "[PER_A]",
+                    "coref_id": null,
+                    "risk_note": "Nom du consultant"
+                },
+                {
+                    "type": "ORG",
+                    "start": 299,
+                    "end": 314,
+                    "text": "Elysée Strategy",
+                    "replacement": "[ORG_A]",
+                    "coref_id": null,
+                    "risk_note": "Cabinet de conseil"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 316,
+                    "end": 337,
+                    "text": "JP.Raffarin@elysee.fr",
+                    "replacement": "[EMAIL_A]",
+                    "coref_id": null,
+                    "risk_note": "Email pro"
+                },
+                {
+                    "type": "LOC",
+                    "start": 388,
+                    "end": 396,
+                    "text": "Poitiers",
+                    "replacement": "[LOC_REGION]",
+                    "coref_id": null,
+                    "risk_note": "Ville d'origine"
+                },
+                {
+                    "type": "PATH",
+                    "start": 528,
+                    "end": 571,
+                    "text": "/var/www/internal-portal/secrets/config.php",
+                    "replacement": "[PATH_A]",
+                    "coref_id": null,
+                    "risk_note": "Chemin vers code source"
+                },
+                {
+                    "type": "PATH",
+                    "start": 586,
+                    "end": 630,
+                    "text": "/mnt/storage/nas-01/backup/sql_dump_2025.zip",
+                    "replacement": "[PATH_B]",
+                    "coref_id": null,
+                    "risk_note": "Chemin vers backup"
+                },
+                {
+                    "type": "ID",
+                    "start": 729,
+                    "end": 744,
+                    "text": "SID-ABC-990-112",
+                    "replacement": "[SESSION_ID]",
+                    "coref_id": null,
+                    "risk_note": "ID de session"
+                },
+                {
+                    "type": "PER",
+                    "start": 787,
+                    "end": 802,
+                    "text": "Brigitte Macron",
+                    "replacement": "[PER_B]",
+                    "coref_id": null,
+                    "risk_note": "Analyste sécurité"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 804,
+                    "end": 822,
+                    "text": "b.macron@elysee.fr",
+                    "replacement": "[EMAIL_B]",
+                    "coref_id": null,
+                    "risk_note": "Email analyste"
+                },
+                {
+                    "type": "PER",
+                    "start": 839,
+                    "end": 854,
+                    "text": "Emmanuel Macron",
+                    "replacement": "[PER_C]",
+                    "coref_id": null,
+                    "risk_note": "Directeur IT"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 856,
+                    "end": 874,
+                    "text": "e.macron@elysee.fr",
+                    "replacement": "[EMAIL_C]",
+                    "coref_id": null,
+                    "risk_note": "Email directeur"
+                },
+                {
+                    "type": "PHONE",
+                    "start": 876,
+                    "end": 893,
+                    "text": "+33 1 22 33 44 55",
+                    "replacement": "[PHONE_A]",
+                    "coref_id": null,
+                    "risk_note": "Téléphone directeur"
+                },
+                {
+                    "type": "LOC",
+                    "start": 956,
+                    "end": 966,
+                    "text": "Paris 8ème",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": "Localisation police"
+                },
+                {
+                    "type": "ID",
+                    "start": 984,
+                    "end": 1002,
+                    "text": "POLICE-2025-XP-998",
+                    "replacement": "[CASE_ID]",
+                    "coref_id": null,
+                    "risk_note": "Référence dossier"
+                },
+                {
+                    "type": "ID",
+                    "start": 1521,
+                    "end": 1533,
+                    "text": "C02XG123XXXX",
+                    "replacement": "[SERIAL_NUMBER]",
+                    "coref_id": null,
+                    "risk_note": "Numéro de série matériel"
+                },
+                {
+                    "type": "MAC",
+                    "start": 1548,
+                    "end": 1565,
+                    "text": "1A:2B:3C:4D:5E:6F",
+                    "replacement": "[MAC_A]",
+                    "coref_id": null,
+                    "risk_note": "Adresse MAC"
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 1591,
+                    "end": 1621,
+                    "text": "raffarin.jp@pro-consulting.com",
+                    "replacement": "[EMAIL_D]",
+                    "coref_id": null,
+                    "risk_note": "Email perso"
+                },
+                {
+                    "type": "LOC",
+                    "start": 1637,
+                    "end": 1671,
+                    "text": "12 Rue de l'Eglise, 86000 Poitiers",
+                    "replacement": "[LOC_ADDRESS]",
+                    "coref_id": null,
+                    "risk_note": "Adresse personnelle"
+                }
+            ],
+            "anonymized_text": "...",
+            "niveau_anonymisation": "L4 Max destructif",
+            "risk_score": 90,
+            "metadata": {
+                "domain": "security_audit",
+                "date_creation": "2025-01-12"
+            }
+        },
+        {
+            "id": "ticket_016",
+            "langue": "FR",
+            "original_text": "Je suis doctorant en astrophysique à l'Université de Grenoble, j'ai 26 ans et je voudrais savoir comment déclarer mon accident de vélo survenu hier devant le bâtiment PhITEM.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 8,
+                    "end": 34,
+                    "text": "doctorant en astrophysique",
+                    "replacement": "[ROLE_RESEARCH_SPECIALIZED]",
+                    "coref_id": null,
+                    "risk_note": "Poste très spécifique dans une petite équipe"
+                },
+                {
+                    "type": "ORG",
+                    "start": 39,
+                    "end": 61,
+                    "text": "Université de Grenoble",
+                    "replacement": "[ORG_UNIVERSITY]",
+                    "coref_id": null,
+                    "risk_note": "Lieu de travail"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 68,
+                    "end": 74,
+                    "text": "26 ans",
+                    "replacement": "[AGE_RANGE_20-30]",
+                    "coref_id": null,
+                    "risk_note": "Tranche d'âge"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 118,
+                    "end": 134,
+                    "text": "accident de vélo",
+                    "replacement": "[INCIDENT_TYPE]",
+                    "coref_id": null,
+                    "risk_note": "Événement marquant récent"
+                },
+                {
+                    "type": "LOC",
+                    "start": 158,
+                    "end": 173,
+                    "text": "bâtiment PhITEM",
+                    "replacement": "[LOC_BUILDING]",
+                    "coref_id": null,
+                    "risk_note": "Localisation précise augmentant le risque de ré-identification"
+                }
+            ],
+            "anonymized_text": "Je suis [ROLE_RESEARCH_SPECIALIZED] dans une [ORG_UNIVERSITY], j'ai [AGE_RANGE_20-30] et je voudrais savoir comment déclarer mon [INCIDENT_TYPE] survenu hier devant un [LOC_BUILDING].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "domain": "education",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_017",
+            "langue": "FR",
+            "original_text": "Patient de 82 ans souffrant du syndrome de Wolfram, suivi au service neurologie de l'hôpital de Poitiers par le Dr. Vallet. Il demande une prise en charge pour son transport en ambulance depuis Châtellerault.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 11,
+                    "end": 17,
+                    "text": "82 ans",
+                    "replacement": "[AGE_EXTREME]",
+                    "coref_id": null,
+                    "risk_note": "Âge avancé combiné à pathologie"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 31,
+                    "end": 50,
+                    "text": "syndrome de Wolfram",
+                    "replacement": "[RARE_DISEASE]",
+                    "coref_id": null,
+                    "risk_note": "Maladie rare (faible k-anonymat)"
+                },
+                {
+                    "type": "ORG",
+                    "start": 61,
+                    "end": 79,
+                    "text": "service neurologie",
+                    "replacement": "[DEPT_MEDICAL]",
+                    "coref_id": null,
+                    "risk_note": "Département hospitalier"
+                },
+                {
+                    "type": "LOC",
+                    "start": 85,
+                    "end": 104,
+                    "text": "hôpital de Poitiers",
+                    "replacement": "[LOC_HOSPITAL]",
+                    "coref_id": null,
+                    "risk_note": "Hôpital régional"
+                },
+                {
+                    "type": "PER",
+                    "start": 112,
+                    "end": 122,
+                    "text": "Dr. Vallet",
+                    "replacement": "[PER_DOCTOR]",
+                    "coref_id": null,
+                    "risk_note": "Nom du médecin"
+                },
+                {
+                    "type": "LOC",
+                    "start": 194,
+                    "end": 207,
+                    "text": "Châtellerault",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": "Ville de résidence"
+                }
+            ],
+            "anonymized_text": "Patient de [AGE_RANGE_80+] souffrant d'une [RARE_DISEASE], suivi dans un [DEPT_MEDICAL] d'un [LOC_HOSPITAL] par [PER_DOCTOR]. Il demande une prise en charge pour son transport depuis une [LOC_TOWN].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 95,
+            "metadata": {
+                "domain": "health",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_018",
+            "langue": "FR",
+            "original_text": "La seule femme ingénieure du département Cloud chez TechSolution à Lyon, qui a travaillé sur le projet 'Icare' l'an dernier, a soumis une plainte concernant les horaires de nuit commencés en décembre.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 25,
+                    "text": "seule femme ingénieure",
+                    "replacement": "[UNIQUE_GENDER_ROLE]",
+                    "coref_id": null,
+                    "risk_note": "Attribut unique dans le département (k=1)"
+                },
+                {
+                    "type": "ORG",
+                    "start": 29,
+                    "end": 46,
+                    "text": "département Cloud",
+                    "replacement": "[DEPT_TECH]",
+                    "coref_id": null,
+                    "risk_note": "Département"
+                },
+                {
+                    "type": "ORG",
+                    "start": 52,
+                    "end": 64,
+                    "text": "TechSolution",
+                    "replacement": "[ORG_COMPANY]",
+                    "coref_id": null,
+                    "risk_note": "Entreprise"
+                },
+                {
+                    "type": "LOC",
+                    "start": 67,
+                    "end": 71,
+                    "text": "Lyon",
+                    "replacement": "[LOC_CITY]",
+                    "coref_id": null,
+                    "risk_note": "Ville"
+                },
+                {
+                    "type": "PROJECT",
+                    "start": 96,
+                    "end": 110,
+                    "text": "projet 'Icare'",
+                    "replacement": "[PROJECT_CONFIDENTIAL]",
+                    "coref_id": null,
+                    "risk_note": "Nom du projet"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 161,
+                    "end": 177,
+                    "text": "horaires de nuit",
+                    "replacement": "[SPECIFIC_STRESS]",
+                    "coref_id": null,
+                    "risk_note": "Condition de travail spécifique"
+                },
+                {
+                    "type": "DATE",
+                    "start": 191,
+                    "end": 199,
+                    "text": "décembre",
+                    "replacement": "[DATE_MONTH]",
+                    "coref_id": null,
+                    "risk_note": "Mois"
+                }
+            ],
+            "anonymized_text": "Une [ROLE_ENGINEER] du [DEPT_TECH] chez [ORG_COMPANY] à [LOC_CITY], ayant travaillé sur le [PROJECT_CONFIDENTIAL] l'an dernier, a soumis une plainte concernant les [SPECIFIC_STRESS] commencés en [DATE_SEASON].",
+            "niveau_anonymisation": "L4 Max",
+            "risk_score": 90,
+            "metadata": {
+                "domain": "hr",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_019",
+            "langue": "FR",
+            "original_text": "Le boulanger de Saint-Cirq-Lapopie, qui est aussi le premier adjoint à la mairie, s'inquiète du retard de livraison de son nouveau four commandé chez FourPro France.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 3,
+                    "end": 12,
+                    "text": "boulanger",
+                    "replacement": "[ROLE_COMMERCIAL]",
+                    "coref_id": null,
+                    "risk_note": "Métier local"
+                },
+                {
+                    "type": "LOC",
+                    "start": 16,
+                    "end": 34,
+                    "text": "Saint-Cirq-Lapopie",
+                    "replacement": "[LOC_SMALL_VILLAGE]",
+                    "coref_id": null,
+                    "risk_note": "Village à faible population (k-anonymat critique)"
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 53,
+                    "end": 80,
+                    "text": "premier adjoint à la mairie",
+                    "replacement": "[ROLE_PUBLIC]",
+                    "coref_id": null,
+                    "risk_note": "Fonction publique locale unique"
+                },
+                {
+                    "type": "ORG",
+                    "start": 150,
+                    "end": 164,
+                    "text": "FourPro France",
+                    "replacement": "[ORG_SUPPLIER]",
+                    "coref_id": null,
+                    "risk_note": "Fournisseur"
+                }
+            ],
+            "anonymized_text": "Un [ROLE_COMMERCIAL] d'une [LOC_SMALL_VILLAGE], qui occupe aussi une [ROLE_PUBLIC], s'inquiète du retard de livraison de matériel commandé chez [ORG_SUPPLIER].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 80,
+            "metadata": {
+                "domain": "public_sector",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_001_en",
+            "langue": "EN",
+            "original_text": "Hello, I am John Smith from London. My email is john.smith@example.com. API Error on server 192.168.1.1 with JIRA-1234 ticket. He told me it was urgent.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 12,
+                    "end": 22,
+                    "text": "John Smith",
+                    "replacement": "[PER_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 28,
+                    "end": 34,
+                    "text": "London",
+                    "replacement": "[LOC_UK]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 48,
+                    "end": 70,
+                    "text": "john.smith@example.com",
+                    "replacement": "[EMAIL_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "IP",
+                    "start": 92,
+                    "end": 103,
+                    "text": "192.168.1.1",
+                    "replacement": "[IP_PRIVATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "TICKET",
+                    "start": 109,
+                    "end": 118,
+                    "text": "JIRA-1234",
+                    "replacement": "[TICKET_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Hello, I am [PER_A] from [LOC_UK]. My email is [EMAIL_A]. API Error on server [IP_PRIVATE] with [TICKET_A] ticket. [PER_A] told me it was urgent.",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 40,
+            "metadata": {
+                "domain": "support_tech",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_001_es",
+            "langue": "ES",
+            "original_text": "Hola, soy Juan Pérez de Madrid. Mi correo es juan.perez@example.com. Error de API en el servidor 192.168.1.1 con ticket JIRA-1234. Me dijo que era urgente.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 10,
+                    "end": 20,
+                    "text": "Juan Pérez",
+                    "replacement": "[PER_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 24,
+                    "end": 30,
+                    "text": "Madrid",
+                    "replacement": "[LOC_ES]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 45,
+                    "end": 67,
+                    "text": "juan.perez@example.com",
+                    "replacement": "[EMAIL_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "IP",
+                    "start": 97,
+                    "end": 108,
+                    "text": "192.168.1.1",
+                    "replacement": "[IP_PRIVATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "TICKET",
+                    "start": 120,
+                    "end": 129,
+                    "text": "JIRA-1234",
+                    "replacement": "[TICKET_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Hola, soy [PER_A] de [LOC_ES]. Mi correo es [EMAIL_A]. Error de API en el servidor [IP_PRIVATE] con ticket [TICKET_A]. [PER_A] me dijo que era urgente.",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 40,
+            "metadata": {
+                "domain": "support_tech",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_001_it",
+            "langue": "IT",
+            "original_text": "Buongiorno, sono Mario Rossi di Roma. La mia email è mario.rossi@example.com. Errore API sul server 192.168.1.1 con ticket JIRA-1234. Mi ha detto che era urgente.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 17,
+                    "end": 28,
+                    "text": "Mario Rossi",
+                    "replacement": "[PER_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 32,
+                    "end": 36,
+                    "text": "Roma",
+                    "replacement": "[LOC_IT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "EMAIL",
+                    "start": 53,
+                    "end": 76,
+                    "text": "mario.rossi@example.com",
+                    "replacement": "[EMAIL_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "IP",
+                    "start": 100,
+                    "end": 111,
+                    "text": "192.168.1.1",
+                    "replacement": "[IP_PRIVATE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "TICKET",
+                    "start": 123,
+                    "end": 132,
+                    "text": "JIRA-1234",
+                    "replacement": "[TICKET_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Buongiorno, sono [PER_A] di [LOC_IT]. La mia email è [EMAIL_A]. Errore API sul server [IP_PRIVATE] con ticket [TICKET_A]. [PER_A] mi ha detto che era urgente.",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 40,
+            "metadata": {
+                "domain": "support_tech",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_002_fr",
+            "langue": "FR",
+            "original_text": "Salut, c'est Alice de Nantes. Téléphone: +33 6 12 34 56 78. Problème avec le nom d'hôte internal-server.example.com et l'UUID 123e4567-e89b-12d3-a456-426614174000. Le chef d'équipe l'a mentionné.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 13,
+                    "end": 18,
+                    "text": "Alice",
+                    "replacement": "[PER_B]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 22,
+                    "end": 28,
+                    "text": "Nantes",
+                    "replacement": "[LOC_FR]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PHONE",
+                    "start": 41,
+                    "end": 58,
+                    "text": "+33 6 12 34 56 78",
+                    "replacement": "[PHONE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "HOST",
+                    "start": 88,
+                    "end": 115,
+                    "text": "internal-server.example.com",
+                    "replacement": "[HOST_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "UUID",
+                    "start": 126,
+                    "end": 162,
+                    "text": "123e4567-e89b-12d3-a456-426614174000",
+                    "replacement": "[UUID_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Salut, c'est [PER_B] de [LOC_FR]. Téléphone: [PHONE_A]. Problème avec le nom d'hôte [HOST_A] et l'UUID [UUID_A]. [PER_C] l'a mentionné.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 25,
+            "metadata": {
+                "domain": "support_IT",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_002_es",
+            "langue": "ES",
+            "original_text": "Hola, soy Alicia de Valencia. Teléfono: +34 912 345 678. Problema con el nombre de host internal-server.example.com y UUID 123e4567-e89b-12d3-a456-426614174000. El líder del equipo lo mencionó.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 10,
+                    "end": 16,
+                    "text": "Alicia",
+                    "replacement": "[PER_B]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 20,
+                    "end": 28,
+                    "text": "Valencia",
+                    "replacement": "[LOC_ES]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PHONE",
+                    "start": 40,
+                    "end": 55,
+                    "text": "+34 912 345 678",
+                    "replacement": "[PHONE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "HOST",
+                    "start": 88,
+                    "end": 115,
+                    "text": "internal-server.example.com",
+                    "replacement": "[HOST_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "UUID",
+                    "start": 123,
+                    "end": 159,
+                    "text": "123e4567-e89b-12d3-a456-426614174000",
+                    "replacement": "[UUID_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Hola, soy [PER_B] de [LOC_ES]. Teléfono: [PHONE_A]. Problema con el host [HOST_A] y UUID [UUID_A]. [PER_C] lo mencionó.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 25,
+            "metadata": {
+                "domain": "support_IT",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_002_it",
+            "langue": "IT",
+            "original_text": "Ciao, sono Alice da Milano. Telefono: +39 02 1234567. Problema con hostname internal-server.example.com e UUID 123e4567-e89b-12d3-a456-426614174000. Il team lead l'ha menzionato.",
+            "annotations": [
+                {
+                    "type": "PER",
+                    "start": 11,
+                    "end": 16,
+                    "text": "Alice",
+                    "replacement": "[PER_B]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 20,
+                    "end": 26,
+                    "text": "Milano",
+                    "replacement": "[LOC_IT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PHONE",
+                    "start": 38,
+                    "end": 52,
+                    "text": "+39 02 1234567",
+                    "replacement": "[PHONE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "HOST",
+                    "start": 76,
+                    "end": 103,
+                    "text": "internal-server.example.com",
+                    "replacement": "[HOST_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "UUID",
+                    "start": 111,
+                    "end": 147,
+                    "text": "123e4567-e89b-12d3-a456-426614174000",
+                    "replacement": "[UUID_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Ciao, sono [PER_B] da [LOC_IT]. Telefono: [PHONE_A]. Problema con [HOST_A] e UUID [UUID_A]. [PER_C] l'ha menzionato.",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 25,
+            "metadata": {
+                "domain": "support_IT",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_003_en",
+            "langue": "EN",
+            "original_text": "Issue with API key: sk-abc123 on 2023-07-15. Address: 123 Example Street, London. Amount: £456.78. Mrs. Martin confirmed.",
+            "annotations": [
+                {
+                    "type": "API_KEY",
+                    "start": 20,
+                    "end": 29,
+                    "text": "sk-abc123",
+                    "replacement": "[API_KEY_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 33,
+                    "end": 43,
+                    "text": "2023-07-15",
+                    "replacement": "[DATE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 54,
+                    "end": 80,
+                    "text": "123 Example Street, London",
+                    "replacement": "[LOC_UK]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "MONTANT",
+                    "start": 90,
+                    "end": 97,
+                    "text": "£456.78",
+                    "replacement": "[MONTANT_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PER",
+                    "start": 99,
+                    "end": 110,
+                    "text": "Mrs. Martin",
+                    "replacement": "[PER_D]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Issue with API key: [API_KEY_A] on [DATE_A]. Address: [LOC_UK]. Amount: [MONTANT_A]. [PER_D] confirmed.",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 35,
+            "metadata": {
+                "domain": "support_finance",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_003_it",
+            "langue": "IT",
+            "original_text": "Problema con la chiave API: sk-abc123 in data 15/07/2023. Indirizzo: 123 Via Esempio, Roma. Importo: 456,78€. La signora Martin ha confermato.",
+            "annotations": [
+                {
+                    "type": "API_KEY",
+                    "start": 28,
+                    "end": 37,
+                    "text": "sk-abc123",
+                    "replacement": "[API_KEY_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 46,
+                    "end": 56,
+                    "text": "15/07/2023",
+                    "replacement": "[DATE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 69,
+                    "end": 90,
+                    "text": "123 Via Esempio, Roma",
+                    "replacement": "[LOC_IT]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "MONTANT",
+                    "start": 101,
+                    "end": 108,
+                    "text": "456,78€",
+                    "replacement": "[MONTANT_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PER",
+                    "start": 110,
+                    "end": 127,
+                    "text": "La signora Martin",
+                    "replacement": "[PER_D]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Problema con chiave [API_KEY_A] il [DATE_A]. Indirizzo: [LOC_IT]. Importo: [MONTANT_A]. [PER_D] ha confermato.",
+            "niveau_anonymisation": "L2 Standard",
+            "risk_score": 35,
+            "metadata": {
+                "domain": "support_finance",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_005_en",
+            "langue": "EN",
+            "original_text": "Incident on MAC address 00:1A:2B:3C:4D:5E and URL https://internal.api.com. Date: 2024-02-10. DevOps team in Manchester. The amount is 1234.56€.",
+            "annotations": [
+                {
+                    "type": "MAC",
+                    "start": 24,
+                    "end": 41,
+                    "text": "00:1A:2B:3C:4D:5E",
+                    "replacement": "[MAC_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "URL",
+                    "start": 50,
+                    "end": 74,
+                    "text": "https://internal.api.com",
+                    "replacement": "[URL_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "DATE",
+                    "start": 82,
+                    "end": 92,
+                    "text": "2024-02-10",
+                    "replacement": "[DATE_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 109,
+                    "end": 119,
+                    "text": "Manchester",
+                    "replacement": "[LOC_UK]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "MONTANT",
+                    "start": 135,
+                    "end": 143,
+                    "text": "1234.56€",
+                    "replacement": "[MONTANT_A]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Incident on MAC address [MAC_A] and URL [URL_A]. Date: [DATE_A]. DevOps team in [LOC_UK]. The amount is [MONTANT_A].",
+            "niveau_anonymisation": "L4 Max destructif",
+            "risk_score": 10,
+            "metadata": {
+                "domain": "support_network",
+                "date_creation": "2025-09-03"
+            }
+        },
+        {
+            "id": "ticket_016_en",
+            "langue": "EN",
+            "original_text": "I am a PhD student in astrophysics at the University of Manchester, I am 26 years old and I would like to know how to report my bike accident that happened yesterday in front of the PhITEM building.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 7,
+                    "end": 34,
+                    "text": "PhD student in astrophysics",
+                    "replacement": "[ROLE_RESEARCH_SPECIALIZED]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 42,
+                    "end": 66,
+                    "text": "University of Manchester",
+                    "replacement": "[ORG_UNIVERSITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 73,
+                    "end": 85,
+                    "text": "26 years old",
+                    "replacement": "[AGE_RANGE_20-30]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 128,
+                    "end": 141,
+                    "text": "bike accident",
+                    "replacement": "[INCIDENT_TYPE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 182,
+                    "end": 197,
+                    "text": "PhITEM building",
+                    "replacement": "[LOC_BUILDING]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "I am a [ROLE_RESEARCH_SPECIALIZED] at [ORG_UNIVERSITY], I am [AGE_RANGE_20-30] and I would like to know how to report my [INCIDENT_TYPE] in front of [LOC_BUILDING].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "domain": "education",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_016_es",
+            "langue": "ES",
+            "original_text": "Soy estudiante de doctorado en astrofísica en la Universidad de Barcelona, tengo 26 años y me gustaría saber cómo declarar mi accidente de bicicleta ocurrido ayer frente al edificio PhITEM.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 4,
+                    "end": 42,
+                    "text": "estudiante de doctorado en astrofísica",
+                    "replacement": "[ROLE_RESEARCH_SPECIALIZED]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 49,
+                    "end": 73,
+                    "text": "Universidad de Barcelona",
+                    "replacement": "[ORG_UNIVERSITY]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 81,
+                    "end": 88,
+                    "text": "26 años",
+                    "replacement": "[AGE_RANGE_20-30]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 126,
+                    "end": 148,
+                    "text": "accidente de bicicleta",
+                    "replacement": "[INCIDENT_TYPE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 173,
+                    "end": 188,
+                    "text": "edificio PhITEM",
+                    "replacement": "[LOC_BUILDING]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "Soy [ROLE_RESEARCH_SPECIALIZED] en la [ORG_UNIVERSITY], tengo [AGE_RANGE_20-30] y me gustaría saber cómo declarar mi [INCIDENT_TYPE] frente al [LOC_BUILDING].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 85,
+            "metadata": {
+                "domain": "education",
+                "reason": "quasi-id_detection"
+            }
+        },
+        {
+            "id": "ticket_017_en",
+            "langue": "EN",
+            "original_text": "82-year-old patient suffering from Wolfram syndrome, followed in the neurology department of the hospital in London by Dr. Vallet. He requests coverage for his ambulance transport from Oxford.",
+            "annotations": [
+                {
+                    "type": "QUASI_ID",
+                    "start": 0,
+                    "end": 11,
+                    "text": "82-year-old",
+                    "replacement": "[AGE_EXTREME]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "QUASI_ID",
+                    "start": 35,
+                    "end": 51,
+                    "text": "Wolfram syndrome",
+                    "replacement": "[RARE_DISEASE]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "ORG",
+                    "start": 69,
+                    "end": 89,
+                    "text": "neurology department",
+                    "replacement": "[DEPT_MEDICAL]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 97,
+                    "end": 115,
+                    "text": "hospital in London",
+                    "replacement": "[LOC_HOSPITAL]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "PER",
+                    "start": 119,
+                    "end": 129,
+                    "text": "Dr. Vallet",
+                    "replacement": "[PER_DOCTOR]",
+                    "coref_id": null,
+                    "risk_note": ""
+                },
+                {
+                    "type": "LOC",
+                    "start": 185,
+                    "end": 191,
+                    "text": "Oxford",
+                    "replacement": "[LOC_TOWN]",
+                    "coref_id": null,
+                    "risk_note": ""
+                }
+            ],
+            "anonymized_text": "[AGE_EXTREME] patient suffering from [RARE_DISEASE], followed in [DEPT_MEDICAL] of [LOC_HOSPITAL] by [PER_DOCTOR]. He requests coverage for transport from [LOC_TOWN].",
+            "niveau_anonymisation": "L3 Fort",
+            "risk_score": 95,
+            "metadata": {
+                "domain": "health",
+                "reason": "quasi-id_detection"
             }
         }
     ]

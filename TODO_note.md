@@ -18,14 +18,20 @@ J'aimerai tester un genre de concil avec les ner et un llm ultra rapide pour aug
 
 ## TO DO list
 
-- [ ] **Streamlit** : Intégrer directement les scripts d'évaluation dans l'application de visualisation.
+- [x] **Copilot instructions** : Générer / mettre à jour `.github/copilot-instructions.md` (architecture, commandes utiles, conventions).
+
+- [x] **Streamlit** : Intégrer directement l'évaluation du pipeline LangGraph (PipeGraph) dans l'application (exécution locale + barre de progression + sauvegarde des runs + historique).
 - [ ] **Évaluation** : Formaliser un script d'évaluation spécifique pour chaque dataset (métriques et usages différents).
-  - [ ] **TAB (Text Anonymization Benchmark)** : Dataset de référence juridique (CEDH).
+  - [x] **TAB (Text Anonymization Benchmark)** : Dataset de référence juridique (CEDH).
   - [ ] **Gretel AI Synthetic PII Finance** : Données synthétiques multilingues (dont FR).
   - [ ] **AI4Privacy PII Masking** : Grand volume pour validation NER.
-  - [ ] **DB-bio** : Données biomédicales/textes cliniques pour transfert anonymisation.
+  - [x] **DB-bio** : Supporté dans l'évaluation PipeGraph (GT reconstruit depuis `people` dans le texte + fallback prénom…nom).
   - [ ] **PersonalReddit** : Posts personnels (style narratif) pour stress-test généralisation PII.
-- [ ] **Intégration** : Raccorder le pipeline LangGraph au Streamlit pour une évaluation en temps réel des modifications.
+- [x] **Intégration** : Raccorder le pipeline LangGraph au Streamlit pour une évaluation au fur et à mesure des modifications (mode "Évaluer PipeGraph (local)").
 - [ ] **Pipeline (Détection)** : Optimiser le code utilisant les NER et spaCy.
 - [ ] **Pipeline (Merge)** : Refaire le code de fusion entre les résultats Regex et NER.
 - [ ] **Expérimentation** : Tester une approche "conseil" combinant NER et un LLM rapide pour améliorer les performances de détection.
+
+Notes état actuel:
+- Datasets déjà utilisables depuis Streamlit (évaluation locale PipeGraph) : `TAB`, `anonymization_dataset` (standard/max), `DB-bio`.
+- Les scripts d'évaluation "par dataset" restent à formaliser (métriques différentes selon les jeux).
