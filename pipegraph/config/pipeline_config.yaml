@@ -23,7 +23,7 @@ pipeline:
 
       # Sous-module: Détection IA (NER)
       ai_ner:
-        enabled: false
+        enabled: true
         provider: "gliner" # Choix: "gliner", "flair", "spacy"
         threshold: 0.35
         warmup: true

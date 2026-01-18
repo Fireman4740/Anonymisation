@@ -10,6 +10,8 @@ import concurrent.futures
 
 class DetectionNode:
     def __init__(self):
+        self._pipegraph_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+
         # Chargement de la configuration globale
         config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../config/pipeline_config.yaml"))
         self.global_config = {}
@@ -26,10 +28,24 @@ class DetectionNode:
         # Initialisation du détecteur déterministe
         try:
             # On utilise le chemin défini dans la config globale ou une valeur par défaut
-            patterns_path = self.global_config.get("detection", {}).get("deterministic", {}).get("patterns_file", "config/patterns_config.yaml")
-            # Si le chemin est relatif, on essaie de le résoudre par rapport à la racine du projet si besoin
-            # Pour l'instant on laisse tel quel car DeterministicDetector semble gérer les chemins relatifs
-            self.det_detector = DeterministicDetector(config_path=patterns_path)
+            # Note: la config est sous pipeline.nodes.detection.*
+            yaml_det_config = self.global_config.get("pipeline", {}).get("nodes", {}).get("detection", {})
+            det_cfg = yaml_det_config.get("deterministic", {}) if isinstance(yaml_det_config, dict) else {}
+
+            # Compat: accepter plusieurs clés (ancienne vs nouvelle)
+            patterns_path = (
+                det_cfg.get("patterns_config_path")
+                or det_cfg.get("patterns_file")
+                or "config/patterns_config.yaml"
+            )
+
+            # Résolution robuste: si relatif, on le resolve depuis la racine pipegraph/
+            if isinstance(patterns_path, str) and not os.path.isabs(patterns_path):
+                patterns_path = os.path.abspath(os.path.join(self._pipegraph_root, patterns_path))
+
+            print(f"ℹ️ Patterns config (deterministic): {patterns_path} (exists={os.path.exists(str(patterns_path))})")
+
+            self.det_detector = DeterministicDetector(config_path=str(patterns_path))
             print("✅ DeterministicDetector chargé.")
         except Exception as e:
             print(f"❌ Erreur DeterministicDetector: {e}")
@@ -38,7 +54,8 @@ class DetectionNode:
         # Initialisation du détecteur IA (NER)
         try:
             # Configuration depuis le fichier YAML
-            ai_config = self.global_config.get("detection", {}).get("ai_ner", {})
+            yaml_det_config = self.global_config.get("pipeline", {}).get("nodes", {}).get("detection", {})
+            ai_config = yaml_det_config.get("ai_ner", {}) if isinstance(yaml_det_config, dict) else {}
             
             # Fallback si la config est vide
             if not ai_config:
@@ -136,11 +153,36 @@ class DetectionNode:
         # TODO: Stratégie de fusion plus intelligente (gestion des chevauchements)
         # Pour l'instant on concatène tout
         
+        def _normalize_type(raw_type: Any) -> Any:
+            if not isinstance(raw_type, str):
+                return raw_type
+            t = raw_type.strip().upper()
+            # Harmonisation des labels entre regex/NER/datasets
+            mapping = {
+                # Deterministic
+                "TELEPHONE": "PHONE",
+                "MAIL": "EMAIL",
+                # GLiNER / NER labels
+                "PHONE NUMBER": "PHONE",
+                "MOBILE PHONE NUMBER": "PHONE",
+                "LANDLINE PHONE NUMBER": "PHONE",
+                "EMAIL ADDRESS": "EMAIL",
+                "IP ADDRESS": "IP",
+                # Petites variantes possibles
+                "E-MAIL": "EMAIL",
+                "TELEPHONE NUMBER": "PHONE",
+            }
+            return mapping.get(t, t)
+
         for ent in det_results:
-            entities_found.append(ent.to_dict())
-            
+            d = ent.to_dict()
+            d["type"] = _normalize_type(d.get("type"))
+            entities_found.append(d)
+
         for ent in ai_results:
-            entities_found.append(ent.to_dict())
+            d = ent.to_dict()
+            d["type"] = _normalize_type(d.get("type"))
+            entities_found.append(d)
 
         print(f"Entités trouvées: {len(entities_found)} (Det: {len(det_results)}, AI: {len(ai_results)})")
         

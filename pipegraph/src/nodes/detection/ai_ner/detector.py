@@ -19,6 +19,7 @@ except ImportError:
 try:
     from flair.models import SequenceTagger
     from flair.data import Sentence
+
     _FLAIR_AVAILABLE = True
 except ImportError:
     SequenceTagger = None
@@ -27,6 +28,7 @@ except ImportError:
 
 try:
     import spacy
+
     _SPACY_AVAILABLE = True
 except ImportError:
     spacy = None
@@ -35,10 +37,8 @@ except ImportError:
 logger = logging.getLogger("AINerDetector")
 
 # Cache global pour les modèles lourds (Flair, Spacy)
-_MODEL_CACHE = {
-    "flair": None,
-    "spacy": None
-}
+_MODEL_CACHE = {"flair": None, "spacy": None}
+
 
 @dataclass
 class AIEntity:
@@ -59,6 +59,7 @@ class AIEntity:
             "score": self.score,
         }
 
+
 class AINerDetector:
     """
     Détecteur d'entités basé sur l'IA (NER).
@@ -67,10 +68,10 @@ class AINerDetector:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.provider = self.config.get("provider", "gliner") # gliner, flair, spacy
+        self.provider = self.config.get("provider", "gliner")  # gliner, flair, spacy
         self.gpu_pipeline = None
         self.use_gpu = self.config.get("use_gpu", False)
-        
+
         # --- GLiNER Setup ---
         if self.provider == "gliner":
             # Tentative d'initialisation du pipeline GPU optimisé si demandé
@@ -83,7 +84,9 @@ class AINerDetector:
                     if self.gpu_pipeline:
                         logger.info("✅ Pipeline NER GPU optimisé chargé.")
                     else:
-                        logger.warning("⚠️ Pipeline GPU demandé mais non chargé (fallback CPU/Standard).")
+                        logger.warning(
+                            "⚠️ Pipeline GPU demandé mais non chargé (fallback CPU/Standard)."
+                        )
                 except Exception as e:
                     logger.error(f"Erreur init GPU pipeline: {e}")
 
@@ -107,7 +110,7 @@ class AINerDetector:
         if not _FLAIR_AVAILABLE:
             logger.error("Flair n'est pas installé.")
             return
-        
+
         if _MODEL_CACHE["flair"] is None:
             try:
                 logger.info("Chargement du modèle Flair (ner-french)...")
@@ -115,7 +118,7 @@ class AINerDetector:
                 logger.info("Modèle Flair chargé.")
             except Exception as e:
                 logger.error(f"Erreur chargement Flair: {e}")
-        
+
         self.flair_tagger = _MODEL_CACHE["flair"]
 
     def _load_spacy(self):
@@ -135,18 +138,20 @@ class AINerDetector:
                     fallback = "fr_core_news_md"
                     logger.warning(f"Modèle {model_name} introuvable, essai avec {fallback}...")
                     _MODEL_CACHE["spacy"] = spacy.load(fallback)
-                
+
                 logger.info("Modèle Spacy chargé.")
             except Exception as e:
                 logger.error(f"Erreur chargement Spacy: {e}")
-        
+
         self.spacy_nlp = _MODEL_CACHE["spacy"]
 
     def detect(self, text: str) -> List[AIEntity]:
         """Exécute la détection NER selon le provider configuré."""
-        print(f"   [AI-NER] Début de l'analyse (Provider: {self.provider}, GPU: {self.use_gpu})...")
+        logger.debug(
+            f"Début de l'analyse AI-NER (Provider: {self.provider}, GPU: {self.use_gpu})..."
+        )
         entities = []
-        
+
         try:
             if self.provider == "gliner":
                 entities = self._detect_gliner(text)
@@ -156,87 +161,91 @@ class AINerDetector:
                 entities = self._detect_spacy(text)
             else:
                 logger.warning(f"Provider inconnu: {self.provider}")
-                print(f"   [AI-NER] ⚠️ Provider inconnu: {self.provider}")
 
         except Exception as e:
             logger.error(f"Erreur lors de la détection NER ({self.provider}): {e}")
-            print(f"   [AI-NER] ❌ Erreur: {e}")
-            
-        print(f"   [AI-NER] Fin de l'analyse. {len(entities)} entités trouvées.")
+
+        logger.debug(f"Fin de l'analyse AI-NER. {len(entities)} entités trouvées.")
         return entities
 
     def _detect_gliner(self, text: str) -> List[AIEntity]:
         entities = []
         if self.gpu_pipeline:
             # Mode GPU Optimisé
-            print("      -> Utilisation du pipeline GPU optimisé")
+            logger.debug("Utilisation du pipeline GPU optimisé")
             raw_results = self.gpu_pipeline.predict(text)
         else:
             # Mode Standard (CPU ou GPU simple via ensemble.py)
             preset = self.config.get("preset", "balanced")
             threshold = self.config.get("threshold", 0.35)
-            print(f"      -> Utilisation du modèle standard (Preset: {preset}, Threshold: {threshold})")
+            logger.debug(
+                f"Utilisation du modèle standard (Preset: {preset}, Threshold: {threshold})"
+            )
             raw_results = run_gliner(text, preset=preset, threshold=threshold)
 
-        print(f"      -> {len(raw_results)} résultats bruts GLiNER")
+        logger.debug(f"{len(raw_results)} résultats bruts GLiNER")
 
         # Conversion des résultats
         for res in raw_results:
             score = res.get("votes", res.get("score", 1.0))
-            entities.append(AIEntity(
-                start=res["start"],
-                end=res["end"],
-                value=text[res["start"]:res["end"]],
-                etype=res["entity_group"],
-                source="gliner",
-                score=score
-            ))
+            entities.append(
+                AIEntity(
+                    start=res["start"],
+                    end=res["end"],
+                    value=text[res["start"] : res["end"]],
+                    etype=res["entity_group"],
+                    source="gliner",
+                    score=score,
+                )
+            )
         return entities
 
     def _detect_flair(self, text: str) -> List[AIEntity]:
         entities = []
         if not self.flair_tagger or not Sentence:
             return []
-        
+
         try:
-            print("      -> Prédiction Flair...")
+            logger.debug("Prédiction Flair...")
             sentence = Sentence(text)
             self.flair_tagger.predict(sentence)
             spans = sentence.get_spans("ner")
-            print(f"      -> {len(spans)} spans trouvés par Flair")
+            logger.debug(f"{len(spans)} spans trouvés par Flair")
             for span in spans:
-                entities.append(AIEntity(
-                    start=span.start_position,
-                    end=span.end_position,
-                    value=span.text,
-                    etype=span.tag.upper(),
-                    source="flair",
-                    score=float(span.score or 0.0)
-                ))
+                entities.append(
+                    AIEntity(
+                        start=span.start_position,
+                        end=span.end_position,
+                        value=span.text,
+                        etype=span.tag.upper(),
+                        source="flair",
+                        score=float(span.score or 0.0),
+                    )
+                )
         except Exception as e:
             logger.error(f"Erreur Flair predict: {e}")
-            print(f"      -> ❌ Erreur Flair: {e}")
         return entities
 
     def _detect_spacy(self, text: str) -> List[AIEntity]:
         entities = []
         if not self.spacy_nlp:
             return []
-        
+
         try:
-            print("      -> Prédiction Spacy...")
+            logger.debug("Prédiction Spacy...")
             doc = self.spacy_nlp(text)
-            print(f"      -> {len(doc.ents)} entités trouvées par Spacy")
+            logger.debug(f"{len(doc.ents)} entités trouvées par Spacy")
             for ent in doc.ents:
-                entities.append(AIEntity(
-                    start=ent.start_char,
-                    end=ent.end_char,
-                    value=ent.text,
-                    etype=ent.label_.upper(),
-                    source="spacy",
-                    score=1.0 # Spacy ne donne pas de score de confiance par défaut facilement accessible
-                ))
+                entities.append(
+                    AIEntity(
+                        start=ent.start_char,
+                        end=ent.end_char,
+                        value=ent.text,
+                        etype=ent.label_.upper(),
+                        source="spacy",
+                        score=1.0,  # Spacy ne donne pas de score de confiance par défaut facilement accessible
+                    )
+                )
         except Exception as e:
             logger.error(f"Erreur Spacy predict: {e}")
-            print(f"      -> ❌ Erreur Spacy: {e}")
         return entities

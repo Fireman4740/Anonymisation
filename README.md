@@ -54,6 +54,9 @@ pip install -r pipeline/requirements.txt
 pip install schwifty phonenumbers  # Pour IBAN/BIC et téléphones internationaux
 ```
 
+
+cd /mnt/f/IA/Anonymisation/eval/streamlit_app && conda run -n ano --no-capture-output streamlit run app.py --server.headless true --server.port 8501
+
 ### Premier Test (30 secondes)
 
 ```python

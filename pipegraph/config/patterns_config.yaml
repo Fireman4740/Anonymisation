@@ -124,6 +124,15 @@ patterns:
     priority: 3
     validate_with: "phone"
 
+  # Formats courts (7-8 chiffres) -> on limite via contexte pour éviter les FP
+  phone_context_short:
+    regex: '(?i)(?:\b(?:tel|tél|téléphone|telephone|phone|mobile|portable)\b\s*(?:is|=|:)?\s*)(\d{1,4}[\s.-]?\d{3}[\s.-]?\d{4})\b'
+    enabled: true
+    entity_type: "TELEPHONE"
+    priority: 3
+    validate_with: "phone"
+    group_index: 1
+
   # --- FILESYSTEM ---
   path_unix:
     regex: '(?<!\w)/(?!/)[^\s]+'
@@ -180,6 +189,12 @@ patterns:
     entity_type: "DATE"
     priority: 3
 
+  date_quarter_year:
+    regex: '(?i)\bQ[1-4]\s*\d{4}\b'
+    enabled: true
+    entity_type: "DATE"
+    priority: 3
+
   # --- MISC ---
   username_keyval:
     regex: '(?i)\b(?:user|username|login|utilisateur)\s*[:=]\s*([A-Za-z0-9._-]{3,64})'
@@ -196,19 +211,25 @@ patterns:
     group_index: 1
 
   amount_currency_prefix:
-    regex: '(?i)\b(?:EUR|USD|SEK|GBP|CHF|CAD|AUD|JPY|CNY)\s+\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\b'
+    regex: '(?i)\b(?:EUR|USD|NOK|SEK|GBP|CHF|CAD|AUD|JPY|CNY)\s*(?:\d{1,3}(?:[.,\s\u202f]\d{3})+|\d{1,9})(?:[.,]\d{2})?\b'
     enabled: true
     entity_type: "MONTANT"
     priority: 3
 
   amount_symbol_prefix:
-    regex: '(?i)(?<![\w<])(?:€|\$|£)\s?\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\b'
+    regex: '(?i)(?<![\w<])(?:€|\$|£)\s?(?:\d{1,3}(?:[.,\s\u202f]\d{3})+|\d{1,9})(?:[.,]\d{2})?\b'
     enabled: true
     entity_type: "MONTANT"
     priority: 3
 
   amount_suffix:
-    regex: '(?i)\b\d{1,3}(?:[.,\s\u202f]\d{3})*(?:[.,]\d{2})?\s?(?:€|euros?|EUR|USD|dollars?|SEK|GBP|pounds?|livres|CHF|CAD|AUD|JPY|CNY)\b'
+    regex: '(?i)\b(?:\d{1,3}(?:[.,\s\u202f]\d{3})+|\d{1,9})(?:[.,]\d{2})?\s?(?:euros?|EUR|USD|NOK|dollars?|SEK|GBP|pounds?|livres|CHF|CAD|AUD|JPY|CNY)\b'
+    enabled: true
+    entity_type: "MONTANT"
+    priority: 3
+
+  amount_symbol_suffix:
+    regex: '(?i)\b(?:\d{1,3}(?:[.,\s\u202f]\d{3})+|\d{1,9})(?:[.,]\d{2})?\s?(?:€|\$|£)(?!\w)'
     enabled: true
     entity_type: "MONTANT"
     priority: 3

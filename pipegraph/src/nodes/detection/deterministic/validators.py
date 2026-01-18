@@ -16,6 +16,7 @@ try:
     _PHONENUMBERS_AVAILABLE = True
 except ImportError:
     _PHONENUMBERS_AVAILABLE = False
+    phonenumbers = None
 
 class Validators:
     @staticmethod
@@ -44,6 +45,7 @@ class Validators:
         cleaned = clean_identifier(value)
         if _SCHWIFTY_AVAILABLE:
             try:
+                assert IBAN is not None
                 IBAN(cleaned)
                 return True
             except ValueError:
@@ -57,6 +59,7 @@ class Validators:
         """Valide un code BIC/SWIFT."""
         if _SCHWIFTY_AVAILABLE:
             try:
+                assert BIC is not None
                 BIC(clean_identifier(value))
                 return True
             except ValueError:
@@ -93,14 +96,48 @@ class Validators:
 
     @staticmethod
     def phone(value: str) -> bool:
-        """Valide un numéro de téléphone via libphonenumbers."""
-        if _PHONENUMBERS_AVAILABLE:
-            try:
+        """Valide un numéro de téléphone.
+
+        Objectif: réduire les faux négatifs (numéros locaux, formats "fictifs" type 555, etc.).
+
+        - Si libphonenumbers est dispo: on tente un parsing robuste et on accepte les numéros
+          "possibles" (is_possible_number) plutôt que strictement "valides".
+        - Fallback: heuristique simple sur le nombre de chiffres.
+        """
+
+        # Heuristique de secours (utile même quand libphonenumbers rejette des numéros fictifs)
+        digits = re.sub(r"\D", "", value or "")
+        # 7 à 15 chiffres couvre la plupart des formats (locaux + internationaux)
+        if not (7 <= len(digits) <= 15):
+            return False
+
+        if not _PHONENUMBERS_AVAILABLE or phonenumbers is None:
+            return True
+
+        assert phonenumbers is not None
+
+        # Parsing robuste: si pas d'indicatif explicite, on tente avec une région par défaut.
+        # On privilégie FR car le dataset/projet est majoritairement FR.
+        regions_to_try = ["FR", "US", "GB", "DE", "ES", "IT"]
+        has_country_prefix = bool(re.match(r"\s*(?:\+|00)", value))
+
+        try:
+            if has_country_prefix:
                 parsed = phonenumbers.parse(value, None)
-                return phonenumbers.is_valid_number(parsed)
-            except Exception:
-                return False
-        return True # Pas de validation si lib absente
+                return bool(phonenumbers.is_possible_number(parsed))
+
+            for region in regions_to_try:
+                try:
+                    parsed = phonenumbers.parse(value, region)
+                    if phonenumbers.is_possible_number(parsed):
+                        return True
+                except Exception:
+                    continue
+
+            # Si tout échoue mais que l'heuristique passe, on accepte (mieux vaut FP léger que FN massif)
+            return True
+        except Exception:
+            return True
 
     @staticmethod
     def get_validator(name: Optional[str]):
