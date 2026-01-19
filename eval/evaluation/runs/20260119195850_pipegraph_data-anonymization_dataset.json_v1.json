@@ -1,21 +1,20 @@
 {
   "meta": {
-    "created_at": "2026-01-13T11:52:29+00:00",
+    "created_at": "2026-01-19T19:58:50+00:00",
     "pipeline": "pipegraph",
+    "run_name": "V1",
     "dataset": {
-      "name": "anonymization_dataset",
+      "name": "data/anonymization_dataset.json",
       "path": "/mnt/f/IA/Anonymisation/eval/datasets/data/anonymization_dataset.json"
     },
     "limit": null,
-    "all_dataset": true,
     "config": {
       "enable_detection": true,
       "enable_deterministic": true,
       "enable_ai": true,
       "enable_anonymization": true,
       "detection_mode": "serial"
-    },
-    "run_name": "anonymization_dataset_31"
+    }
   },
   "data": [
     {
@@ -23,7 +22,7 @@
       "precision": 1.0,
       "recall": 1.0,
       "f2": 1.0,
-      "pred_count": 7,
+      "pred_count": 10,
       "truth_count": 6,
       "leaks_count": 0,
       "full_text": "Bonjour, je suis Jean Dupont de Paris. Mon email est jean.dupont@example.com. Erreur API sur le serveur 192.168.1.1 avec ticket JIRA-1234. Il m'a dit que c'était urgent.",
@@ -77,9 +76,19 @@
           "PERSON"
         ],
         [
+          53,
+          76,
+          "EMAIL"
+        ],
+        [
           65,
           76,
           "LOCATION"
+        ],
+        [
+          104,
+          115,
+          "IP"
         ],
         [
           104,
@@ -92,6 +101,11 @@
           "ORGANIZATION"
         ],
         [
+          128,
+          137,
+          "TICKET"
+        ],
+        [
           139,
           141,
           "PERSON"
@@ -101,12 +115,12 @@
     },
     {
       "doc_id": "ticket_002",
-      "precision": 1.0,
-      "recall": 0.6666666666666666,
-      "f2": 0.7142857142857142,
-      "pred_count": 5,
+      "precision": 0.875,
+      "recall": 0.8333333333333334,
+      "f2": 0.841346153846154,
+      "pred_count": 8,
       "truth_count": 6,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "Hi, this is Alice from New York. Phone: +1-123-456-7890. Issue with hostname internal-server.example.com and UUID 123e4567-e89b-12d3-a456-426614174000. The team lead mentioned it.",
       "text_snippet": "Hi, this is Alice from New York. Phone: +1-123-456-7890. Issue with hostname internal-server.example.com and UUID 123e4567-e89b-12d3-a456-426614174000. The team lead mentioned it.",
       "ground_truth": [
@@ -153,14 +167,29 @@
           "LOCATION"
         ],
         [
+          68,
+          76,
+          "BIC"
+        ],
+        [
           77,
           92,
           "ORGANIZATION"
         ],
         [
+          77,
+          104,
+          "HOST"
+        ],
+        [
           93,
           104,
           "ORGANIZATION"
+        ],
+        [
+          114,
+          150,
+          "UUID"
         ],
         [
           152,
@@ -174,23 +203,17 @@
           "end": 55,
           "label": "PHONE",
           "text": "+1-123-456-7890"
-        },
-        {
-          "start": 114,
-          "end": 150,
-          "label": "UUID",
-          "text": "123e4567-e89b-12d3-a456-426614174000"
         }
       ]
     },
     {
       "doc_id": "ticket_003",
       "precision": 1.0,
-      "recall": 0.6,
-      "f2": 0.6521739130434783,
-      "pred_count": 4,
+      "recall": 1.0,
+      "f2": 1.0,
+      "pred_count": 6,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 0,
       "full_text": "Problème avec API key: sk-abc123 sur date du 15/07/2023. Adresse: 123 Rue Exemple, Lyon. Montant: 456.78€. Mme Martin a confirmé.",
       "text_snippet": "Problème avec API key: sk-abc123 sur date du 15/07/2023. Adresse: 123 Rue Exemple, Lyon. Montant: 456.78€. Mme Martin a confirmé.",
       "ground_truth": [
@@ -227,6 +250,11 @@
           "PERSON"
         ],
         [
+          45,
+          55,
+          "DATE"
+        ],
+        [
           66,
           81,
           "LOCATION"
@@ -237,34 +265,26 @@
           "LOCATION"
         ],
         [
+          98,
+          105,
+          "MONTANT"
+        ],
+        [
           107,
           117,
           "PERSON"
         ]
       ],
-      "leaks": [
-        {
-          "start": 45,
-          "end": 55,
-          "label": "DATE",
-          "text": "15/07/2023"
-        },
-        {
-          "start": 98,
-          "end": 105,
-          "label": "MONTANT",
-          "text": "456.78€"
-        }
-      ]
+      "leaks": []
     },
     {
       "doc_id": "ticket_004",
-      "precision": 1.0,
-      "recall": 0.6666666666666666,
-      "f2": 0.7142857142857142,
-      "pred_count": 4,
+      "precision": 0.875,
+      "recall": 0.8333333333333334,
+      "f2": 0.841346153846154,
+      "pred_count": 8,
       "truth_count": 6,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "Error code 404 on product XYZ-789 in London office. Email support@company.com for details. Bob said it's linked to previous ticket SN-456.",
       "text_snippet": "Error code 404 on product XYZ-789 in London office. Email support@company.com for details. Bob said it's linked to previous ticket SN-456.",
       "ground_truth": [
@@ -301,9 +321,19 @@
       ],
       "predictions": [
         [
+          26,
+          33,
+          "TICKET"
+        ],
+        [
           37,
           43,
           "LOCATION"
+        ],
+        [
+          58,
+          77,
+          "EMAIL"
         ],
         [
           66,
@@ -316,9 +346,19 @@
           "PERSON"
         ],
         [
+          115,
+          123,
+          "BIC"
+        ],
+        [
           131,
           137,
           "LOCATION"
+        ],
+        [
+          131,
+          137,
+          "TICKET"
         ]
       ],
       "leaks": [
@@ -327,23 +367,17 @@
           "end": 14,
           "label": "ERROR_CODE",
           "text": "404"
-        },
-        {
-          "start": 26,
-          "end": 33,
-          "label": "PRODUCT",
-          "text": "XYZ-789"
         }
       ]
     },
     {
       "doc_id": "ticket_005",
-      "precision": 1.0,
-      "recall": 0.5,
-      "f2": 0.5555555555555556,
-      "pred_count": 3,
+      "precision": 0.875,
+      "recall": 1.0,
+      "f2": 0.9722222222222222,
+      "pred_count": 8,
       "truth_count": 6,
-      "leaks_count": 3,
+      "leaks_count": 0,
       "full_text": "Incident sur MAC address 00:1A:2B:3C:4D:5E et URL https://internal.api.com. Date: 2024-02-10. Équipe DevOps à Marseille. Le montant est de 1234.56€.",
       "text_snippet": "Incident sur MAC address 00:1A:2B:3C:4D:5E et URL https://internal.api.com. Date: 2024-02-10. Équipe DevOps à Marseille. Le montant est de 1234.56€.",
       "ground_truth": [
@@ -380,9 +414,29 @@
       ],
       "predictions": [
         [
+          0,
+          8,
+          "BIC"
+        ],
+        [
+          25,
+          42,
+          "IP"
+        ],
+        [
+          50,
+          75,
+          "URL"
+        ],
+        [
           67,
           74,
           "ORGANIZATION"
+        ],
+        [
+          82,
+          92,
+          "DATE"
         ],
         [
           94,
@@ -393,37 +447,23 @@
           110,
           119,
           "LOCATION"
+        ],
+        [
+          139,
+          147,
+          "MONTANT"
         ]
       ],
-      "leaks": [
-        {
-          "start": 25,
-          "end": 42,
-          "label": "MAC",
-          "text": "00:1A:2B:3C:4D:5E"
-        },
-        {
-          "start": 82,
-          "end": 92,
-          "label": "DATE",
-          "text": "2024-02-10"
-        },
-        {
-          "start": 139,
-          "end": 147,
-          "label": "MONTANT",
-          "text": "1234.56€"
-        }
-      ]
+      "leaks": []
     },
     {
       "doc_id": "ticket_006",
-      "precision": 0.9333333333333333,
-      "recall": 0.7333333333333333,
-      "f2": 0.7661691542288557,
-      "pred_count": 15,
+      "precision": 0.9545454545454546,
+      "recall": 0.8666666666666667,
+      "f2": 0.8829236739974127,
+      "pred_count": 22,
       "truth_count": 15,
-      "leaks_count": 4,
+      "leaks_count": 2,
       "full_text": "Conversation entre M. Leclerc, ingénieur senior à Bordeaux chez TechCorp, et l'équipe support. Il a signalé une erreur sur l'API Paiement v2.3 le 12/03/2023. Son collègue, qui est le chef de projet à Nantes, a confirmé via email leclerc@techcorp.fr. Combinaison rare: rôle senior + ville + produit interne. Montant impliqué: 15000€. Elle a ajouté que c'était lié au ticket JIRA-5678 d'il y a deux mois.",
       "text_snippet": "Conversation entre M. Leclerc, ingénieur senior à Bordeaux chez TechCorp, et l'équipe support. Il a signalé une erreur sur l'API Paiement v2.3 le 12/03/2023. Son collègue, qui est le chef de projet à ",
       "ground_truth": [
@@ -522,6 +562,11 @@
         [
           64,
           72,
+          "BIC"
+        ],
+        [
+          64,
+          72,
           "ORGANIZATION"
         ],
         [
@@ -532,7 +577,17 @@
         [
           129,
           137,
+          "BIC"
+        ],
+        [
+          129,
+          137,
           "ORGANIZATION"
+        ],
+        [
+          146,
+          156,
+          "DATE"
         ],
         [
           158,
@@ -550,9 +605,19 @@
           "PERSON"
         ],
         [
+          229,
+          248,
+          "EMAIL"
+        ],
+        [
           237,
           245,
           "ORGANIZATION"
+        ],
+        [
+          250,
+          261,
+          "BIC"
         ],
         [
           268,
@@ -570,6 +635,11 @@
           "ORGANIZATION"
         ],
         [
+          325,
+          331,
+          "MONTANT"
+        ],
+        [
           333,
           337,
           "PERSON"
@@ -578,26 +648,19 @@
           373,
           382,
           "ORGANIZATION"
+        ],
+        [
+          373,
+          382,
+          "TICKET"
         ]
       ],
       "leaks": [
-        {
-          "start": 146,
-          "end": 156,
-          "label": "DATE",
-          "text": "12/03/2023"
-        },
         {
           "start": 183,
           "end": 197,
           "label": "ROLE",
           "text": "chef de projet"
-        },
-        {
-          "start": 325,
-          "end": 331,
-          "label": "MONTANT",
-          "text": "15000€"
         },
         {
           "start": 385,
@@ -609,12 +672,12 @@
     },
     {
       "doc_id": "ticket_007",
-      "precision": 0.9230769230769231,
-      "recall": 0.6470588235294118,
-      "f2": 0.6882168925964547,
-      "pred_count": 13,
+      "precision": 0.9444444444444444,
+      "recall": 0.7647058823529411,
+      "f2": 0.7949640287769785,
+      "pred_count": 18,
       "truth_count": 17,
-      "leaks_count": 6,
+      "leaks_count": 4,
       "full_text": "Support chat: User Jane Doe, marketing manager in Seattle branch of GlobalInc, reported issue with internal tool version 4.2.1 on 2024-05-15. Her assistant, based in the same office, added that it's similar to what happened to the finance team in Chicago last quarter. Email: jane.doe@globalinc.com. Rare combo: marketing role + branch + tool version + cross-team reference. Amount affected: $25000. He noted the MAC address 00:11:22:33:44:55 and IP 10.0.0.1.",
       "text_snippet": "Support chat: User Jane Doe, marketing manager in Seattle branch of GlobalInc, reported issue with internal tool version 4.2.1 on 2024-05-15. Her assistant, based in the same office, added that it's s",
       "ground_truth": [
@@ -726,6 +789,11 @@
           "ORGANIZATION"
         ],
         [
+          130,
+          140,
+          "DATE"
+        ],
+        [
           142,
           155,
           "PERSON"
@@ -746,14 +814,29 @@
           "PERSON"
         ],
         [
+          276,
+          298,
+          "EMAIL"
+        ],
+        [
           285,
           298,
           "ORGANIZATION"
         ],
         [
+          392,
+          398,
+          "MONTANT"
+        ],
+        [
           400,
           402,
           "PERSON"
+        ],
+        [
+          425,
+          442,
+          "IP"
         ],
         [
           425,
@@ -768,6 +851,11 @@
         [
           450,
           458,
+          "IP"
+        ],
+        [
+          450,
+          458,
           "LOCATION"
         ]
       ],
@@ -777,12 +865,6 @@
           "end": 126,
           "label": "TOOL",
           "text": "internal tool version 4.2.1"
-        },
-        {
-          "start": 130,
-          "end": 140,
-          "label": "DATE",
-          "text": "2024-05-15"
         },
         {
           "start": 170,
@@ -801,23 +883,17 @@
           "end": 373,
           "label": "QUASI_ID",
           "text": "Rare combo: marketing role + branch + tool version + cross-team reference"
-        },
-        {
-          "start": 392,
-          "end": 398,
-          "label": "MONTANT",
-          "text": "$25000"
         }
       ]
     },
     {
       "doc_id": "ticket_008",
-      "precision": 0.9333333333333333,
-      "recall": 0.7,
-      "f2": 0.7368421052631579,
-      "pred_count": 15,
+      "precision": 0.8695652173913043,
+      "recall": 0.85,
+      "f2": 0.8538422903063786,
+      "pred_count": 23,
       "truth_count": 20,
-      "leaks_count": 6,
+      "leaks_count": 3,
       "full_text": "Ticket urgent: Erreur sur serveur prod-eu-west-1 avec clé AWS AKIA1234567890. Reporté par Sophie, dev lead de l'équipe Alpha à Toulouse, qui travaille avec le client BetaCorp basé à Lille. Date incident: 2023-11-20. Montant perte: 5000€. Son manager, M. Durand, a escaladé via ticket lié SERV-999. Contexte: Sophie a mentionné que c'est similaire à l'incident de l'équipe Gamma à Strasbourg en octobre, impliquant UUID f47ac10b-58cc-4372-a567-0e02b2c3d479 et IP 172.16.0.1. Style d'écriture formel, avec politesses répétées.",
       "text_snippet": "Ticket urgent: Erreur sur serveur prod-eu-west-1 avec clé AWS AKIA1234567890. Reporté par Sophie, dev lead de l'équipe Alpha à Toulouse, qui travaille avec le client BetaCorp basé à Lille. Date incide",
       "ground_truth": [
@@ -956,12 +1032,32 @@
         [
           166,
           174,
+          "BIC"
+        ],
+        [
+          166,
+          174,
           "ORGANIZATION"
         ],
         [
           182,
           187,
           "LOCATION"
+        ],
+        [
+          194,
+          202,
+          "BIC"
+        ],
+        [
+          204,
+          214,
+          "DATE"
+        ],
+        [
+          231,
+          236,
+          "MONTANT"
         ],
         [
           238,
@@ -979,9 +1075,19 @@
           "LOCATION"
         ],
         [
+          288,
+          296,
+          "TICKET"
+        ],
+        [
           308,
           314,
           "PERSON"
+        ],
+        [
+          351,
+          359,
+          "BIC"
         ],
         [
           365,
@@ -992,6 +1098,16 @@
           380,
           390,
           "LOCATION"
+        ],
+        [
+          419,
+          455,
+          "UUID"
+        ],
+        [
+          462,
+          472,
+          "IP"
         ],
         [
           462,
@@ -1007,28 +1123,10 @@
           "text": "dev lead"
         },
         {
-          "start": 204,
-          "end": 214,
-          "label": "DATE",
-          "text": "2023-11-20"
-        },
-        {
-          "start": 231,
-          "end": 236,
-          "label": "MONTANT",
-          "text": "5000€"
-        },
-        {
           "start": 394,
           "end": 401,
           "label": "DATE",
           "text": "octobre"
-        },
-        {
-          "start": 419,
-          "end": 455,
-          "label": "UUID",
-          "text": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         },
         {
           "start": 474,
@@ -1040,12 +1138,12 @@
     },
     {
       "doc_id": "ticket_009",
-      "precision": 1.0,
-      "recall": 0.6666666666666666,
-      "f2": 0.7142857142857142,
-      "pred_count": 14,
+      "precision": 0.8695652173913043,
+      "recall": 0.8888888888888888,
+      "f2": 0.8849557522123893,
+      "pred_count": 23,
       "truth_count": 18,
-      "leaks_count": 6,
+      "leaks_count": 2,
       "full_text": "Issue log: Developer Mike from the Berlin office of EuroTech experienced API failure with error code ERR-789 on 2024-01-10. His phone is +49-30-1234567. The problem is tied to a rare configuration: custom plugin v1.0.2 used only by 3 teams, including his in Germany and one in Paris. Amount at stake: €100000. She emailed mike@eurotech.de about it, referencing previous case from Q4 2023 involving hostname berlin-server-01 and secret key secret123. Indirect link: rare plugin + country + error code could deduce team via sector knowledge.",
       "text_snippet": "Issue log: Developer Mike from the Berlin office of EuroTech experienced API failure with error code ERR-789 on 2024-01-10. His phone is +49-30-1234567. The problem is tied to a rare configuration: cu",
       "ground_truth": [
@@ -1157,6 +1255,16 @@
           "ORGANIZATION"
         ],
         [
+          101,
+          108,
+          "TICKET"
+        ],
+        [
+          112,
+          122,
+          "DATE"
+        ],
+        [
           137,
           151,
           "LOCATION"
@@ -1177,6 +1285,11 @@
           "LOCATION"
         ],
         [
+          301,
+          308,
+          "MONTANT"
+        ],
+        [
           310,
           313,
           "PERSON"
@@ -1185,6 +1298,11 @@
           322,
           326,
           "PERSON"
+        ],
+        [
+          322,
+          338,
+          "EMAIL"
         ],
         [
           327,
@@ -1197,9 +1315,34 @@
           "LOCATION"
         ],
         [
+          349,
+          360,
+          "BIC"
+        ],
+        [
+          361,
+          369,
+          "BIC"
+        ],
+        [
+          380,
+          387,
+          "DATE"
+        ],
+        [
+          398,
+          406,
+          "BIC"
+        ],
+        [
           407,
           423,
           "LOCATION"
+        ],
+        [
+          450,
+          458,
+          "BIC"
         ],
         [
           479,
@@ -1214,34 +1357,10 @@
       ],
       "leaks": [
         {
-          "start": 101,
-          "end": 108,
-          "label": "ERROR_CODE",
-          "text": "ERR-789"
-        },
-        {
-          "start": 112,
-          "end": 122,
-          "label": "DATE",
-          "text": "2024-01-10"
-        },
-        {
           "start": 198,
           "end": 218,
           "label": "CONFIG",
           "text": "custom plugin v1.0.2"
-        },
-        {
-          "start": 301,
-          "end": 308,
-          "label": "MONTANT",
-          "text": "€100000"
-        },
-        {
-          "start": 380,
-          "end": 387,
-          "label": "DATE_REL",
-          "text": "Q4 2023"
         },
         {
           "start": 439,
@@ -1253,12 +1372,12 @@
     },
     {
       "doc_id": "ticket_010",
-      "precision": 0.8125,
-      "recall": 0.5,
-      "f2": 0.5416666666666666,
-      "pred_count": 16,
+      "precision": 0.8260869565217391,
+      "recall": 0.7222222222222222,
+      "f2": 0.7408518296340733,
+      "pred_count": 23,
       "truth_count": 18,
-      "leaks_count": 9,
+      "leaks_count": 5,
       "full_text": "Rapport d'incident: L'utilisateur principal, Dr. Émilie Roux, chercheuse en IA chez InnoLab à Grenoble, a rencontré un bug dans le modèle ML version beta-0.9 lors d'un test le 2024-07-01. Son NIR est 1 85 12 38 123 456 78. Elle collabore avec l'équipe de Paris, dirigée par un expert qui a travaillé sur le projet Zeta l'an dernier. Montant du grant: 200000€. Le bug est lié à une URL interne https://innolab-research.fr/api/ml et un chemin /home/roux/data. Contexte métier: combinaison de rôle académique + lab rare + grant élevé pourrait permettre une identification par recoupement avec publications publiques. Style: phrases longues et techniques.",
       "text_snippet": "Rapport d'incident: L'utilisateur principal, Dr. Émilie Roux, chercheuse en IA chez InnoLab à Grenoble, a rencontré un bug dans le modèle ML version beta-0.9 lors d'un test le 2024-07-01. Son NIR est ",
       "ground_truth": [
@@ -1355,6 +1474,16 @@
       ],
       "predictions": [
         [
+          10,
+          18,
+          "BIC"
+        ],
+        [
+          22,
+          33,
+          "BIC"
+        ],
+        [
           45,
           60,
           "PERSON"
@@ -1368,6 +1497,11 @@
           94,
           102,
           "LOCATION"
+        ],
+        [
+          176,
+          186,
+          "DATE"
         ],
         [
           188,
@@ -1400,6 +1534,16 @@
           "ORGANIZATION"
         ],
         [
+          351,
+          358,
+          "MONTANT"
+        ],
+        [
+          393,
+          427,
+          "URL"
+        ],
+        [
           401,
           417,
           "ORGANIZATION"
@@ -1420,6 +1564,11 @@
           "LOCATION"
         ],
         [
+          441,
+          457,
+          "PATH"
+        ],
+        [
           442,
           446,
           "LOCATION"
@@ -1433,15 +1582,14 @@
           452,
           456,
           "LOCATION"
+        ],
+        [
+          475,
+          486,
+          "BIC"
         ]
       ],
       "leaks": [
-        {
-          "start": 22,
-          "end": 43,
-          "label": "ROLE",
-          "text": "utilisateur principal"
-        },
         {
           "start": 62,
           "end": 78,
@@ -1453,12 +1601,6 @@
           "end": 157,
           "label": "MODEL",
           "text": "modèle ML version beta-0.9"
-        },
-        {
-          "start": 176,
-          "end": 186,
-          "label": "DATE",
-          "text": "2024-07-01"
         },
         {
           "start": 200,
@@ -1473,18 +1615,6 @@
           "text": "l'an dernier"
         },
         {
-          "start": 351,
-          "end": 358,
-          "label": "MONTANT",
-          "text": "200000€"
-        },
-        {
-          "start": 458,
-          "end": 612,
-          "label": "QUASI_ID",
-          "text": "Contexte métier: combinaison de rôle académique + lab rare + grant élevé pourrait permettre une identification par recoupement avec publications publiques"
-        },
-        {
           "start": 614,
           "end": 650,
           "label": "STYLE",
@@ -1494,12 +1624,12 @@
     },
     {
       "doc_id": "ticket_011",
-      "precision": 0.55,
-      "recall": 0.6666666666666666,
-      "f2": 0.6395348837209301,
-      "pred_count": 20,
+      "precision": 0.6052631578947368,
+      "recall": 1.0,
+      "f2": 0.8846153846153846,
+      "pred_count": 38,
       "truth_count": 18,
-      "leaks_count": 6,
+      "leaks_count": 0,
       "full_text": "LOGS D'INCIDENT - CRITIQUE\nDate: 2024-08-12 14:35:02\nSignalé par: Marc Lefebvre (m.lefebvre@corp-tech.fr)\nLocalisation: Bureau 402, Lyon\n\nDescription: Impossible de joindre le service de paiement sur le serveur 10.0.45.12. Le timeout se produit à chaque tentative depuis l'URL https://api-internal.payments.corp-tech.fr/v1/auth.\n\nMarc a contacté Sarah Bernard (s.bernard@corp-tech.fr) du département DevOps pour vérifier les accès via la passerelle 192.168.10.254. \nSarah a répondu: 'Je vois des erreurs 403 récurrentes. Marc, est-ce que tu as mis à jour la clé API ?'.\nMarc: 'Oui, j'ai utilisé la clé AKIA-PROD-9988776655. C'est David qui me l'a donnée.'\nDavid est le manager de l'équipe infrastructure à Nantes. Son numéro est +33 6 12 34 56 78.\n\nNote: Le fichier de config /etc/network/interfaces semble corrompu. Voici l'empreinte UUID du disque: 550e8400-e29b-41d4-a716-446655440000.\nMontant des transactions bloquées: 45000€.\nIl faut régler ça avant la fin du trimestre Q3 2024.",
       "text_snippet": "LOGS D'INCIDENT - CRITIQUE\nDate: 2024-08-12 14:35:02\nSignalé par: Marc Lefebvre (m.lefebvre@corp-tech.fr)\nLocalisation: Bureau 402, Lyon\n\nDescription: Impossible de joindre le service de paiement sur ",
       "ground_truth": [
@@ -1596,9 +1726,39 @@
       ],
       "predictions": [
         [
+          7,
+          15,
+          "BIC"
+        ],
+        [
+          18,
+          26,
+          "BIC"
+        ],
+        [
+          33,
+          43,
+          "DATE"
+        ],
+        [
+          44,
+          52,
+          "IP"
+        ],
+        [
           66,
           79,
           "PERSON"
+        ],
+        [
+          71,
+          79,
+          "BIC"
+        ],
+        [
+          81,
+          104,
+          "EMAIL"
         ],
         [
           92,
@@ -1614,6 +1774,21 @@
           132,
           136,
           "LOCATION"
+        ],
+        [
+          187,
+          195,
+          "BIC"
+        ],
+        [
+          211,
+          221,
+          "IP"
+        ],
+        [
+          277,
+          328,
+          "URL"
         ],
         [
           285,
@@ -1636,6 +1811,11 @@
           "PERSON"
         ],
         [
+          361,
+          383,
+          "EMAIL"
+        ],
+        [
           371,
           383,
           "ORGANIZATION"
@@ -1649,6 +1829,11 @@
           438,
           463,
           "LOCATION"
+        ],
+        [
+          449,
+          463,
+          "IP"
         ],
         [
           466,
@@ -1669,6 +1854,11 @@
           602,
           622,
           "ORGANIZATION"
+        ],
+        [
+          607,
+          622,
+          "TICKET"
         ],
         [
           630,
@@ -1694,55 +1884,48 @@
           714,
           717,
           "PERSON"
+        ],
+        [
+          729,
+          746,
+          "PHONE"
+        ],
+        [
+          776,
+          799,
+          "PATH"
+        ],
+        [
+          807,
+          815,
+          "BIC"
+        ],
+        [
+          851,
+          887,
+          "UUID"
+        ],
+        [
+          924,
+          930,
+          "MONTANT"
+        ],
+        [
+          976,
+          983,
+          "DATE"
         ]
       ],
-      "leaks": [
-        {
-          "start": 211,
-          "end": 221,
-          "label": "IP",
-          "text": "10.0.45.12"
-        },
-        {
-          "start": 729,
-          "end": 746,
-          "label": "PHONE",
-          "text": "+33 6 12 34 56 78"
-        },
-        {
-          "start": 776,
-          "end": 799,
-          "label": "PATH",
-          "text": "/etc/network/interfaces"
-        },
-        {
-          "start": 851,
-          "end": 887,
-          "label": "UUID",
-          "text": "550e8400-e29b-41d4-a716-446655440000"
-        },
-        {
-          "start": 924,
-          "end": 930,
-          "label": "MONTANT",
-          "text": "45000€"
-        },
-        {
-          "start": 976,
-          "end": 983,
-          "label": "DATE",
-          "text": "Q3 2024"
-        }
-      ]
+      "leaks": []
     },
     {
       "doc_id": "ticket_012",
-      "precision": 0.3269230769230769,
-      "recall": 0.6818181818181818,
-      "f2": 0.5601933216168716,
-      "pred_count": 52,
+      "precision": 0.43478260869565216,
+      "recall": 0.8636363636363636,
+      "f2": 0.721336370539104,
+      "pred_count": 69,
       "truth_count": 22,
-      "leaks_count": 7,
+      "leaks_count": 3,
       "full_text": "VERY LONG TRANSCRIPT - NETWORK TROUBLESHOOTING\nParticipants: Robert Smith (Network Admin), Linda Johnson (Security Analyst), Kevin (ISP Support).\n\nRobert Smith: Hi Linda, I'm seeing weird traffic from 172.217.16.143 hitting our internal database at db-prod-01.company.internal (10.10.1.50).\nLinda Johnson: Let me check the firewall logs. I see an access attempt with credentials for 'user_admin_robert' at 14:00 GMT.\nKevin: This is Kevin from GlobalLink ISP. We noticed a potential DDoS starting from your subnet 203.0.113.0/24.\nRobert Smith: That's strange. Linda, can you block 172.217.16.143 immediately? My email for the report is r.smith@company.com.\nLinda Johnson: Done. I also see requests to https://internal.dev.portal/api/secret-token. The source seems to be Kevin's test machine?\nKevin: No, my IP is 8.8.4.4. Wait, I see another one: 192.168.5.10. \nRobert Smith: Kevin, check the route to our Chicago office. The manager there, Susan, is reporting outages.\nLinda Johnson: Kevin, Susan's email is s.well@company.com and her phone is +1-555-0199. Please coordinate with her.\nKevin: Copy that. I'm investigating the trunk link eth0/1 on the Cisco router model ASR-1001.\nRobert Smith: One more thing, the license key for the firewall is LIC-9988-X-Z. Is it still valid?\nLinda Johnson: Yes, it expires on 2025-12-31. Kevin, what's the status for the Chicago link?\nKevin: Still down. I'm seeing hardware failure on the line. Estimated repair cost: $5000.\nRobert Smith: We need this fixed by Q1 2026 for the audit.",
       "text_snippet": "VERY LONG TRANSCRIPT - NETWORK TROUBLESHOOTING\nParticipants: Robert Smith (Network Admin), Linda Johnson (Security Analyst), Kevin (ISP Support).\n\nRobert Smith: Hi Linda, I'm seeing weird traffic from",
       "ground_truth": [
@@ -1891,7 +2074,17 @@
         [
           201,
           215,
+          "IP"
+        ],
+        [
+          201,
+          215,
           "LOCATION"
+        ],
+        [
+          237,
+          245,
+          "BIC"
         ],
         [
           249,
@@ -1899,9 +2092,19 @@
           "LOCATION"
         ],
         [
+          249,
+          276,
+          "HOST"
+        ],
+        [
           260,
           276,
           "ORGANIZATION"
+        ],
+        [
+          278,
+          288,
+          "IP"
         ],
         [
           278,
@@ -1946,6 +2149,11 @@
         [
           513,
           524,
+          "IP"
+        ],
+        [
+          513,
+          524,
           "LOCATION"
         ],
         [
@@ -1961,12 +2169,22 @@
         [
           580,
           594,
+          "IP"
+        ],
+        [
+          580,
+          594,
           "LOCATION"
         ],
         [
           635,
           642,
           "PERSON"
+        ],
+        [
+          635,
+          654,
+          "EMAIL"
         ],
         [
           643,
@@ -1982,6 +2200,16 @@
           677,
           678,
           "PERSON"
+        ],
+        [
+          688,
+          696,
+          "BIC"
+        ],
+        [
+          700,
+          745,
+          "URL"
         ],
         [
           708,
@@ -2001,7 +2229,17 @@
         [
           811,
           818,
+          "IP"
+        ],
+        [
+          811,
+          818,
           "LOCATION"
+        ],
+        [
+          845,
+          857,
+          "IP"
         ],
         [
           845,
@@ -2044,6 +2282,11 @@
           "PERSON"
         ],
         [
+          1007,
+          1025,
+          "EMAIL"
+        ],
+        [
           1014,
           1025,
           "ORGANIZATION"
@@ -2074,14 +2317,29 @@
           "ORGANIZATION"
         ],
         [
+          1168,
+          1176,
+          "TICKET"
+        ],
+        [
           1178,
           1190,
           "PERSON"
         ],
         [
+          1244,
+          1252,
+          "TICKET"
+        ],
+        [
           1277,
           1290,
           "PERSON"
+        ],
+        [
+          1311,
+          1321,
+          "DATE"
         ],
         [
           1323,
@@ -2109,6 +2367,11 @@
           "LOCATION"
         ],
         [
+          1453,
+          1458,
+          "MONTANT"
+        ],
+        [
           1460,
           1472,
           "PERSON"
@@ -2117,6 +2380,11 @@
           1474,
           1476,
           "ORGANIZATION"
+        ],
+        [
+          1496,
+          1503,
+          "DATE"
         ]
       ],
       "leaks": [
@@ -2137,41 +2405,17 @@
           "end": 1054,
           "label": "PHONE",
           "text": "+1-555-0199"
-        },
-        {
-          "start": 1244,
-          "end": 1256,
-          "label": "LICENSE",
-          "text": "LIC-9988-X-Z"
-        },
-        {
-          "start": 1311,
-          "end": 1321,
-          "label": "DATE",
-          "text": "2025-12-31"
-        },
-        {
-          "start": 1453,
-          "end": 1458,
-          "label": "MONTANT",
-          "text": "$5000"
-        },
-        {
-          "start": 1496,
-          "end": 1503,
-          "label": "DATE",
-          "text": "Q1 2026"
         }
       ]
     },
     {
       "doc_id": "ticket_013",
-      "precision": 0.4827586206896552,
-      "recall": 0.8125,
-      "f2": 0.7148468185388844,
-      "pred_count": 29,
+      "precision": 0.39655172413793105,
+      "recall": 0.9375,
+      "f2": 0.7365499573014518,
+      "pred_count": 58,
       "truth_count": 16,
-      "leaks_count": 3,
+      "leaks_count": 1,
       "full_text": "LOG ANALYSIS REPORT - INCIDENT #8829\nTimestamp: 2024-10-05 08:12:44\nSeverity: CRITICAL\nNode: srv-prod-db-master-01.internal.cloud.net\nIP Address: 10.240.15.2\nMaintenance Contact: Arthur Pendragon (a.pendragon@camelot-solutions.fr)\n\n[08:12:40] ERROR: Auth failed for user 'db_admin_svc' from 192.168.100.45.\n[08:12:41] WARNING: Connection limit reached on eth0 (MAC: 00:50:56:AB:CD:EF).\n[08:12:42] CRITICAL: System disk /dev/sda1 is 99% full. Path: /var/lib/mysql/data/camelot_db.\n[08:12:43] ALERT: Secret key 'AKIA_SQL_KEY_SAMPLE_123' exposed in plain text in /etc/mysql/my.cnf.\n[08:12:44] INFO: Escalating to Head of Infrastructure, Morgane LeFay (m.lefay@camelot-solutions.fr, +33 7 88 99 00 11).\n\nDetailed Stack Trace:\njava.sql.SQLException: Access denied for user 'db_admin_svc'@'192.168.100.45' (using password: YES)\n    at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)\n    at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)\n    at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:836)\n    ...\nImpacted Customers:\n- Excalibur Retail (Contract ID: EX-7788)\n- RoundTable Finance (Project: Avalon-v2)\n\nResolution Steps:\n1. Contact Arthur Pendragon for disk cleanup.\n2. Rotate AWS key AKIA_SQL_KEY_SAMPLE_123.\n3. Update firewall rules for 192.168.100.45.\n",
       "text_snippet": "LOG ANALYSIS REPORT - INCIDENT #8829\nTimestamp: 2024-10-05 08:12:44\nSeverity: CRITICAL\nNode: srv-prod-db-master-01.internal.cloud.net\nIP Address: 10.240.15.2\nMaintenance Contact: Arthur Pendragon (a.p",
       "ground_truth": [
@@ -2258,9 +2502,34 @@
       ],
       "predictions": [
         [
+          22,
+          30,
+          "BIC"
+        ],
+        [
+          48,
+          58,
+          "DATE"
+        ],
+        [
+          59,
+          67,
+          "IP"
+        ],
+        [
           93,
           114,
           "LOCATION"
+        ],
+        [
+          93,
+          133,
+          "HOST"
+        ],
+        [
+          146,
+          157,
+          "IP"
         ],
         [
           146,
@@ -2273,9 +2542,19 @@
           "PERSON"
         ],
         [
+          197,
+          229,
+          "EMAIL"
+        ],
+        [
           209,
           229,
           "ORGANIZATION"
+        ],
+        [
+          233,
+          241,
+          "IP"
         ],
         [
           266,
@@ -2290,7 +2569,17 @@
         [
           291,
           305,
+          "IP"
+        ],
+        [
+          291,
+          305,
           "LOCATION"
+        ],
+        [
+          308,
+          316,
+          "IP"
         ],
         [
           355,
@@ -2301,6 +2590,11 @@
           361,
           364,
           "LOCATION"
+        ],
+        [
+          366,
+          383,
+          "IP"
         ],
         [
           375,
@@ -2318,9 +2612,29 @@
           "LOCATION"
         ],
         [
+          387,
+          395,
+          "IP"
+        ],
+        [
+          419,
+          428,
+          "PATH"
+        ],
+        [
           424,
           428,
           "LOCATION"
+        ],
+        [
+          448,
+          479,
+          "PATH"
+        ],
+        [
+          481,
+          489,
+          "IP"
         ],
         [
           510,
@@ -2333,14 +2647,29 @@
           "LOCATION"
         ],
         [
+          560,
+          578,
+          "PATH"
+        ],
+        [
           565,
           570,
           "ORGANIZATION"
         ],
         [
+          580,
+          588,
+          "IP"
+        ],
+        [
           634,
           647,
           "PERSON"
+        ],
+        [
+          649,
+          677,
+          "EMAIL"
         ],
         [
           657,
@@ -2353,9 +2682,29 @@
           "LOCATION"
         ],
         [
+          679,
+          696,
+          "PHONE"
+        ],
+        [
+          700,
+          708,
+          "BIC"
+        ],
+        [
+          722,
+          743,
+          "HOST"
+        ],
+        [
           769,
           781,
           "PERSON"
+        ],
+        [
+          784,
+          798,
+          "IP"
         ],
         [
           784,
@@ -2368,9 +2717,29 @@
           "ORGANIZATION"
         ],
         [
+          829,
+          885,
+          "HOST"
+        ],
+        [
+          886,
+          899,
+          "HOST"
+        ],
+        [
+          912,
+          980,
+          "HOST"
+        ],
+        [
           916,
           921,
           "ORGANIZATION"
+        ],
+        [
+          981,
+          1006,
+          "HOST"
         ],
         [
           1019,
@@ -2378,9 +2747,24 @@
           "ORGANIZATION"
         ],
         [
+          1019,
+          1063,
+          "HOST"
+        ],
+        [
+          1064,
+          1083,
+          "HOST"
+        ],
+        [
           1119,
           1135,
           "ORGANIZATION"
+        ],
+        [
+          1150,
+          1157,
+          "TICKET"
         ],
         [
           1161,
@@ -2400,22 +2784,15 @@
         [
           1338,
           1352,
+          "IP"
+        ],
+        [
+          1338,
+          1352,
           "LOCATION"
         ]
       ],
       "leaks": [
-        {
-          "start": 448,
-          "end": 478,
-          "label": "PATH",
-          "text": "/var/lib/mysql/data/camelot_db"
-        },
-        {
-          "start": 1150,
-          "end": 1157,
-          "label": "ID",
-          "text": "EX-7788"
-        },
         {
           "start": 1190,
           "end": 1199,
@@ -2426,12 +2803,12 @@
     },
     {
       "doc_id": "ticket_014",
-      "precision": 0.3181818181818182,
-      "recall": 0.7333333333333333,
-      "f2": 0.581570996978852,
-      "pred_count": 44,
+      "precision": 0.375,
+      "recall": 0.9333333333333333,
+      "f2": 0.7191780821917807,
+      "pred_count": 56,
       "truth_count": 15,
-      "leaks_count": 4,
+      "leaks_count": 1,
       "full_text": "CUSTOMER SUPPORT TRANSCRIPT - TRANSCRIPTION_ID_99012\nDate: 2024-11-20\nParticipants: John (Support Agent), Elena Gilbert (Customer), Stefan (Billing Expert)\n\nJohn [10:00]: Hello! This is John from GlobalNet Support. How can I help you today?\nElena Gilbert [10:01]: Hi John. I'm calling from Mystic Falls. I have an issue with my bill. My account number is ACCT-5544-3322.\nJohn [10:01]: I see. Could you verify your address for security purposes?\nElena Gilbert [10:02]: Sure, it's 2104 Maple Street, Mystic Falls, VA 22101. My phone is 555-010-9988.\nJohn [10:03]: Thank you Elena. I'm looking at your last transaction of $1,250.45 dated 2024-11-15. It seems it was charged to your Visa ending in 4455.\nElena Gilbert [10:04]: Yes, but I was promised a discount because I work for the Salvatore Boarding School as a teacher.\nJohn [10:05]: Let me bring Stefan into this chat. He handles the institutional discounts.\nStefan [10:06]: Hello Elena. Stefan here. John told me about the Salvatore Boarding School discount. \nStefan [10:07]: I see your email registered is elena.g@mystic-high.edu. I will apply a 20% discount. \nElena Gilbert [10:08]: Thank you Stefan!\nStefan [10:09]: You're welcome. The updated amount is $1,000.36. I've sent the confirmation to your IP 172.16.254.1 for your record.\nJohn [10:10]: Is there anything else?\nElena Gilbert [10:10]: No, that's it. Thanks John and Stefan!\n",
       "text_snippet": "CUSTOMER SUPPORT TRANSCRIPT - TRANSCRIPTION_ID_99012\nDate: 2024-11-20\nParticipants: John (Support Agent), Elena Gilbert (Customer), Stefan (Billing Expert)\n\nJohn [10:00]: Hello! This is John from Glob",
       "ground_truth": [
@@ -2513,6 +2890,16 @@
       ],
       "predictions": [
         [
+          0,
+          8,
+          "BIC"
+        ],
+        [
+          59,
+          69,
+          "DATE"
+        ],
+        [
           84,
           88,
           "PERSON"
@@ -2521,6 +2908,11 @@
           106,
           119,
           "PERSON"
+        ],
+        [
+          121,
+          129,
+          "BIC"
         ],
         [
           132,
@@ -2564,6 +2956,11 @@
         ],
         [
           355,
+          364,
+          "TICKET"
+        ],
+        [
+          355,
           369,
           "ORGANIZATION"
         ],
@@ -2603,6 +3000,11 @@
           "LOCATION"
         ],
         [
+          534,
+          546,
+          "PHONE"
+        ],
+        [
           548,
           552,
           "PERSON"
@@ -2613,6 +3015,21 @@
           "PERSON"
         ],
         [
+          604,
+          615,
+          "BIC"
+        ],
+        [
+          619,
+          628,
+          "MONTANT"
+        ],
+        [
+          635,
+          645,
+          "DATE"
+        ],
+        [
           694,
           698,
           "LOCATION"
@@ -2621,6 +3038,11 @@
           700,
           713,
           "PERSON"
+        ],
+        [
+          738,
+          746,
+          "BIC"
         ],
         [
           781,
@@ -2678,6 +3100,11 @@
           "PERSON"
         ],
         [
+          1060,
+          1083,
+          "EMAIL"
+        ],
+        [
           1068,
           1083,
           "ORGANIZATION"
@@ -2703,9 +3130,19 @@
           "PERSON"
         ],
         [
+          1210,
+          1219,
+          "MONTANT"
+        ],
+        [
           1221,
           1222,
           "PERSON"
+        ],
+        [
+          1259,
+          1271,
+          "IP"
         ],
         [
           1259,
@@ -2735,39 +3172,21 @@
       ],
       "leaks": [
         {
-          "start": 619,
-          "end": 628,
-          "label": "AMOUNT",
-          "text": "$1,250.45"
-        },
-        {
-          "start": 635,
-          "end": 645,
-          "label": "DATE",
-          "text": "2024-11-15"
-        },
-        {
           "start": 812,
           "end": 819,
           "label": "ROLE",
           "text": "teacher"
-        },
-        {
-          "start": 1210,
-          "end": 1219,
-          "label": "AMOUNT",
-          "text": "$1,000.36"
         }
       ]
     },
     {
       "doc_id": "ticket_015",
-      "precision": 0.7105263157894737,
-      "recall": 0.8947368421052632,
-      "f2": 0.8506300963676797,
-      "pred_count": 38,
+      "precision": 0.5365853658536586,
+      "recall": 0.9473684210526315,
+      "f2": 0.8215767634854771,
+      "pred_count": 82,
       "truth_count": 19,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "SECURITY AUDIT LOG - SYSTEM EXTERNAL ACCESS\nDATE: 2025-01-12\nOBJECT: Investigation on unauthorized access from external IP 45.12.33.102.\n\nSummary:\nAn anomalous activity was detected by the security system on Sunday evening. The user account involved belongs to Jean-Pierre Raffarin, a consultant at Elysée Strategy (JP.Raffarin@elysee.fr).\nThe access originated from a residential ISP in Poitiers, France.\n\nEvents Timeline:\n1. 22:15:02 - Login from 45.12.33.102 using valid credentials for 'j_raffarin'.\n2. 22:16:30 - Access to /var/www/internal-portal/secrets/config.php. System path: /mnt/storage/nas-01/backup/sql_dump_2025.zip.\n3. 22:17:45 - Download initiated of 4.5GB of data. \n4. 22:18:10 - Alert triggered on session ID: SID-ABC-990-112.\n\nPersonnel Involved:\n- Security Analyst: Brigitte Macron (b.macron@elysee.fr)\n- IT Director: Emmanuel Macron (e.macron@elysee.fr, +33 1 22 33 44 55)\n\nThe incident was reported to the local police department in Paris 8ème.\nReference case: POLICE-2025-XP-998.\n\nOriginal Log Snippet:\n[2025-01-12 22:15:02] SSHD: Accepted password for j_raffarin from 45.12.33.102 port 54322 ssh2\n[2025-01-12 22:16:15] KERNEL: sda2: write cache: enabled, read cache: enabled, supports DPO and FUA\n[2025-01-12 22:16:30] AUDIT: user=j_raffarin action=read file=/var/www/internal-portal/secrets/config.php\n[2025-01-12 22:17:00] APP: Session SID-ABC-990-112 started background task for /home/j_raffarin/exports/client_list.csv\n\nAdditional Context:\nThe user was using a MacBook Pro with serial number C02XG123XXXX.\nMAC Address: 1A:2B:3C:4D:5E:6F.\nSecondary email listed: raffarin.jp@pro-consulting.com.\nHome address: 12 Rue de l'Eglise, 86000 Poitiers.\n",
       "text_snippet": "SECURITY AUDIT LOG - SYSTEM EXTERNAL ACCESS\nDATE: 2025-01-12\nOBJECT: Investigation on unauthorized access from external IP 45.12.33.102.\n\nSummary:\nAn anomalous activity was detected by the security sy",
       "ground_truth": [
@@ -2869,9 +3288,24 @@
       ],
       "predictions": [
         [
+          50,
+          60,
+          "DATE"
+        ],
+        [
           120,
           135,
           "LOCATION"
+        ],
+        [
+          123,
+          135,
+          "IP"
+        ],
+        [
+          160,
+          168,
+          "BIC"
         ],
         [
           189,
@@ -2879,9 +3313,19 @@
           "ORGANIZATION"
         ],
         [
+          241,
+          249,
+          "BIC"
+        ],
+        [
           261,
           281,
           "PERSON"
+        ],
+        [
+          273,
+          281,
+          "BIC"
         ],
         [
           299,
@@ -2894,6 +3338,11 @@
           "LOCATION"
         ],
         [
+          316,
+          337,
+          "EMAIL"
+        ],
+        [
           319,
           327,
           "PERSON"
@@ -2904,9 +3353,19 @@
           "LOCATION"
         ],
         [
+          369,
+          380,
+          "BIC"
+        ],
+        [
           381,
           384,
           "ORGANIZATION"
+        ],
+        [
+          388,
+          396,
+          "BIC"
         ],
         [
           388,
@@ -2919,6 +3378,21 @@
           "LOCATION"
         ],
         [
+          414,
+          422,
+          "BIC"
+        ],
+        [
+          427,
+          435,
+          "IP"
+        ],
+        [
+          449,
+          461,
+          "IP"
+        ],
+        [
           449,
           461,
           "LOCATION"
@@ -2929,9 +3403,24 @@
           "PERSON"
         ],
         [
+          507,
+          515,
+          "IP"
+        ],
+        [
+          528,
+          572,
+          "PATH"
+        ],
+        [
           586,
           590,
           "LOCATION"
+        ],
+        [
+          586,
+          631,
+          "PATH"
         ],
         [
           599,
@@ -2939,14 +3428,44 @@
           "LOCATION"
         ],
         [
+          635,
+          643,
+          "IP"
+        ],
+        [
+          687,
+          695,
+          "IP"
+        ],
+        [
           729,
           744,
           "PERSON"
         ],
         [
+          733,
+          740,
+          "TICKET"
+        ],
+        [
+          757,
+          765,
+          "BIC"
+        ],
+        [
+          787,
+          795,
+          "BIC"
+        ],
+        [
           787,
           802,
           "PERSON"
+        ],
+        [
+          804,
+          822,
+          "EMAIL"
         ],
         [
           813,
@@ -2955,8 +3474,18 @@
         ],
         [
           839,
+          847,
+          "BIC"
+        ],
+        [
+          839,
           854,
           "PERSON"
+        ],
+        [
+          856,
+          874,
+          "EMAIL"
         ],
         [
           865,
@@ -2967,6 +3496,16 @@
           876,
           893,
           "LOCATION"
+        ],
+        [
+          876,
+          893,
+          "PHONE"
+        ],
+        [
+          900,
+          908,
+          "BIC"
         ],
         [
           929,
@@ -2980,8 +3519,38 @@
         ],
         [
           984,
+          995,
+          "TICKET"
+        ],
+        [
+          984,
           1002,
           "ORGANIZATION"
+        ],
+        [
+          996,
+          1002,
+          "TICKET"
+        ],
+        [
+          1005,
+          1013,
+          "BIC"
+        ],
+        [
+          1028,
+          1038,
+          "DATE"
+        ],
+        [
+          1039,
+          1047,
+          "IP"
+        ],
+        [
+          1055,
+          1063,
+          "BIC"
         ],
         [
           1077,
@@ -2991,12 +3560,67 @@
         [
           1093,
           1105,
+          "IP"
+        ],
+        [
+          1093,
+          1105,
           "LOCATION"
+        ],
+        [
+          1123,
+          1133,
+          "DATE"
+        ],
+        [
+          1134,
+          1142,
+          "IP"
+        ],
+        [
+          1223,
+          1233,
+          "DATE"
+        ],
+        [
+          1234,
+          1242,
+          "IP"
         ],
         [
           1256,
           1266,
           "PERSON"
+        ],
+        [
+          1256,
+          1266,
+          "USERNAME"
+        ],
+        [
+          1284,
+          1327,
+          "PATH"
+        ],
+        [
+          1329,
+          1339,
+          "DATE"
+        ],
+        [
+          1340,
+          1348,
+          "IP"
+        ],
+        [
+          1367,
+          1374,
+          "TICKET"
+        ],
+        [
+          1407,
+          1447,
+          "PATH"
         ],
         [
           1413,
@@ -3012,6 +3636,11 @@
           1548,
           1550,
           "LOCATION"
+        ],
+        [
+          1548,
+          1565,
+          "IP"
         ],
         [
           1551,
@@ -3044,6 +3673,11 @@
           "PERSON"
         ],
         [
+          1591,
+          1621,
+          "EMAIL"
+        ],
+        [
           1603,
           1621,
           "ORGANIZATION"
@@ -3057,15 +3691,14 @@
           1657,
           1671,
           "LOCATION"
+        ],
+        [
+          1663,
+          1671,
+          "BIC"
         ]
       ],
       "leaks": [
-        {
-          "start": 528,
-          "end": 571,
-          "label": "PATH",
-          "text": "/var/www/internal-portal/secrets/config.php"
-        },
         {
           "start": 1521,
           "end": 1533,
@@ -3076,12 +3709,12 @@
     },
     {
       "doc_id": "ticket_016",
-      "precision": 0.6666666666666666,
-      "recall": 0.4,
-      "f2": 0.43478260869565216,
-      "pred_count": 3,
+      "precision": 0.75,
+      "recall": 0.6,
+      "f2": 0.625,
+      "pred_count": 4,
       "truth_count": 5,
-      "leaks_count": 3,
+      "leaks_count": 2,
       "full_text": "Je suis doctorant en astrophysique à l'Université de Grenoble, j'ai 26 ans et je voudrais savoir comment déclarer mon accident de vélo survenu hier devant le bâtiment PhITEM.",
       "text_snippet": "Je suis doctorant en astrophysique à l'Université de Grenoble, j'ai 26 ans et je voudrais savoir comment déclarer mon accident de vélo survenu hier devant le bâtiment PhITEM.",
       "ground_truth": [
@@ -3123,6 +3756,11 @@
           "ORGANIZATION"
         ],
         [
+          118,
+          126,
+          "BIC"
+        ],
+        [
           167,
           173,
           "LOCATION"
@@ -3140,23 +3778,17 @@
           "end": 74,
           "label": "QUASI_ID",
           "text": "26 ans"
-        },
-        {
-          "start": 118,
-          "end": 134,
-          "label": "QUASI_ID",
-          "text": "accident de vélo"
         }
       ]
     },
     {
       "doc_id": "ticket_017",
-      "precision": 0.75,
-      "recall": 0.5,
-      "f2": 0.5357142857142857,
-      "pred_count": 4,
+      "precision": 0.8333333333333334,
+      "recall": 0.6666666666666666,
+      "f2": 0.6944444444444444,
+      "pred_count": 6,
       "truth_count": 6,
-      "leaks_count": 3,
+      "leaks_count": 2,
       "full_text": "Patient de 82 ans souffrant du syndrome de Wolfram, suivi au service neurologie de l'hôpital de Poitiers par le Dr. Vallet. Il demande une prise en charge pour son transport en ambulance depuis Châtellerault.",
       "text_snippet": "Patient de 82 ans souffrant du syndrome de Wolfram, suivi au service neurologie de l'hôpital de Poitiers par le Dr. Vallet. Il demande une prise en charge pour son transport en ambulance depuis Châtel",
       "ground_truth": [
@@ -3193,6 +3825,16 @@
       ],
       "predictions": [
         [
+          31,
+          39,
+          "BIC"
+        ],
+        [
+          96,
+          104,
+          "BIC"
+        ],
+        [
           96,
           104,
           "LOCATION"
@@ -3221,12 +3863,6 @@
           "text": "82 ans"
         },
         {
-          "start": 31,
-          "end": 50,
-          "label": "QUASI_ID",
-          "text": "syndrome de Wolfram"
-        },
-        {
           "start": 61,
           "end": 79,
           "label": "ORG",
@@ -3237,11 +3873,11 @@
     {
       "doc_id": "ticket_018",
       "precision": 1.0,
-      "recall": 0.42857142857142855,
-      "f2": 0.48387096774193544,
-      "pred_count": 3,
+      "recall": 0.5714285714285714,
+      "f2": 0.625,
+      "pred_count": 4,
       "truth_count": 7,
-      "leaks_count": 4,
+      "leaks_count": 3,
       "full_text": "La seule femme ingénieure du département Cloud chez TechSolution à Lyon, qui a travaillé sur le projet 'Icare' l'an dernier, a soumis une plainte concernant les horaires de nuit commencés en décembre.",
       "text_snippet": "La seule femme ingénieure du département Cloud chez TechSolution à Lyon, qui a travaillé sur le projet 'Icare' l'an dernier, a soumis une plainte concernant les horaires de nuit commencés en décembre.",
       "ground_truth": [
@@ -3296,6 +3932,11 @@
           67,
           71,
           "LOCATION"
+        ],
+        [
+          161,
+          169,
+          "BIC"
         ]
       ],
       "leaks": [
@@ -3310,12 +3951,6 @@
           "end": 110,
           "label": "PROJECT",
           "text": "projet 'Icare'"
-        },
-        {
-          "start": 161,
-          "end": 177,
-          "label": "QUASI_ID",
-          "text": "horaires de nuit"
         },
         {
           "start": 191,
@@ -3386,10 +4021,10 @@
     },
     {
       "doc_id": "ticket_001_en",
-      "precision": 0.8571428571428571,
+      "precision": 0.9,
       "recall": 1.0,
-      "f2": 0.9677419354838709,
-      "pred_count": 7,
+      "f2": 0.9782608695652175,
+      "pred_count": 10,
       "truth_count": 5,
       "leaks_count": 0,
       "full_text": "Hello, I am John Smith from London. My email is john.smith@example.com. API Error on server 192.168.1.1 with JIRA-1234 ticket. He told me it was urgent.",
@@ -3438,9 +4073,19 @@
           "PERSON"
         ],
         [
+          48,
+          70,
+          "EMAIL"
+        ],
+        [
           59,
           70,
           "LOCATION"
+        ],
+        [
+          92,
+          103,
+          "IP"
         ],
         [
           92,
@@ -3453,6 +4098,11 @@
           "ORGANIZATION"
         ],
         [
+          109,
+          118,
+          "TICKET"
+        ],
+        [
           127,
           129,
           "PERSON"
@@ -3462,10 +4112,10 @@
     },
     {
       "doc_id": "ticket_001_es",
-      "precision": 0.8571428571428571,
+      "precision": 0.8181818181818182,
       "recall": 1.0,
-      "f2": 0.9677419354838709,
-      "pred_count": 7,
+      "f2": 0.9574468085106381,
+      "pred_count": 11,
       "truth_count": 5,
       "leaks_count": 0,
       "full_text": "Hola, soy Juan Pérez de Madrid. Mi correo es juan.perez@example.com. Error de API en el servidor 192.168.1.1 con ticket JIRA-1234. Me dijo que era urgente.",
@@ -3509,6 +4159,11 @@
           "PERSON"
         ],
         [
+          45,
+          67,
+          "EMAIL"
+        ],
+        [
           50,
           55,
           "PERSON"
@@ -3519,6 +4174,16 @@
           "LOCATION"
         ],
         [
+          88,
+          96,
+          "BIC"
+        ],
+        [
+          97,
+          108,
+          "IP"
+        ],
+        [
           97,
           108,
           "LOCATION"
@@ -3527,6 +4192,11 @@
           120,
           129,
           "ORGANIZATION"
+        ],
+        [
+          120,
+          129,
+          "TICKET"
         ],
         [
           131,
@@ -3541,7 +4211,7 @@
       "precision": 1.0,
       "recall": 1.0,
       "f2": 1.0,
-      "pred_count": 6,
+      "pred_count": 9,
       "truth_count": 5,
       "leaks_count": 0,
       "full_text": "Buongiorno, sono Mario Rossi di Roma. La mia email è mario.rossi@example.com. Errore API sul server 192.168.1.1 con ticket JIRA-1234. Mi ha detto che era urgente.",
@@ -3590,9 +4260,19 @@
           "PERSON"
         ],
         [
+          53,
+          76,
+          "EMAIL"
+        ],
+        [
           65,
           76,
           "LOCATION"
+        ],
+        [
+          100,
+          111,
+          "IP"
         ],
         [
           100,
@@ -3603,18 +4283,23 @@
           123,
           132,
           "ORGANIZATION"
+        ],
+        [
+          123,
+          132,
+          "TICKET"
         ]
       ],
       "leaks": []
     },
     {
       "doc_id": "ticket_002_fr",
-      "precision": 0.6,
-      "recall": 0.6,
-      "f2": 0.6,
-      "pred_count": 5,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f2": 0.9375,
+      "pred_count": 8,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 0,
       "full_text": "Salut, c'est Alice de Nantes. Téléphone: +33 6 12 34 56 78. Problème avec le nom d'hôte internal-server.example.com et l'UUID 123e4567-e89b-12d3-a456-426614174000. Le chef d'équipe l'a mentionné.",
       "text_snippet": "Salut, c'est Alice de Nantes. Téléphone: +33 6 12 34 56 78. Problème avec le nom d'hôte internal-server.example.com et l'UUID 123e4567-e89b-12d3-a456-426614174000. Le chef d'équipe l'a mentionné.",
       "ground_truth": [
@@ -3656,9 +4341,19 @@
           "PERSON"
         ],
         [
+          41,
+          58,
+          "PHONE"
+        ],
+        [
           88,
           103,
           "ORGANIZATION"
+        ],
+        [
+          88,
+          115,
+          "HOST"
         ],
         [
           104,
@@ -3666,34 +4361,26 @@
           "ORGANIZATION"
         ],
         [
+          126,
+          162,
+          "UUID"
+        ],
+        [
           164,
           180,
           "PERSON"
         ]
       ],
-      "leaks": [
-        {
-          "start": 41,
-          "end": 58,
-          "label": "PHONE",
-          "text": "+33 6 12 34 56 78"
-        },
-        {
-          "start": 126,
-          "end": 162,
-          "label": "UUID",
-          "text": "123e4567-e89b-12d3-a456-426614174000"
-        }
-      ]
+      "leaks": []
     },
     {
       "doc_id": "ticket_002_es",
-      "precision": 0.75,
-      "recall": 0.6,
-      "f2": 0.625,
-      "pred_count": 4,
+      "precision": 0.8571428571428571,
+      "recall": 0.8,
+      "f2": 0.8108108108108109,
+      "pred_count": 7,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "Hola, soy Alicia de Valencia. Teléfono: +34 912 345 678. Problema con el nombre de host internal-server.example.com y UUID 123e4567-e89b-12d3-a456-426614174000. El líder del equipo lo mencionó.",
       "text_snippet": "Hola, soy Alicia de Valencia. Teléfono: +34 912 345 678. Problema con el nombre de host internal-server.example.com y UUID 123e4567-e89b-12d3-a456-426614174000. El líder del equipo lo mencionó.",
       "ground_truth": [
@@ -3730,14 +4417,29 @@
           "PERSON"
         ],
         [
+          20,
+          28,
+          "BIC"
+        ],
+        [
           88,
           103,
           "LOCATION"
         ],
         [
+          88,
+          115,
+          "HOST"
+        ],
+        [
           104,
           115,
           "ORGANIZATION"
+        ],
+        [
+          123,
+          159,
+          "UUID"
         ],
         [
           161,
@@ -3751,23 +4453,17 @@
           "end": 55,
           "label": "PHONE",
           "text": "+34 912 345 678"
-        },
-        {
-          "start": 123,
-          "end": 159,
-          "label": "UUID",
-          "text": "123e4567-e89b-12d3-a456-426614174000"
         }
       ]
     },
     {
       "doc_id": "ticket_002_it",
-      "precision": 0.8,
-      "recall": 0.6,
-      "f2": 0.631578947368421,
-      "pred_count": 5,
+      "precision": 0.6666666666666666,
+      "recall": 0.8,
+      "f2": 0.7692307692307692,
+      "pred_count": 9,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "Ciao, sono Alice da Milano. Telefono: +39 02 1234567. Problema con hostname internal-server.example.com e UUID 123e4567-e89b-12d3-a456-426614174000. Il team lead l'ha menzionato.",
       "text_snippet": "Ciao, sono Alice da Milano. Telefono: +39 02 1234567. Problema con hostname internal-server.example.com e UUID 123e4567-e89b-12d3-a456-426614174000. Il team lead l'ha menzionato.",
       "ground_truth": [
@@ -3809,14 +4505,34 @@
           "LOCATION"
         ],
         [
+          28,
+          36,
+          "BIC"
+        ],
+        [
+          67,
+          75,
+          "BIC"
+        ],
+        [
           76,
           91,
           "ORGANIZATION"
         ],
         [
+          76,
+          103,
+          "HOST"
+        ],
+        [
           92,
           103,
           "ORGANIZATION"
+        ],
+        [
+          111,
+          147,
+          "UUID"
         ],
         [
           152,
@@ -3830,23 +4546,17 @@
           "end": 52,
           "label": "PHONE",
           "text": "+39 02 1234567"
-        },
-        {
-          "start": 111,
-          "end": 147,
-          "label": "UUID",
-          "text": "123e4567-e89b-12d3-a456-426614174000"
         }
       ]
     },
     {
       "doc_id": "ticket_003_en",
       "precision": 1.0,
-      "recall": 0.4,
-      "f2": 0.45454545454545453,
-      "pred_count": 3,
+      "recall": 0.8,
+      "f2": 0.8333333333333334,
+      "pred_count": 5,
       "truth_count": 5,
-      "leaks_count": 3,
+      "leaks_count": 1,
       "full_text": "Issue with API key: sk-abc123 on 2023-07-15. Address: 123 Example Street, London. Amount: £456.78. Mrs. Martin confirmed.",
       "text_snippet": "Issue with API key: sk-abc123 on 2023-07-15. Address: 123 Example Street, London. Amount: £456.78. Mrs. Martin confirmed.",
       "ground_truth": [
@@ -3878,6 +4588,11 @@
       ],
       "predictions": [
         [
+          33,
+          43,
+          "DATE"
+        ],
+        [
           54,
           72,
           "LOCATION"
@@ -3886,6 +4601,11 @@
           74,
           80,
           "LOCATION"
+        ],
+        [
+          90,
+          97,
+          "MONTANT"
         ],
         [
           99,
@@ -3899,29 +4619,17 @@
           "end": 29,
           "label": "API_KEY",
           "text": "sk-abc123"
-        },
-        {
-          "start": 33,
-          "end": 43,
-          "label": "DATE",
-          "text": "2023-07-15"
-        },
-        {
-          "start": 90,
-          "end": 97,
-          "label": "MONTANT",
-          "text": "£456.78"
         }
       ]
     },
     {
       "doc_id": "ticket_003_it",
       "precision": 1.0,
-      "recall": 0.4,
-      "f2": 0.45454545454545453,
-      "pred_count": 3,
+      "recall": 0.8,
+      "f2": 0.8333333333333334,
+      "pred_count": 5,
       "truth_count": 5,
-      "leaks_count": 3,
+      "leaks_count": 1,
       "full_text": "Problema con la chiave API: sk-abc123 in data 15/07/2023. Indirizzo: 123 Via Esempio, Roma. Importo: 456,78€. La signora Martin ha confermato.",
       "text_snippet": "Problema con la chiave API: sk-abc123 in data 15/07/2023. Indirizzo: 123 Via Esempio, Roma. Importo: 456,78€. La signora Martin ha confermato.",
       "ground_truth": [
@@ -3953,6 +4661,11 @@
       ],
       "predictions": [
         [
+          46,
+          56,
+          "DATE"
+        ],
+        [
           69,
           84,
           "LOCATION"
@@ -3961,6 +4674,11 @@
           86,
           90,
           "LOCATION"
+        ],
+        [
+          101,
+          108,
+          "MONTANT"
         ],
         [
           110,
@@ -3974,29 +4692,17 @@
           "end": 37,
           "label": "API_KEY",
           "text": "sk-abc123"
-        },
-        {
-          "start": 46,
-          "end": 56,
-          "label": "DATE",
-          "text": "15/07/2023"
-        },
-        {
-          "start": 101,
-          "end": 108,
-          "label": "MONTANT",
-          "text": "456,78€"
         }
       ]
     },
     {
       "doc_id": "ticket_005_en",
-      "precision": 0.6666666666666666,
-      "recall": 0.6,
-      "f2": 0.6122448979591836,
-      "pred_count": 6,
+      "precision": 0.7272727272727273,
+      "recall": 1.0,
+      "f2": 0.930232558139535,
+      "pred_count": 11,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 0,
       "full_text": "Incident on MAC address 00:1A:2B:3C:4D:5E and URL https://internal.api.com. Date: 2024-02-10. DevOps team in Manchester. The amount is 1234.56€.",
       "text_snippet": "Incident on MAC address 00:1A:2B:3C:4D:5E and URL https://internal.api.com. Date: 2024-02-10. DevOps team in Manchester. The amount is 1234.56€.",
       "ground_truth": [
@@ -4028,6 +4734,11 @@
       ],
       "predictions": [
         [
+          0,
+          8,
+          "BIC"
+        ],
+        [
           12,
           23,
           "LOCATION"
@@ -4038,14 +4749,29 @@
           "LOCATION"
         ],
         [
+          24,
+          41,
+          "IP"
+        ],
+        [
           39,
           41,
           "LOCATION"
         ],
         [
+          50,
+          75,
+          "URL"
+        ],
+        [
           67,
           74,
           "ORGANIZATION"
+        ],
+        [
+          82,
+          92,
+          "DATE"
         ],
         [
           94,
@@ -4056,31 +4782,23 @@
           109,
           119,
           "LOCATION"
+        ],
+        [
+          135,
+          143,
+          "MONTANT"
         ]
       ],
-      "leaks": [
-        {
-          "start": 82,
-          "end": 92,
-          "label": "DATE",
-          "text": "2024-02-10"
-        },
-        {
-          "start": 135,
-          "end": 143,
-          "label": "MONTANT",
-          "text": "1234.56€"
-        }
-      ]
+      "leaks": []
     },
     {
       "doc_id": "ticket_016_en",
       "precision": 1.0,
-      "recall": 0.6,
-      "f2": 0.6521739130434783,
-      "pred_count": 3,
+      "recall": 0.8,
+      "f2": 0.8333333333333334,
+      "pred_count": 4,
       "truth_count": 5,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "I am a PhD student in astrophysics at the University of Manchester, I am 26 years old and I would like to know how to report my bike accident that happened yesterday in front of the PhITEM building.",
       "text_snippet": "I am a PhD student in astrophysics at the University of Manchester, I am 26 years old and I would like to know how to report my bike accident that happened yesterday in front of the PhITEM building.",
       "ground_truth": [
@@ -4122,6 +4840,11 @@
           "ORGANIZATION"
         ],
         [
+          133,
+          141,
+          "BIC"
+        ],
+        [
           182,
           197,
           "LOCATION"
@@ -4133,21 +4856,15 @@
           "end": 85,
           "label": "QUASI_ID",
           "text": "26 years old"
-        },
-        {
-          "start": 128,
-          "end": 141,
-          "label": "QUASI_ID",
-          "text": "bike accident"
         }
       ]
     },
     {
       "doc_id": "ticket_016_es",
-      "precision": 1.0,
+      "precision": 0.75,
       "recall": 0.4,
-      "f2": 0.45454545454545453,
-      "pred_count": 2,
+      "f2": 0.4411764705882353,
+      "pred_count": 4,
       "truth_count": 5,
       "leaks_count": 3,
       "full_text": "Soy estudiante de doctorado en astrofísica en la Universidad de Barcelona, tengo 26 años y me gustaría saber cómo declarar mi accidente de bicicleta ocurrido ayer frente al edificio PhITEM.",
@@ -4182,8 +4899,18 @@
       "predictions": [
         [
           49,
+          60,
+          "BIC"
+        ],
+        [
+          49,
           73,
           "ORGANIZATION"
+        ],
+        [
+          114,
+          122,
+          "BIC"
         ],
         [
           173,
@@ -4214,12 +4941,12 @@
     },
     {
       "doc_id": "ticket_017_en",
-      "precision": 0.8333333333333334,
-      "recall": 0.6666666666666666,
-      "f2": 0.6944444444444444,
-      "pred_count": 6,
+      "precision": 0.7777777777777778,
+      "recall": 0.8333333333333334,
+      "f2": 0.8215962441314554,
+      "pred_count": 9,
       "truth_count": 6,
-      "leaks_count": 2,
+      "leaks_count": 1,
       "full_text": "82-year-old patient suffering from Wolfram syndrome, followed in the neurology department of the hospital in London by Dr. Vallet. He requests coverage for his ambulance transport from Oxford.",
       "text_snippet": "82-year-old patient suffering from Wolfram syndrome, followed in the neurology department of the hospital in London by Dr. Vallet. He requests coverage for his ambulance transport from Oxford.",
       "ground_truth": [
@@ -4256,9 +4983,19 @@
       ],
       "predictions": [
         [
+          43,
+          51,
+          "BIC"
+        ],
+        [
           69,
           89,
           "ORGANIZATION"
+        ],
+        [
+          97,
+          105,
+          "BIC"
         ],
         [
           97,
@@ -4281,6 +5018,11 @@
           "PERSON"
         ],
         [
+          134,
+          142,
+          "BIC"
+        ],
+        [
           185,
           191,
           "LOCATION"
@@ -4292,12 +5034,6 @@
           "end": 11,
           "label": "QUASI_ID",
           "text": "82-year-old"
-        },
-        {
-          "start": 35,
-          "end": 51,
-          "label": "QUASI_ID",
-          "text": "Wolfram syndrome"
         }
       ]
     }

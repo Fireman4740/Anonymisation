@@ -6,26 +6,27 @@ from typing import Dict, Any, List
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 from src.state import PipelineState
+from src.config import settings
 
 # Configuration du logger
 logger = logging.getLogger("AnonymizationNode")
 
-# Import du PseudoMapper legacy
+# Import du PseudoMapper nouveau
 try:
-    from src.legacy_services.utils.utils_pseudo import PseudoMapper
+    from src.utils.pseudo import PseudoMapper
 except ImportError:
+    # Fallback critique : on ne devrait pas arriver ici avec la nouvelle structure
+    logger.error("❌ Impossible d'importer PseudoMapper depuis src.utils.pseudo")
     PseudoMapper = None
 
 
 class AnonymizationNode:
     def __init__(self):
-        # On récupère le secret depuis l'environnement ou on échoue si absent en prod
-        self.secret = os.getenv("PSEUDO_SECRET")
-        if not self.secret:
-            logger.warning(
-                "⚠️ PSEUDO_SECRET non défini. Utilisation d'un secret temporaire peu sûr."
-            )
-            self.secret = "temp_development_secret_do_not_use_in_prod"
+        # Utilisation des settings centralisés et sécurisés
+        self.secret = settings.security.PSEUDO_SECRET.get_secret_value()
+
+        # Validation explicite en production
+        settings.security.validate_secrets()
 
         self.default_scope = "default_scope"
         self._mappers = {}  # Cache de mappers par scope_id
@@ -56,9 +57,11 @@ class AnonymizationNode:
             return {"text": text}
 
         # Récupération du scope_id depuis le state metadata ou config
-        scope_id = state.get("metadata", {}).get("scope_id") or state.get("config", {}).get(
+        # Typage explicite pour satisfaire le linter si nécessaire
+        raw_scope = state.get("metadata", {}).get("scope_id") or state.get("config", {}).get(
             "scope_id", self.default_scope
         )
+        scope_id = str(raw_scope) if raw_scope is not None else self.default_scope
         mapper = self._get_mapper(scope_id)
 
         # Tri des entités par position inverse pour ne pas casser les index lors du remplacement

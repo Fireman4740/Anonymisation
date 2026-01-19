@@ -23,5 +23,5 @@ tqdm>=4.66.0
 intervaltree>=3.1.0
 gdown>=4.7.0
 plotly
-
+pydantic-settings
 # Note: transformers removed (HF NER legacy code removed)

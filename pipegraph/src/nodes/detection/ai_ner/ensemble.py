@@ -11,9 +11,12 @@ GPU optimisation:
  - Move GLiNER models to the best device when possible.
  - Optional float16 on CUDA (configurable) with safe fallback.
 """
+
 from __future__ import annotations
 
-from typing import List, Tuple, Dict, Any, Optional, Union
+from typing import List, Tuple, Dict, Any, Optional, Union, Callable
+from collections import OrderedDict
+import gc
 import os
 import warnings
 
@@ -29,6 +32,7 @@ def _log(msg: str) -> None:
 # ---------------- Optional imports (guarded) ----------------
 try:
     from gliner import GLiNER
+
     _GLINER_AVAILABLE = True
 except Exception:
     _GLINER_AVAILABLE = False
@@ -89,13 +93,55 @@ _detect_devices()
 # ---------------- Sentence splitting helpers ----------------
 _ABBR = {
     # FR
-    "m.", "mme.", "mlle.", "dr.", "pr.", "art.", "n°", "p. ex.", "cf.", "etc.",
+    "m.",
+    "mme.",
+    "mlle.",
+    "dr.",
+    "pr.",
+    "art.",
+    "n°",
+    "p. ex.",
+    "cf.",
+    "etc.",
     # EN
-    "mr.", "mrs.", "ms.", "dr.", "prof.", "art.", "no.", "nos.", "vol.", "inc.",
-    "jr.", "sr.", "co.", "vs.", "st.", "e.g.", "i.e.", "cf.", "u.s.", "u.k.",
+    "mr.",
+    "mrs.",
+    "ms.",
+    "dr.",
+    "prof.",
+    "art.",
+    "no.",
+    "nos.",
+    "vol.",
+    "inc.",
+    "jr.",
+    "sr.",
+    "co.",
+    "vs.",
+    "st.",
+    "e.g.",
+    "i.e.",
+    "cf.",
+    "u.s.",
+    "u.k.",
     # months abbr
-    "jan.", "feb.", "mar.", "apr.", "aug.", "sept.", "oct.", "nov.", "dec.",
-    "janv.", "févr.", "avr.", "juil.", "sept.", "oct.", "nov.", "déc.",
+    "jan.",
+    "feb.",
+    "mar.",
+    "apr.",
+    "aug.",
+    "sept.",
+    "oct.",
+    "nov.",
+    "dec.",
+    "janv.",
+    "févr.",
+    "avr.",
+    "juil.",
+    "sept.",
+    "oct.",
+    "nov.",
+    "déc.",
 }
 
 
@@ -130,7 +176,7 @@ def split_sentences(text: str) -> List[Tuple[int, int]]:
             m = i + 1
             while m < n and text[m].isspace():
                 m += 1
-            if m >= n or (m < n and (text[m].isupper() or text[m] in "\"'([""'')")):
+            if m >= n or (m < n and (text[m].isupper() or text[m] in "\"'(['')")):
                 spans.append((start, m))
                 start = m
                 i = m
@@ -179,39 +225,90 @@ _GLINER_FORCE_HALF = os.getenv("GLINER_HALF", "0").lower() in {"1", "true", "yes
 
 # Helpful label sets
 _GLINER_PII_LABELS = [
-    "Person", "Organization", "Location",
-    "Email address", "Phone number", "Address",
-    "Bank account number", "Credit card number", "IBAN",
-    "Passport number", "Driver's license number",
-    "National ID number", "Username", "IP address",
-    "Date", "Time",
+    "Person",
+    "Organization",
+    "Location",
+    "Email address",
+    "Phone number",
+    "Address",
+    "Bank account number",
+    "Credit card number",
+    "IBAN",
+    "Passport number",
+    "Driver's license number",
+    "National ID number",
+    "Username",
+    "IP address",
+    "Date",
+    "Time",
 ]
 
 # Extended label list (generic NER + frequent PII)
 GLINER_ALL_LABELS: List[str] = [
     # Generic NER
-    "Person", "Organization", "Location", "GPE", "Facility",
-    "Product", "Event", "Work of Art", "Law", "Language",
-    "Date", "Time", "Percent", "Money", "Quantity", "Ordinal", "Cardinal",
+    "Person",
+    "Organization",
+    "Location",
+    "GPE",
+    "Facility",
+    "Product",
+    "Event",
+    "Work of Art",
+    "Law",
+    "Language",
+    "Date",
+    "Time",
+    "Percent",
+    "Money",
+    "Quantity",
+    "Ordinal",
+    "Cardinal",
     # PII / Sensitive
-    "Email address", "URL", "IP address", "Username", "Social media handle",
-    "Phone number", "Mobile phone number", "Landline phone number",
-    "Address", "Postal code",
-    "Bank account number", "IBAN", "Credit card number",
-    "Credit card brand", "CVV", "CVC", "Credit card expiration date",
-    "Passport number", "Passport expiration date",
-    "Driver's license number", "Identity card number",
-    "National ID number", "Tax identification number",
-    "Social security number", "National health insurance number",
-    "Health insurance id number", "Health insurance number",
-    "Date of birth", "Medical condition", "Medication",
-    "Registration number", "Student id number",
-    "Insurance number", "Insurance company",
-    "License plate number", "Vehicle registration number",
-    "Serial number", "Transaction number", "Digital signature",
-    "Flight number", "Train ticket number", "Visa number",
+    "Email address",
+    "URL",
+    "IP address",
+    "Username",
+    "Social media handle",
+    "Phone number",
+    "Mobile phone number",
+    "Landline phone number",
+    "Address",
+    "Postal code",
+    "Bank account number",
+    "IBAN",
+    "Credit card number",
+    "Credit card brand",
+    "CVV",
+    "CVC",
+    "Credit card expiration date",
+    "Passport number",
+    "Passport expiration date",
+    "Driver's license number",
+    "Identity card number",
+    "National ID number",
+    "Tax identification number",
+    "Social security number",
+    "National health insurance number",
+    "Health insurance id number",
+    "Health insurance number",
+    "Date of birth",
+    "Medical condition",
+    "Medication",
+    "Registration number",
+    "Student id number",
+    "Insurance number",
+    "Insurance company",
+    "License plate number",
+    "Vehicle registration number",
+    "Serial number",
+    "Transaction number",
+    "Digital signature",
+    "Flight number",
+    "Train ticket number",
+    "Visa number",
     # Country-specific
-    "CPF", "CNPJ",
+    "CPF",
+    "CNPJ",
 ]
 
 
@@ -224,7 +321,37 @@ def _normalize_gliner_label(lbl: str) -> Optional[str]:
 
 
 # ---------------- GLiNER ----------------
-_GLINER_MODELS = None
+# Use centralized thread-safe model cache
+try:
+    from src.utils.model_cache import get_model_cache
+
+    _MODEL_CACHE = get_model_cache("gliner")
+except ImportError:
+    # Fallback: create a simple inline cache if utils not available
+    from collections import OrderedDict
+
+    class _SimpleLRUCache:
+        """Minimal fallback LRU cache."""
+
+        def __init__(self, capacity: int = 4):
+            self.capacity = capacity
+            self._cache: Dict[str, Any] = {}
+
+        def get(self, key: str) -> Optional[Any]:
+            return self._cache.get(key)
+
+        def put(self, key: str, model: Any) -> None:
+            if len(self._cache) >= self.capacity and key not in self._cache:
+                oldest = next(iter(self._cache))
+                del self._cache[oldest]
+                if torch is not None and torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            self._cache[key] = model
+
+        def __contains__(self, key: str) -> bool:
+            return key in self._cache
+
+    _MODEL_CACHE = _SimpleLRUCache(capacity=int(os.getenv("NER_MODEL_CACHE_SIZE", "4")))
 
 
 def _move_gliner_model_to_device(mdl):
@@ -251,25 +378,27 @@ def _move_gliner_model_to_device(mdl):
 
 
 def _load_gliner_models(model_names: List[str]):
-    """Load GLiNER models on best device."""
-    global _GLINER_MODELS
+    """Load GLiNER models on best device using LRU Cache."""
     if not _GLINER_AVAILABLE:
         return []
 
-    if _GLINER_MODELS is None:
-        _GLINER_MODELS = []
-
-    loaded_names = {name for name, _ in _GLINER_MODELS}
-    models = list(_GLINER_MODELS)
+    loaded_models = []
 
     for name in model_names:
-        if name in loaded_names:
+        # Check cache first
+        cached_model = _MODEL_CACHE.get(name)
+        if cached_model:
+            loaded_models.append((name, cached_model))
             continue
+
+        # Load new
         kwargs: Dict[str, Any] = {}
         if _GLINER_ATTENTION == "eager":
             kwargs["_attn_implementation"] = "eager"
         if _GLINER_ONNX:
             kwargs["load_onnx_model"] = True
+
+        mdl = None
         try:
             mdl = GLiNER.from_pretrained(name, **kwargs)
         except Exception:
@@ -278,17 +407,22 @@ def _load_gliner_models(model_names: List[str]):
             except Exception:
                 continue
 
-        mdl = _move_gliner_model_to_device(mdl)
-        if torch is not None and _GLN_DEVICE == "cuda" and (_HALF_PRECISION or _GLINER_FORCE_HALF):
-            try:
-                getattr(mdl, "model", mdl).half()
-            except Exception:
-                pass
+        if mdl:
+            mdl = _move_gliner_model_to_device(mdl)
+            if (
+                torch is not None
+                and _GLN_DEVICE == "cuda"
+                and (_HALF_PRECISION or _GLINER_FORCE_HALF)
+            ):
+                try:
+                    getattr(mdl, "model", mdl).half()
+                except Exception:
+                    pass
 
-        models.append((name, mdl))
+            _MODEL_CACHE.put(name, mdl)
+            loaded_models.append((name, mdl))
 
-    _GLINER_MODELS = models
-    return models
+    return loaded_models
 
 
 def run_gliner(
@@ -302,7 +436,7 @@ def run_gliner(
 ) -> List[Dict[str, Any]]:
     """
     Run one or more GLiNER models and vote across models.
-    
+
     Args:
         text: Input text
         model_names: List of model names to use
@@ -311,7 +445,7 @@ def run_gliner(
         device: (unused, kept for compatibility)
         preset: Preset name from _GLINER_PRESETS
         auto_labels: Use automatic labels if none provided
-        
+
     Returns:
         List of entities with start, end, entity_group, votes
     """
@@ -342,7 +476,11 @@ def run_gliner(
                 ents = mdl.predict_entities(chunk, labels, threshold=threshold)
             except Exception as e:
                 msg = str(e).lower()
-                if any(k in msg for k in ["cuda", "oom", "out of memory"]) and torch is not None and _GLN_DEVICE in {"cuda", "mps"}:
+                if (
+                    any(k in msg for k in ["cuda", "oom", "out of memory"])
+                    and torch is not None
+                    and _GLN_DEVICE in {"cuda", "mps"}
+                ):
                     _log("GLiNER OOM/device error -> trying CPU for this model")
                     try:
                         # Reload on CPU
@@ -372,7 +510,9 @@ def run_gliner(
                 key = (gs, ge, g_label)
                 votes[key] = votes.get(key, 0.0) + weight
 
-    results = [{"start": s, "end": e, "entity_group": lab, "votes": v} for (s, e, lab), v in votes.items()]
+    results = [
+        {"start": s, "end": e, "entity_group": lab, "votes": v} for (s, e, lab), v in votes.items()
+    ]
     results.sort(key=lambda x: (x["start"], x["end"]))
     return results
 
@@ -392,12 +532,14 @@ def merge_ner_lists(*ner_lists) -> List[Dict[str, Any]]:
             if key in seen:
                 continue
             seen.add(key)
-            out.append({
-                "start": s,
-                "end": e,
-                "entity_group": lab,
-                **{k: v for k, v in ent.items() if k not in {"start", "end", "entity_group"}},
-            })
+            out.append(
+                {
+                    "start": s,
+                    "end": e,
+                    "entity_group": lab,
+                    **{k: v for k, v in ent.items() if k not in {"start", "end", "entity_group"}},
+                }
+            )
     out.sort(key=lambda x: (x["start"], x["end"]))
     return out
 
@@ -423,7 +565,12 @@ def warm_up_models(
         # Prime internal caches with a tiny run
         if gliner_labels is None:
             gliner_labels = ["Person", "Organization", "Location"]
-        _ = run_gliner("Warmup text.", model_names=model_names, labels=gliner_labels, threshold=gliner_threshold)
+        _ = run_gliner(
+            "Warmup text.",
+            model_names=model_names,
+            labels=gliner_labels,
+            threshold=gliner_threshold,
+        )
     except Exception as e:
         _log(f"Warm-up GLiNER failed: {e}")
 

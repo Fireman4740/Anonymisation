@@ -33,9 +33,12 @@ def build_run_filename(
 ) -> str:
     # 2025-12-12T10:11:12+00:00 -> 20251212_101112
     safe_ts = re.sub(r"[^0-9]", "", created_at_iso)[:14]
-    base = f"{safe_ts}_{_slugify(pipeline_name)}_{_slugify(dataset_name)}"
-    if run_name:
-        base += f"_{_slugify(run_name)}"
+    # run_name at the beginning if provided
+    base = (
+        f"{_slugify(run_name)}_{safe_ts}_{_slugify(pipeline_name)}_{_slugify(dataset_name)}"
+        if run_name
+        else f"{safe_ts}_{_slugify(pipeline_name)}_{_slugify(dataset_name)}"
+    )
     return f"{base}.json"
 
 

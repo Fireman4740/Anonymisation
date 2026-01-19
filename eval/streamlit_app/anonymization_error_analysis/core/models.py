@@ -22,7 +22,6 @@ class LocalEvalConfig:
     enable_ai: bool
     enable_anonymization: bool
     detection_mode: str
-    out_path: str
     save_run: bool
     run_name: str
 

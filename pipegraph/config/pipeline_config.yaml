@@ -56,7 +56,7 @@ pipeline:
       
       # Configuration de la pseudonymisation (consistante)
       pseudonymization:
-        salt: "my-secret-salt" # À changer en prod
+        # salt: Géré par variables d'environnement (PIPEGRAPH_SEC_PSEUDO_SALT)
         format: "[{type}_{hash}]" # ex: [PER_A1B]
       
       # Politique par type d'entité (override la stratégie globale)

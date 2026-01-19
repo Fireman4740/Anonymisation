@@ -16,7 +16,13 @@ from ..core.models import LocalEvalConfig, ReportSelection, RunSummary, RunsFilt
 
 
 def render_sidebar_ui(
-    reports: List[str], runs: List[RunSummary], eval_dir: str, run_store: Any
+    reports: List[str],
+    runs: List[RunSummary],
+    eval_dir: str,
+    run_store: Any,
+    *,
+    reports_dir: str,
+    runs_dir: str,
 ) -> Tuple[str, Any, Any]:
     """
     Renders the unified sidebar with tabs-like navigation.
@@ -81,13 +87,24 @@ def render_sidebar_ui(
         extra_data = sub_mode
 
     elif active_mode == "comparison":
-        render_comparison_controls_adapted(reports, runs, run_store)
+        render_comparison_controls_adapted(
+            reports,
+            runs,
+            run_store,
+            reports_dir=reports_dir,
+            runs_dir=runs_dir,
+        )
 
     return active_mode, config_obj, extra_data
 
 
 def render_comparison_controls_adapted(
-    reports: List[str], runs: List[RunSummary], run_store
+    reports: List[str],
+    runs: List[RunSummary],
+    run_store,
+    *,
+    reports_dir: str,
+    runs_dir: str,
 ) -> None:
     st.sidebar.subheader("Configuration Comparaison")
     st.sidebar.info("Sélectionnez le rapport de référence (Modèle B).")
@@ -109,7 +126,7 @@ def render_comparison_controls_adapted(
                 path = reports[report_names.index(selected_comp)]
                 if st.sidebar.button("Charger B (Fichier)", key="btn_load_b_file"):
                     try:
-                        rep = load_report_from_file(path)
+                        rep = load_report_from_file(path, base_dir=reports_dir)
                         meta = {"title": "Reference B", "subtitle": selected_comp, "source": "file"}
                         update_comparison_report(rep, meta)
                         st.sidebar.success("Chargé !")
@@ -128,7 +145,7 @@ def render_comparison_controls_adapted(
             if st.sidebar.button("Charger B (Run)", key="btn_load_b_run"):
                 run_obj = runs[selected_run_idx]
                 try:
-                    meta_run, rep = load_report_from_run(run_obj.path, run_store)
+                    meta_run, rep = load_report_from_run(run_obj.path, run_store, base_dir=runs_dir)
                     meta = {
                         "title": "Reference B",
                         "subtitle": f"{meta_run.get('created_at')} | {meta_run.get('dataset', {}).get('name')}",
@@ -141,19 +158,8 @@ def render_comparison_controls_adapted(
 
 
 def render_history_controls(reports: List[str], runs: List[RunSummary]) -> Tuple[str, Any]:
-    st.sidebar.subheader("Source de données")
-    hist_type = st.sidebar.radio(
-        "Type",
-        ["Fichiers Locaux (JSON)", "Runs Sauvegardés"],
-        index=0,
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-
-    if hist_type == "Fichiers Locaux (JSON)":
-        return "existing_report", render_existing_report_controls(reports)
-    else:
-        return "saved_runs", render_saved_runs_controls(runs)
+    st.sidebar.subheader("Runs sauvegardes")
+    return "saved_runs", render_saved_runs_controls(runs)
 
 
 def _list_json_datasets(data_dir: str) -> List[Tuple[str, str]]:
@@ -236,21 +242,7 @@ def render_local_eval_controls(*, eval_dir: str) -> Optional[LocalEvalConfig]:
     enable_anonymization = st.sidebar.checkbox("enable_anonymization", value=True)
     detection_mode = st.sidebar.selectbox("detection_mode", DETECTION_MODES, index=0)
 
-    if dataset_kind == "JSON":
-        dataset_stem = os.path.basename(in_path).replace(".json", "")
-        out_default = os.path.join(
-            eval_dir, "evaluation", "reports", f"report_{dataset_stem}_pipegraph_details.json"
-        )
-    else:
-        suffix = f"_{split}" if split else ""
-        out_default = os.path.join(
-            eval_dir,
-            "evaluation",
-            "reports",
-            f"report_{dataset_kind}_pipegraph{suffix}_details.json",
-        )
-
-    out_path = st.sidebar.text_input("Chemin du report", value=out_default)
+    st.sidebar.markdown("---")
     save_run = st.sidebar.checkbox("Sauvegarder un run", value=False)
     run_name = st.sidebar.text_input("run_name (optionnel)", value="") if save_run else ""
 
@@ -266,7 +258,6 @@ def render_local_eval_controls(*, eval_dir: str) -> Optional[LocalEvalConfig]:
         enable_ai=enable_ai,
         enable_anonymization=enable_anonymization,
         detection_mode=detection_mode,
-        out_path=out_path,
         save_run=save_run,
         run_name=run_name,
     )
@@ -368,7 +359,14 @@ def render_existing_report_controls(reports: List[str]) -> ReportSelection:
     return ReportSelection(report_paths=reports, selected_path=selected_path)
 
 
-def render_comparison_controls(reports: List[str], runs: List[RunSummary], run_store) -> None:
+def render_comparison_controls(
+    reports: List[str],
+    runs: List[RunSummary],
+    run_store,
+    *,
+    reports_dir: str,
+    runs_dir: str,
+) -> None:
     st.sidebar.markdown("---")
     st.sidebar.subheader("Comparaison")
 
@@ -406,7 +404,7 @@ def render_comparison_controls(reports: List[str], runs: List[RunSummary], run_s
                 path = reports[report_names.index(selected_comp)]
                 if st.sidebar.button("Charger B (Fichier)", key="btn_load_b_file"):
                     try:
-                        rep = load_report_from_file(path)
+                        rep = load_report_from_file(path, base_dir=reports_dir)
                         meta = {"title": "Reference B", "subtitle": selected_comp, "source": "file"}
                         update_comparison_report(rep, meta)
                         st.sidebar.success("Chargé !")
@@ -426,7 +424,7 @@ def render_comparison_controls(reports: List[str], runs: List[RunSummary], run_s
             if st.sidebar.button("Charger B (Run)", key="btn_load_b_run"):
                 run_obj = runs[selected_run_idx]
                 try:
-                    meta_run, rep = load_report_from_run(run_obj.path, run_store)
+                    meta_run, rep = load_report_from_run(run_obj.path, run_store, base_dir=runs_dir)
                     meta = {
                         "title": "Reference B",
                         "subtitle": f"{meta_run.get('created_at')} | {meta_run.get('dataset', {}).get('name')}",

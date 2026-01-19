@@ -12,12 +12,12 @@ def render_doc_inspector(doc: Dict[str, Any]) -> None:
     gt = [tuple(x) if isinstance(x, list) else x for x in doc.get("ground_truth", [])]
     preds = [tuple(x) if isinstance(x, list) else x for x in doc.get("predictions", [])]
     spans = classify_spans(text, gt, preds)
-    html = render_text_with_spans(text, spans)
+    span_html = render_text_with_spans(text, spans)
 
     st.markdown(
         f"""
     <div style="padding: 20px; border: 1px solid #ddd; border-radius: 5px; line-height: 1.6; font-family: monospace; white-space: pre-wrap;">
-        {html}
+        {span_html}
     </div>
     """,
         unsafe_allow_html=True,

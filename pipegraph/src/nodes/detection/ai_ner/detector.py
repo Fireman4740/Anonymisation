@@ -36,8 +36,16 @@ except ImportError:
 
 logger = logging.getLogger("AINerDetector")
 
-# Cache global pour les modèles lourds (Flair, Spacy)
-_MODEL_CACHE = {"flair": None, "spacy": None}
+# Use centralized thread-safe model cache for Flair/Spacy
+try:
+    from src.utils.model_cache import get_model_cache
+
+    _MODEL_CACHE = get_model_cache("flair_spacy")
+    _USE_NEW_CACHE = True
+except ImportError:
+    # Fallback to simple dict cache
+    _MODEL_CACHE = {"flair": None, "spacy": None}
+    _USE_NEW_CACHE = False
 
 
 @dataclass
@@ -106,44 +114,86 @@ class AINerDetector:
             self._load_spacy()
 
     def _load_flair(self):
-        """Charge le modèle Flair (Singleton)."""
+        """Charge le modèle Flair (Singleton via cache centralisé)."""
         if not _FLAIR_AVAILABLE:
             logger.error("Flair n'est pas installé.")
             return
 
-        if _MODEL_CACHE["flair"] is None:
-            try:
-                logger.info("Chargement du modèle Flair (ner-french)...")
-                _MODEL_CACHE["flair"] = SequenceTagger.load("flair/ner-french")
-                logger.info("Modèle Flair chargé.")
-            except Exception as e:
-                logger.error(f"Erreur chargement Flair: {e}")
+        cache_key = "flair:ner-french"
 
-        self.flair_tagger = _MODEL_CACHE["flair"]
+        # Try to get from cache (new API)
+        if _USE_NEW_CACHE:
+            cached = _MODEL_CACHE.get(cache_key)
+            if cached is not None:
+                self.flair_tagger = cached
+                return
+        else:
+            # Fallback dict API
+            if _MODEL_CACHE.get("flair") is not None:
+                self.flair_tagger = _MODEL_CACHE["flair"]
+                return
+
+        # Load model
+        try:
+            logger.info("Chargement du modèle Flair (ner-french)...")
+            model = SequenceTagger.load("flair/ner-french")
+
+            # Store in cache
+            if _USE_NEW_CACHE:
+                _MODEL_CACHE.put(cache_key, model)
+            else:
+                _MODEL_CACHE["flair"] = model
+
+            self.flair_tagger = model
+            logger.info("Modèle Flair chargé.")
+        except Exception as e:
+            logger.error(f"Erreur chargement Flair: {e}")
+            self.flair_tagger = None
 
     def _load_spacy(self):
-        """Charge le modèle Spacy (Singleton)."""
+        """Charge le modèle Spacy (Singleton via cache centralisé)."""
         if not _SPACY_AVAILABLE:
             logger.error("Spacy n'est pas installé.")
             return
 
-        if _MODEL_CACHE["spacy"] is None:
+        model_name = self.config.get("spacy_model", "fr_core_news_sm")
+        cache_key = f"spacy:{model_name}"
+
+        # Try to get from cache (new API)
+        if _USE_NEW_CACHE:
+            cached = _MODEL_CACHE.get(cache_key)
+            if cached is not None:
+                self.spacy_nlp = cached
+                return
+        else:
+            # Fallback dict API
+            if _MODEL_CACHE.get("spacy") is not None:
+                self.spacy_nlp = _MODEL_CACHE["spacy"]
+                return
+
+        # Load model
+        try:
+            logger.info(f"Chargement du modèle Spacy ({model_name})...")
             try:
-                model_name = self.config.get("spacy_model", "fr_core_news_sm")
-                logger.info(f"Chargement du modèle Spacy ({model_name})...")
-                try:
-                    _MODEL_CACHE["spacy"] = spacy.load(model_name)
-                except OSError:
-                    # Fallback
-                    fallback = "fr_core_news_md"
-                    logger.warning(f"Modèle {model_name} introuvable, essai avec {fallback}...")
-                    _MODEL_CACHE["spacy"] = spacy.load(fallback)
+                model = spacy.load(model_name)
+            except OSError:
+                # Fallback
+                fallback = "fr_core_news_md"
+                logger.warning(f"Modèle {model_name} introuvable, essai avec {fallback}...")
+                model = spacy.load(fallback)
+                cache_key = f"spacy:{fallback}"
 
-                logger.info("Modèle Spacy chargé.")
-            except Exception as e:
-                logger.error(f"Erreur chargement Spacy: {e}")
+            # Store in cache
+            if _USE_NEW_CACHE:
+                _MODEL_CACHE.put(cache_key, model)
+            else:
+                _MODEL_CACHE["spacy"] = model
 
-        self.spacy_nlp = _MODEL_CACHE["spacy"]
+            self.spacy_nlp = model
+            logger.info("Modèle Spacy chargé.")
+        except Exception as e:
+            logger.error(f"Erreur chargement Spacy: {e}")
+            self.spacy_nlp = None
 
     def detect(self, text: str) -> List[AIEntity]:
         """Exécute la détection NER selon le provider configuré."""
