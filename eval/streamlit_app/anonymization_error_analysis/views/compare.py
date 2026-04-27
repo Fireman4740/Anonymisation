@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
-import plotly.express as px
 from typing import Any, Dict, List, Optional
 from ..metrics import compute_dataset_metrics, compute_label_metrics
+
+try:
+    import plotly.express as px
+except ImportError:
+    px = None
 
 
 def render_comparison(
@@ -38,8 +42,8 @@ def render_comparison(
         return float(m.get(key, 0.0))
 
     with c1:
-        val_a = _safe_get(metrics_a, "global_precision")
-        val_b = _safe_get(metrics_b, "global_precision")
+        val_a = _safe_get(metrics_a, "avg_prec")
+        val_b = _safe_get(metrics_b, "avg_prec")
         st.metric(
             "Précision",
             f"{val_a:.1%}",
@@ -47,8 +51,8 @@ def render_comparison(
             delta_color="normal",
         )
     with c2:
-        val_a = _safe_get(metrics_a, "global_recall")
-        val_b = _safe_get(metrics_b, "global_recall")
+        val_a = _safe_get(metrics_a, "avg_rec")
+        val_b = _safe_get(metrics_b, "avg_rec")
         st.metric(
             "Rappel",
             f"{val_a:.1%}",
@@ -56,10 +60,10 @@ def render_comparison(
             delta_color="normal",
         )
     with c3:
-        val_a = _safe_get(metrics_a, "global_f1")
-        val_b = _safe_get(metrics_b, "global_f1")
+        val_a = _safe_get(metrics_a, "avg_f2")
+        val_b = _safe_get(metrics_b, "avg_f2")
         st.metric(
-            "F1-Score",
+            "F2-Score",
             f"{val_a:.1%}",
             f"{val_a - val_b:.1%}",
             delta_color="normal",
@@ -69,8 +73,8 @@ def render_comparison(
         # But st.metric defaults: positive delta = green.
         # For leaks, if A > B (more leaks), that's bad (red).
         # We can use delta_color="inverse".
-        val_a = int(metrics_a.get("total_leaky_docs", 0))
-        val_b = int(metrics_b.get("total_leaky_docs", 0))
+        val_a = int(metrics_a.get("leaky_docs", 0))
+        val_b = int(metrics_b.get("leaky_docs", 0))
         st.metric(
             "Docs avec fuites",
             f"{val_a}",
@@ -113,21 +117,26 @@ def render_comparison(
         )
 
         # Bar chart for visual comparison
-        df_melt = df_cmp.melt(
-            id_vars=["Label", "Difference"],
-            value_vars=["Modele A (F1)", "Modele B (F1)"],
-            var_name="Model",
-            value_name="F1 Score",
-        )
-        fig = px.bar(
-            df_melt,
-            x="Label",
-            y="F1 Score",
-            color="Model",
-            barmode="group",
-            title="Comparaison F1 par Label",
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        if px is not None:
+            df_melt = df_cmp.melt(
+                id_vars=["Label", "Difference"],
+                value_vars=["Modele A (F1)", "Modele B (F1)"],
+                var_name="Model",
+                value_name="F1 Score",
+            )
+            fig = px.bar(
+                df_melt,
+                x="Label",
+                y="F1 Score",
+                color="Model",
+                barmode="group",
+                title="Comparaison F1 par Label",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.caption("Plotly non installé : affichage d'un graphique simplifié.")
+            chart_df = df_cmp.set_index("Label")[["Modele A (F1)", "Modele B (F1)"]]
+            st.bar_chart(chart_df)
 
     # 3. Regressions List (Docs that got worse)
     st.markdown("### Régressions Détectées")

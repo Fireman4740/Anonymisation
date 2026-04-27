@@ -1,0 +1,14 @@
+ORIGINAL TEXT:
+---
+{original_text}
+---
+
+PARTIALLY ANONYMIZED TEXT:
+---
+{anonymized_text}
+---
+
+INSTRUCTIONS:
+Did anything identifying or sensitive survive in the PARTIALLY ANONYMIZED TEXT?
+If yes, extract the exact corresponding string from the ORIGINAL TEXT.
+Return ONLY a valid JSON array. If no leaks, return [].

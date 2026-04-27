@@ -20,6 +20,8 @@ import gc
 import os
 import warnings
 
+from src.utils.entity_utils import normalize_entity_profile
+
 # ---------------- Logging ----------------
 _DEF_DEBUG = os.getenv("NER_DEBUG", "0").lower() in {"1", "true", "yes"}
 
@@ -194,8 +196,13 @@ _GLINER_PRESETS: Dict[str, List[str]] = {
     "accuracy": ["urchade/gliner_large-v2.1", "urchade/gliner_multi-v2.1"],
     "pii": ["urchade/gliner_multi_pii-v1"],
     "multitask": ["knowledgator/gliner-multitask-v1.0"],
-    # High-perf combo
+    # High-perf combo PII-focused : précision >> généricité
     "best": [
+        "urchade/gliner_large-v2.1",      # meilleur NER général,  poids 1.10
+        "urchade/gliner_multi_pii-v1",    # spécialisé PII,         poids 1.15
+    ],
+    # Ensemble complet (plus lent, pour expérimentation)
+    "full": [
         "EmergentMethods/gliner_medium_news-v2.1",
         "numind/NuNER_Zero-span",
         "urchade/gliner_large-v2.1",
@@ -311,6 +318,85 @@ GLINER_ALL_LABELS: List[str] = [
     "CNPJ",
 ]
 
+# ---------------------------------------------------------------------------
+# Focused PII-only label set
+# Use this instead of GLINER_ALL_LABELS to eliminate false positives on
+# generic NER categories (Product, Event, Law, Money, Ordinal, etc.)
+# ---------------------------------------------------------------------------
+GLINER_PII_FOCUSED_LABELS: List[str] = [
+    # Identité
+    "Person",
+    "Date of birth",
+    "Age",
+    "Sex",
+    "Nationality",
+    "Occupation",
+    "Race",
+    # Contact
+    "Email address",
+    "Phone number",
+    "Mobile phone number",
+    "Address",
+    "Postal code",
+    # Financier
+    "Credit card number",
+    "IBAN",
+    "Bank account number",
+    # Documents d'identité
+    "Social security number",
+    "National ID number",
+    "Passport number",
+    "Driver's license number",
+    # Numérique
+    "IP address",
+    "Username",
+    # Localisation (pour state/city des profils)
+    "Location",
+    # Attributs démographiques indirects (RAT-Bench indirect identifiers)
+    "Marital status",
+    "Employment status",
+    "Educational background",
+    "Citizenship status",
+]
+
+# ---------------------------------------------------------------------------
+# News / CoNLL-friendly label set.
+# Ask GLiNER for generic NER categories first, then project them downstream
+# into the CoNLL schema (PER/ORG/LOC/MISC).
+# ---------------------------------------------------------------------------
+GLINER_NEWS_NER_LABELS: List[str] = [
+    "Person",
+    "Organization",
+    "Location",
+    "GPE",
+    "Facility",
+    "Event",
+    "Product",
+    "Language",
+    "Law",
+    "Work of Art",
+    "Nationality",
+]
+
+GLINER_HYBRID_LABELS: List[str] = sorted(
+    set(GLINER_PII_FOCUSED_LABELS) | set(GLINER_NEWS_NER_LABELS)
+)
+
+
+def get_gliner_labels(
+    *,
+    profile: Optional[str] = None,
+    preset: Optional[str] = None,
+) -> List[str]:
+    norm_profile = normalize_entity_profile(profile)
+    if norm_profile in {"news_ner", "conll2003"}:
+        return GLINER_NEWS_NER_LABELS
+    if norm_profile == "hybrid":
+        return GLINER_HYBRID_LABELS
+    if preset == "pii":
+        return _GLINER_PII_LABELS
+    return GLINER_PII_FOCUSED_LABELS
+
 
 def _normalize_gliner_label(lbl: str) -> Optional[str]:
     """Normalize GLiNER label to uppercase."""
@@ -318,6 +404,31 @@ def _normalize_gliner_label(lbl: str) -> Optional[str]:
     if not lab:
         return None
     return lab.upper()
+
+
+# ---------------- Chunk aggregation helper ----------------
+
+def aggregate_chunks(
+    spans: List[Tuple[int, int]], text: str, max_chars: int = 400
+) -> List[Tuple[int, int]]:
+    """
+    Aggregate consecutive sentence spans into larger chunks for efficient batch inference.
+
+    Reduces the number of model forward passes by grouping small sentences
+    together up to max_chars characters.
+    """
+    if not spans:
+        return []
+    result: List[Tuple[int, int]] = []
+    cur_start, cur_end = spans[0]
+    for s, e in spans[1:]:
+        if e - cur_start <= max_chars:
+            cur_end = e
+        else:
+            result.append((cur_start, cur_end))
+            cur_start, cur_end = s, e
+    result.append((cur_start, cur_end))
+    return result
 
 
 # ---------------- GLiNER ----------------
@@ -433,6 +544,7 @@ def run_gliner(
     device: Optional[str] = None,  # unused; kept for API compatibility
     preset: Optional[str] = None,
     auto_labels: bool = True,
+    label_profile: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """
     Run one or more GLiNER models and vote across models.
@@ -455,7 +567,7 @@ def run_gliner(
         model_names = _GLINER_PRESETS.get(preset, _GLINER_PRESETS["balanced"])
 
     if labels is None and auto_labels:
-        labels = _GLINER_PII_LABELS if preset == "pii" else ["Person", "Organization", "Location"]
+        labels = get_gliner_labels(profile=label_profile, preset=preset)
 
     if not _GLINER_AVAILABLE:
         return []
@@ -465,6 +577,8 @@ def run_gliner(
         return []
 
     spans = split_sentences(text)
+    # Agréger les petites phrases pour réduire le nombre de forward passes
+    spans = aggregate_chunks(spans, text, max_chars=400)
     votes: Dict[Tuple[int, int, str], float] = {}
 
     for name, mdl in models:
@@ -579,7 +693,12 @@ __all__ = [
     "run_gliner",
     "merge_ner_lists",
     "warm_up_models",
+    "aggregate_chunks",
     "GLINER_ALL_LABELS",
+    "GLINER_PII_FOCUSED_LABELS",
+    "GLINER_NEWS_NER_LABELS",
+    "GLINER_HYBRID_LABELS",
+    "get_gliner_labels",
     "_GLINER_PRESETS",
     "_GLINER_MODEL_WEIGHTS",
     "_normalize_gliner_label",

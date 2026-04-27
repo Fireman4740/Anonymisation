@@ -1,38 +1,41 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from eval.core.bootstrap import (
+    ensure_pipegraph_importable as core_ensure_pipegraph_importable,
+    load_pipegraph as core_load_pipegraph,
+    project_root,
+)
+from eval.core.config import normalize_runtime_config
+
+logger = logging.getLogger("pipegraph_eval")
 
 Span = Tuple[int, int, str]
 ProgressCallback = Callable[[int, int, str], None]
+LLM_ENTITY_SOURCES = {"llm", "llm_review", "llm_verified"}
 
 
 def _project_root_from_eval_dir() -> str:
-    # This file lives in <repo>/eval/
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    return project_root()
 
 
 def ensure_pipegraph_importable() -> str:
     """Ensure `pipegraph/` is importable and returns its absolute path."""
-    project_root = _project_root_from_eval_dir()
-    pipegraph_dir = os.path.join(project_root, "pipegraph")
-    if pipegraph_dir not in sys.path:
-        sys.path.insert(0, pipegraph_dir)
-    return pipegraph_dir
+    return core_ensure_pipegraph_importable()
 
 
 def load_pipegraph() -> Tuple[Any, Any]:
     """Returns (create_pipeline_graph, create_initial_state)."""
-    ensure_pipegraph_importable()
-    from src.graph import create_pipeline_graph  # type: ignore
-    from src.state import create_initial_state  # type: ignore
-
-    return create_pipeline_graph, create_initial_state
+    return core_load_pipegraph()
 
 
 def calculate_overlap(span1: Tuple[int, int], span2: Tuple[int, int]) -> bool:
@@ -76,43 +79,117 @@ def spans_from_pipegraph_entities(entities: Sequence[Dict[str, Any]], label_fall
     return _dedupe_spans(spans)
 
 
-def evaluate_spans(text: str, gt_spans: Sequence[Span], pred_spans: Sequence[Span]) -> Dict[str, Any]:
-    """Entity-level overlap evaluation (same logic as Streamlit view)."""
-    gt = list(gt_spans)
-    preds = list(pred_spans)
+def evaluate_spans(
+    text: str,
+    gt_spans: Sequence[Span],
+    pred_spans: Sequence[Span],
+    allowed_labels: Optional[frozenset] = None,
+) -> Dict[str, Any]:
+    """Entity-level overlap evaluation (same logic as Streamlit view).
 
-    # Recall: GT covered by at least one pred
+    Returns global metrics **and** per-label TP/FP/FN breakdowns
+    (``tp_by_label``, ``fp_by_label``, ``fn_by_label``) so that
+    downstream consumers (e.g. ``compute_label_metrics``) can aggregate
+    performance per entity type.
+
+    Parameters
+    ----------
+    allowed_labels:
+        When provided, the label scope is used **asymmetrically**:
+
+        * **Recall** uses ALL predictions (regardless of label) so that a
+          ground-truth span covered by *any* prediction is still a TP.
+        * **Precision** uses only in-scope predictions, so out-of-scope
+          labels (e.g. DATE on CoNLL2003) are neither TP nor FP.
+
+        This avoids both inflating FP (penalising valid PII detections)
+        and deflating recall (ignoring coverage from cross-label overlaps).
+        Ground-truth spans are **never** filtered.
+    """
+    gt = list(gt_spans)
+    all_preds = list(pred_spans)
+
+    # Scoped predictions for precision (drop out-of-scope labels)
+    if allowed_labels is not None:
+        scoped_preds = [p for p in all_preds if p[2] in allowed_labels]
+    else:
+        scoped_preds = all_preds
+
+    # --- Per-label counters ---
+    tp_by_label: Dict[str, int] = {}
+    fp_by_label: Dict[str, int] = {}
+    fn_by_label: Dict[str, int] = {}
+    exact_tp_by_label: Dict[str, int] = {}
+    exact_fn_by_label: Dict[str, int] = {}
+
+    # Recall: GT covered by at least one pred (ALL preds, any label)
     tp_gt = 0
     fn_gt = 0
+    exact_tp_gt = 0
+    exact_fn_gt = 0
     for g in gt:
-        g_start, g_end, _ = g
-        covered = any(calculate_overlap((g_start, g_end), (p[0], p[1])) for p in preds)
+        g_start, g_end, g_label = g
+        overlaps = [
+            p for p in all_preds
+            if calculate_overlap((g_start, g_end), (p[0], p[1]))
+        ]
+        covered = bool(overlaps)
         if covered:
             tp_gt += 1
+            tp_by_label[g_label] = tp_by_label.get(g_label, 0) + 1
         else:
             fn_gt += 1
+            fn_by_label[g_label] = fn_by_label.get(g_label, 0) + 1
 
-    # Precision: preds overlapping at least one GT
+        exact_match = any(p[2] == g_label for p in overlaps)
+        if exact_match:
+            exact_tp_gt += 1
+            exact_tp_by_label[g_label] = exact_tp_by_label.get(g_label, 0) + 1
+        else:
+            exact_fn_gt += 1
+            exact_fn_by_label[g_label] = exact_fn_by_label.get(g_label, 0) + 1
+
+    # Precision: only scoped preds overlapping at least one GT
     tp_pred = 0
     fp_pred = 0
-    for p in preds:
-        p_start, p_end, _ = p
+    for p in scoped_preds:
+        p_start, p_end, p_label = p
         overlaps = any(calculate_overlap((p_start, p_end), (g[0], g[1])) for g in gt)
         if overlaps:
             tp_pred += 1
         else:
             fp_pred += 1
+            fp_by_label[p_label] = fp_by_label.get(p_label, 0) + 1
 
     precision = tp_pred / (tp_pred + fp_pred) if (tp_pred + fp_pred) else 0.0
     recall = tp_gt / (tp_gt + fn_gt) if (tp_gt + fn_gt) else 0.0
+    exact_label_recall = (
+        exact_tp_gt / (exact_tp_gt + exact_fn_gt)
+        if (exact_tp_gt + exact_fn_gt) else 0.0
+    )
 
     return {
         "precision": precision,
         "recall": recall,
+        "exact_label_recall": exact_label_recall,
         "f2": _f2(precision, recall, beta=2.0),
-        "pred_count": len(preds),
+        # Raw counters for robust micro aggregation across documents.
+        # Precision side uses scoped predictions (post dataset filter).
+        "precision_tp": tp_pred,
+        "precision_fp": fp_pred,
+        # Recall side uses all predictions (pre dataset filter).
+        "recall_tp": tp_gt,
+        "recall_fn": fn_gt,
+        "exact_recall_tp": exact_tp_gt,
+        "exact_recall_fn": exact_fn_gt,
+        "pred_count": len(scoped_preds),
         "truth_count": len(gt),
         "leaks_count": fn_gt,
+        "tp_by_label": tp_by_label,
+        "fp_by_label": fp_by_label,
+        "fn_by_label": fn_by_label,
+        "exact_tp_by_label": exact_tp_by_label,
+        "exact_fn_by_label": exact_fn_by_label,
     }
 
 
@@ -197,7 +274,8 @@ def gt_spans_from_anonymization_example(example: Dict[str, Any]) -> List[Span]:
                         start, end = occ[0]
                     else:
                         # Choose occurrence closest to the originally provided start
-                        best = min(occ, key=lambda p: abs(p[0] - start))
+                        original_start = start
+                        best = min(occ, key=lambda p: abs(p[0] - original_start))
                         start, end = best
 
         if start is None or end is None:
@@ -284,7 +362,8 @@ def run_pipegraph_on_text(
     text: str,
     config: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    initial_state = create_initial_state(text, config or {})
+    runtime_config = normalize_runtime_config(config)
+    initial_state = create_initial_state(text, runtime_config)
     return pipeline.invoke(initial_state)
 
 
@@ -294,44 +373,178 @@ def build_report(
     create_initial_state: Any,
     config: Optional[Dict[str, Any]] = None,
     progress_cb: Optional[ProgressCallback] = None,
+    max_workers: Optional[int] = None,
+    allowed_labels: Optional[frozenset] = None,
 ) -> List[Dict[str, Any]]:
-    report: List[Dict[str, Any]] = []
-    for idx, (doc_id, text, gt_spans) in enumerate(docs):
-        if progress_cb is not None:
-            try:
-                progress_cb(idx, len(docs), doc_id)
-            except Exception:
-                pass
-        final_state = run_pipegraph_on_text(pipeline, create_initial_state, text, config=config)
-        pred_spans = spans_from_pipegraph_entities(final_state.get("entities", []))
+    """Build an evaluation report by running the pipeline on each document.
 
-        metrics = evaluate_spans(text, gt_spans, pred_spans)
-        report.append(
-            {
-                "doc_id": doc_id,
-                **metrics,
-                "full_text": text,
-                "text_snippet": text[:200],
-                "ground_truth": gt_spans,
-                "predictions": pred_spans,
-                "leaks": [
-                    {
-                        "start": s,
-                        "end": e,
-                        "label": label,
-                        "text": text[s:e],
-                    }
-                    for (s, e, label) in gt_spans
-                    if not any(calculate_overlap((s, e), (p[0], p[1])) for p in pred_spans)
-                ],
-            }
-        )
-        if progress_cb is not None:
+    When ``max_workers`` > 1 **and** the LLM provider is ``openrouter``
+    (detected via config), documents are processed in parallel threads to
+    maximise API throughput.  Each LLM call already has its own retry logic
+    with exponential back-off (see ``LLMClient.chat``).
+
+    For local LM Studio (single-GPU), parallelism is capped at 1 to avoid
+    contention.
+    """
+    # --- Determine effective concurrency -----------------------------------
+    runtime_config = normalize_runtime_config(config)
+
+    if max_workers is None:
+        # Auto-detect: parallel only for OpenRouter
+        provider = str(runtime_config.get("llm_provider", "")).lower()
+        if not provider:
             try:
-                progress_cb(idx + 1, len(docs), doc_id)
+                ensure_pipegraph_importable()
+                from src.nodes.llm.llm_client import load_full_config  # type: ignore
+                _cfg = load_full_config()
+                provider = _cfg.get("llm", {}).get("provider", "lmstudio").lower()
             except Exception:
-                pass
-    return report
+                provider = "lmstudio"
+        if provider == "openrouter":
+            try:
+                ensure_pipegraph_importable()
+                from src.nodes.llm.llm_client import load_full_config as _lcfg  # type: ignore
+                _or_cfg = _lcfg().get("openrouter", {})
+                max_workers = int(_or_cfg.get("max_workers", 8))
+            except Exception:
+                max_workers = 8
+        else:
+            max_workers = 1
+
+    use_parallel = max_workers > 1 and len(docs) > 1
+    if use_parallel:
+        logger.info(
+            f"build_report: parallel mode — {max_workers} workers, "
+            f"{len(docs)} documents"
+        )
+
+    # --- Worker function (processes one document) --------------------------
+    def _process_doc(
+        idx: int, doc_id: str, text: str, gt_spans: List[Span]
+    ) -> Dict[str, Any]:
+        final_state = run_pipegraph_on_text(
+            pipeline, create_initial_state, text, config=runtime_config
+        )
+        pred_spans = spans_from_pipegraph_entities(
+            final_state.get("entities", [])
+        )
+        anonymized_text = final_state.get("text", text)
+        metrics = evaluate_spans(text, gt_spans, pred_spans, allowed_labels=allowed_labels)
+        return {
+            "doc_id": doc_id,
+            **metrics,
+            "full_text": text,
+            "anonymized_text": anonymized_text,
+            "text_snippet": text[:200],
+            "ground_truth": gt_spans,
+            "predictions": pred_spans,
+            # LLM / RUPTA
+            "privacy_score": final_state.get("privacy_score"),
+            "rupta_iterations": final_state.get("iteration", 0),
+            "llm_entities": len(
+                [
+                    e for e in final_state.get("entities", [])
+                    if str(e.get("source", "")).lower() in LLM_ENTITY_SOURCES
+                ]
+            ),
+            "llm_feedback": final_state.get("llm_feedback") or {},
+            "leaks": [
+                {
+                    "start": s,
+                    "end": e,
+                    "label": label,
+                    "text": text[s:e],
+                }
+                for (s, e, label) in gt_spans
+                if not any(calculate_overlap((s, e), (p[0], p[1])) for p in pred_spans)
+            ],
+        }
+
+    # --- Sequential path (LM Studio / single worker) ----------------------
+    if not use_parallel:
+        report: List[Dict[str, Any]] = []
+        for idx, (doc_id, text, gt_spans) in enumerate(docs):
+            if progress_cb is not None:
+                try:
+                    progress_cb(idx, len(docs), doc_id)
+                except Exception:
+                    pass
+            report.append(_process_doc(idx, doc_id, text, gt_spans))
+            if progress_cb is not None:
+                try:
+                    progress_cb(idx + 1, len(docs), doc_id)
+                except Exception:
+                    pass
+        return report
+
+    # --- Parallel path (OpenRouter) ----------------------------------------
+    report = [None] * len(docs)  # type: ignore[list-item]
+    completed = 0
+    lock = threading.Lock()
+
+    def _worker(idx: int) -> Tuple[int, Dict[str, Any]]:
+        doc_id, text, gt_spans = docs[idx]
+        return idx, _process_doc(idx, doc_id, text, gt_spans)
+
+    with ThreadPoolExecutor(max_workers=min(max_workers, len(docs))) as pool:
+        futures = {pool.submit(_worker, i): i for i in range(len(docs))}
+        for future in as_completed(futures):
+            idx_done = futures[future]
+            try:
+                idx_res, result = future.result(timeout=300)
+                report[idx_res] = result
+            except TimeoutError:
+                doc_id, text, gt_spans = docs[idx_done]
+                logger.warning(f"build_report: document {doc_id} timed out after 300s")
+                report[idx_done] = {
+                    "doc_id": doc_id,
+                    "error": "timeout (300s)",
+                    "tp": 0, "fp": 0, "fn": 0,
+                    "precision": 0.0, "recall": 0.0, "f2": 0.0,
+                    "pred_count": 0, "truth_count": len(gt_spans),
+                    "leaks_count": len(gt_spans),
+                    "full_text": text,
+                    "anonymized_text": text,
+                    "text_snippet": text[:200],
+                    "ground_truth": gt_spans,
+                    "predictions": [],
+                    "privacy_score": None,
+                    "rupta_iterations": 0,
+                    "llm_entities": 0,
+                    "llm_feedback": {},
+                    "leaks": [],
+                    "tp_by_label": {},
+                    "fp_by_label": {},
+                    "fn_by_label": {},
+                }
+            except Exception as exc:
+                doc_id, text, gt_spans = docs[idx_done]
+                logger.warning(f"build_report: document {doc_id} failed: {exc}")
+                report[idx_done] = {
+                    "doc_id": doc_id,
+                    "error": str(exc),
+                    "tp": 0, "fp": 0, "fn": 0,
+                    "precision": 0.0, "recall": 0.0, "f2": 0.0,
+                    "full_text": text,
+                    "anonymized_text": text,
+                    "text_snippet": text[:200],
+                    "ground_truth": gt_spans,
+                    "predictions": [],
+                    "privacy_score": None,
+                    "rupta_iterations": 0,
+                    "llm_entities": 0,
+                    "llm_feedback": {},
+                    "leaks": [],
+                }
+            with lock:
+                completed += 1
+                if progress_cb is not None:
+                    try:
+                        progress_cb(completed, len(docs), docs[idx_done][0])
+                    except Exception:
+                        pass
+
+    return [r for r in report if r is not None]  # type: ignore
 
 
 def build_docs_from_anonymization_dataset(dataset_path: str, limit: Optional[int] = None) -> List[Tuple[str, str, List[Span]]]:

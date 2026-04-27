@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-anno"
+version = "0.1.0"
+description = "Independent synthetic text anonymization benchmark generator and evaluator."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Codex" }
+]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+llm = [
+  "openai>=1.0.0",
+]
+parquet = [
+  "pyarrow>=15.0.0",
+]
+dev = [
+  "pytest>=7.0.0",
+]
+
+[project.scripts]
+atlas = "atlas_anno.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

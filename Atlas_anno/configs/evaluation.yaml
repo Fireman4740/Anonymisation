@@ -1,0 +1,13 @@
+report:
+  include_markdown: true
+  include_html: true
+  include_json: true
+privacy_thresholds:
+  low: 0.25
+  medium: 0.50
+  high: 0.75
+utility_thresholds:
+  degraded: 0.50
+  acceptable: 0.75
+  strong: 0.90
+

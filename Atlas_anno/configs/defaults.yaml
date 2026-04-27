@@ -1,0 +1,83 @@
+project:
+  name: atlas_anno
+  language: fr
+generation:
+  pilot_batch: pilot_100
+  worlds: 3
+  characters_total: 100
+  documents_total: 3000
+  pilot:
+    worlds: 3
+    characters_total: 36
+    characters_per_world: 12
+    documents_total: 100
+    domains:
+      support_ticket: 50
+      email: 50
+    difficulties:
+      easy: 40
+      medium: 35
+      hard: 25
+  domains:
+    - support_ticket
+    - email
+  difficulties:
+    easy: 0.40
+    medium: 0.35
+    hard: 0.25
+  splits:
+    train: 0.60
+    dev: 0.20
+    test: 0.20
+  direct_id_rates:
+    easy: 0.75
+    medium: 0.35
+    hard: 0.10
+  sensitive_document_rate: 0.15
+llm:
+  models:
+    reasoning: aion-labs/aion-2.0
+    creative: mistralai/mistral-small-creative
+  routing:
+    complex: reasoning
+    classic: reasoning
+    creative: creative
+  runtime:
+    reasoning_workers: 12
+    creative_workers: 8
+    checkpoint_every: 1
+    backoff_initial_seconds: 2
+    backoff_max_seconds: 30
+    cache_enabled: true
+    resume_enabled: true
+  max_retries: 2
+  repair_retries: 1
+  pricing_usd_per_1k_tokens:
+    reasoning_input: 0.0
+    reasoning_output: 0.0
+    creative_input: 0.0
+    creative_output: 0.0
+evaluation:
+  privacy_weights:
+    direct_removal: 0.35
+    qid_reduction: 0.25
+    sensitive_reduction: 0.20
+    attack_resistance: 0.20
+  utility_weights:
+    domain_classification: 0.60
+    lexical_retention: 0.40
+paths:
+  worlds: data/worlds/worlds.jsonl
+  characters: data/characters/characters.jsonl
+  scenarios: data/scenarios/scenarios.jsonl
+  raw_docs: data/raw_docs/raw_docs.jsonl
+  annotations: data/annotations/preannotations.jsonl
+  reviewed_annotations: data/annotations/reviewed_annotations.jsonl
+  reports_dir: data/reports
+  anonymized_dir: data/anonymized
+  attacks_dir: data/attacks
+  review_dir: data/review
+  parquet_dir: data/parquet
+  logs_dir: data/logs
+  batches_dir: data/batches
+  cache_dir: data/cache/llm

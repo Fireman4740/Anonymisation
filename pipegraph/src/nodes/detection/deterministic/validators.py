@@ -69,30 +69,40 @@ class Validators:
     @staticmethod
     def french_ssn(value: str) -> bool:
         """Valide un NIR (Numéro de Sécurité Sociale Français)."""
-        cleaned = clean_identifier(value)
+        cleaned = clean_identifier(value).upper()
         try:
-            if len(cleaned) < 15:
+            if len(cleaned) not in (13, 15):
                 return False
-            # Extraction du numéro (13 chiffres) et de la clé (2 chiffres)
-            # Parfois le NIR est complet (15), parfois sans clé (13).
-            # Ici on suppose qu'on a capturé la clé.
-            if len(cleaned) != 15:
+
+            if not re.match(r"^[12]\d{2}(0[1-9]|1[0-2])(2A|2B|\d{2})\d{6}(\d{2})?$", cleaned):
                 return False
-                
+
+            number_part = cleaned[:13].replace("2A", "19").replace("2B", "18")
+            expected_key = 97 - (int(number_part) % 97)
+
+            if len(cleaned) == 13:
+                return True
+
             key = int(cleaned[-2:])
-            num = int(cleaned[:-2])
-            
-            # Corse (2A/2B) handling simplifiée (remplacement par 0/1 pour le calcul)
-            # Note: Pour une validation stricte, il faudrait gérer 2A->19, 2B->18 etc.
-            # Ici on fait simple ou on skip si complexe.
-            # Le code legacy faisait:
-            # expected_key = 97 - (num % 97)
-            
-            expected_key = 97 - (num % 97)
             return expected_key == key
         except ValueError:
-            # Cas complexes (Corse) ou format invalide
             return False
+
+    @staticmethod
+    def us_ssn(value: str) -> bool:
+        """Validate a US Social Security Number."""
+        digits = re.sub(r"\D", "", value or "")
+        if len(digits) != 9:
+            return False
+
+        area = digits[:3]
+        group = digits[3:5]
+        serial = digits[5:]
+        if area == "000" or area == "666" or int(area) >= 900:
+            return False
+        if group == "00" or serial == "0000":
+            return False
+        return True
 
     @staticmethod
     def phone(value: str) -> bool:
@@ -152,8 +162,10 @@ class Validators:
             return Validators.iban
         elif name == "bic":
             return Validators.bic
-        elif name == "ssn" or name == "nir":
+        elif name == "nir":
             return Validators.french_ssn
+        elif name == "ssn":
+            return Validators.us_ssn
         elif name == "phone" or name == "telephone":
             return Validators.phone
         return None

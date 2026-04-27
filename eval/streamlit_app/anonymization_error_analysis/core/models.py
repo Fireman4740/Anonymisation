@@ -22,8 +22,54 @@ class LocalEvalConfig:
     enable_ai: bool
     enable_anonymization: bool
     detection_mode: str
+    llm_detection_enabled: bool
+    llm_audit_enabled: bool
+    llm_paraphrase_enabled: bool
+    rupta_enabled: bool
+    rupta_max_iterations: int
+    rupta_p_threshold: int
     save_run: bool
     run_name: str
+
+
+@dataclass(frozen=True)
+class RATBenchEvalConfig:
+    language: str
+    level: Optional[int]  # None = tous les niveaux
+    limit: int
+    run_full_dataset: bool
+    enable_detection: bool
+    enable_deterministic: bool
+    enable_ai: bool
+    enable_anonymization: bool
+    detection_mode: str
+    # LLM / RUPTA
+    llm_detection_enabled: bool
+    llm_audit_enabled: bool
+    llm_paraphrase_enabled: bool
+    rupta_enabled: bool
+    rupta_max_iterations: int
+    rupta_p_threshold: int
+    # Risk re-identification
+    enable_risk_eval: bool
+    save_run: bool
+    run_name: str
+
+
+@dataclass(frozen=True)
+class BenchmarkEvalConfig:
+    type: str
+    ratbench_config: Optional[RATBenchEvalConfig]
+    local_config: Optional[LocalEvalConfig]
+
+
+@dataclass(frozen=True)
+class AblationConfig:
+    run_new: bool
+    dataset_kind: str
+    limit: int
+    suite: str
+    save_run: bool
 
 
 @dataclass(frozen=True)

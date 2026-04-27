@@ -1,12 +1,27 @@
 import sys
 import os
+import re
 from typing import Dict, Any
 import yaml
 
 from src.state import PipelineState
 from .deterministic.detector import DeterministicDetector
 from .ai_ner.detector import AINerDetector
+from src.utils.span_utils import merge_entity_lists
+from src.utils.entity_utils import normalize_entity_profile, normalize_entity_type
 import concurrent.futures
+
+_SHORT_ACRONYM_RE = re.compile(r"^[A-Z](?:[A-Z0-9]|[.$&/'-])+$")
+
+
+def _passes_ai_length_filter(entity: Dict[str, Any], min_len: int) -> bool:
+    value = str(entity.get("value") or entity.get("text") or "").strip()
+    length = int(entity.get("end", 0)) - int(entity.get("start", 0))
+    if length >= min_len:
+        return True
+    if length < 2 or not value:
+        return False
+    return bool(_SHORT_ACRONYM_RE.fullmatch(value))
 
 class DetectionNode:
     def __init__(self):
@@ -83,6 +98,7 @@ class DetectionNode:
         
         # Config statique (YAML)
         yaml_det_config = self.global_config.get("pipeline", {}).get("nodes", {}).get("detection", {})
+        gliner_yaml_cfg = yaml_det_config.get("ai_ner", {}).get("gliner", {})
         
         # Vérification globale du noeud
         # Priorité: State > YAML > Default True
@@ -108,6 +124,32 @@ class DetectionNode:
         det_results = []
         ai_results = []
 
+        # ---------------------------------------------------------------
+        # Préparation des overrides NER pour l'ablation
+        # Ces clés dans state.config permettent de modifier le comportement
+        # NER à la volée sans changer le YAML (utile pour run_ablation.py)
+        # ---------------------------------------------------------------
+        _NER_OVERRIDE_KEYS = (
+            "gliner_preset",
+            "gliner_models",
+            "gliner_threshold",
+            "entity_profile",
+            "gliner_label_profile",
+            "gliner_labels",
+            "ner_provider",
+        )
+        ner_config_override: Dict[str, Any] = {
+            k: state_config[k] for k in _NER_OVERRIDE_KEYS if k in state_config
+        }
+
+        entity_profile = normalize_entity_profile(
+            state_config.get("entity_profile")
+            or state_config.get("gliner_label_profile")
+            or gliner_yaml_cfg.get("label_profile")
+            or yaml_det_config.get("entity_profile")
+            or "pii"
+        )
+
         if exec_mode == "parallel":
             print("🚀 Lancement des détecteurs en parallèle...")
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -118,7 +160,9 @@ class DetectionNode:
                 
                 if self.ai_detector and enable_ai:
                     print("   -> Soumission AINerDetector")
-                    futures[executor.submit(self.ai_detector.detect, text)] = "ai"
+                    futures[executor.submit(
+                        self.ai_detector.detect, text, ner_config_override or None
+                    )] = "ai"
                 
                 for future in concurrent.futures.as_completed(futures):
                     source = futures[future]
@@ -144,48 +188,43 @@ class DetectionNode:
             
             if self.ai_detector and enable_ai:
                 print("   -> Exécution AINerDetector...")
-                ai_results = self.ai_detector.detect(text)
+                ai_results = self.ai_detector.detect(text, ner_config_override or None)
                 print(f"   ✅ AINerDetector terminé: {len(ai_results)} entités")
             elif not enable_ai:
                 print("   🚫 AINerDetector désactivé (config).")
 
-        # Fusion des résultats
-        # TODO: Stratégie de fusion plus intelligente (gestion des chevauchements)
-        # Pour l'instant on concatène tout
-        
-        def _normalize_type(raw_type: Any) -> Any:
-            if not isinstance(raw_type, str):
-                return raw_type
-            t = raw_type.strip().upper()
-            # Harmonisation des labels entre regex/NER/datasets
-            mapping = {
-                # Deterministic
-                "TELEPHONE": "PHONE",
-                "MAIL": "EMAIL",
-                # GLiNER / NER labels
-                "PHONE NUMBER": "PHONE",
-                "MOBILE PHONE NUMBER": "PHONE",
-                "LANDLINE PHONE NUMBER": "PHONE",
-                "EMAIL ADDRESS": "EMAIL",
-                "IP ADDRESS": "IP",
-                # Petites variantes possibles
-                "E-MAIL": "EMAIL",
-                "TELEPHONE NUMBER": "PHONE",
-            }
-            return mapping.get(t, t)
-
-        for ent in det_results:
+        # Conversion + normalisation centralisée des types d'entités
+        def _to_dict_normalized(ent) -> Dict[str, Any]:
             d = ent.to_dict()
-            d["type"] = _normalize_type(d.get("type"))
-            entities_found.append(d)
+            d["type"] = normalize_entity_type(d.get("type", ""), profile=entity_profile)
+            return d
 
-        for ent in ai_results:
-            d = ent.to_dict()
-            d["type"] = _normalize_type(d.get("type"))
-            entities_found.append(d)
+        det_dicts = [_to_dict_normalized(e) for e in det_results]
+        ai_dicts  = [_to_dict_normalized(e) for e in ai_results]
 
-        print(f"Entités trouvées: {len(entities_found)} (Det: {len(det_results)}, AI: {len(ai_results)})")
-        
+        # Filtre de consensus : seuil de vote minimum.
+        # Par défaut 1.0 = conserver toutes les détections d'au moins 1 modèle.
+        # Augmenter (ex: 2.0) pour exiger le consensus de 2+ modèles (↓recall, ↑précision).
+        # Configurable via state.config["ner_min_vote"].
+        _MIN_VOTE = float(state_config.get("ner_min_vote", 1.0))
+        # Filtre longueur minimum : éliminer les entités de moins de N chars
+        _MIN_LEN = int(state_config.get("ner_min_len", 3))
+        ai_dicts = [
+            d for d in ai_dicts
+            if float(d.get("score") or 0.0) >= _MIN_VOTE
+            and _passes_ai_length_filter(d, _MIN_LEN)
+        ]
+
+        # Fusion intelligente avec déduplication et résolution des chevauchements
+        # Les entités déterministes (source=regex) ont priorité sur l'IA (SOURCE_PRIORITY)
+        entities_found = merge_entity_lists(
+            det_dicts,
+            ai_dicts,
+            resolve_overlapping=True,
+            strategy="priority_longest",
+        )
+
+        print(f"Entités trouvées: {len(entities_found)} après fusion (Det: {len(det_results)}, AI: {len(ai_results)})")
+
         return {"entities": entities_found}
-
 

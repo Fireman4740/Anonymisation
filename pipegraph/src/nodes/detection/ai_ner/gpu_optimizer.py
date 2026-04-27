@@ -42,19 +42,25 @@ except ImportError:
 try:
     from .ensemble import (
         split_sentences,
+        aggregate_chunks,
         _normalize_gliner_label,
         _GLINER_PRESETS,
         _GLINER_MODEL_WEIGHTS,
         GLINER_ALL_LABELS,
+        GLINER_PII_FOCUSED_LABELS,
+        get_gliner_labels,
     )
 except ImportError:
     # Fallback si import relatif échoue (ex: exécution directe)
     from ensemble import (  # type: ignore
         split_sentences,
+        aggregate_chunks,
         _normalize_gliner_label,
         _GLINER_PRESETS,
         _GLINER_MODEL_WEIGHTS,
         GLINER_ALL_LABELS,
+        GLINER_PII_FOCUSED_LABELS,
+        get_gliner_labels,
     )
 
 # Configuration par défaut
@@ -214,19 +220,39 @@ class OptimizedGLiNERModel:
         if not texts:
             return []
 
-        # _log(f"Inférence batch de {len(texts)} textes avec {self.model_name}")
-
-        results = []
         with torch.inference_mode() if _TORCH_AVAILABLE else _nullcontext():
+            # Prefer GLiNER.run() (new API) over deprecated batch_predict_entities
+            try:
+                if hasattr(self.model, "run"):
+                    results = self.model.run(texts, labels, threshold=threshold)
+                    return [r or [] for r in results]
+            except (AttributeError, TypeError):
+                pass
+            except Exception as e:
+                _log(f"GLiNER.run() échoué ({e}), tentative batch_predict_entities", logging.DEBUG)
+
+            # Fallback: batch_predict_entities (deprecated but still functional)
+            try:
+                import warnings
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", FutureWarning)
+                    results = self.model.batch_predict_entities(texts, labels, threshold=threshold)
+                return [r or [] for r in results]
+            except (AttributeError, TypeError):
+                pass  # API non disponible → fallback séquentiel
+            except Exception as e:
+                _log(f"batch_predict_entities échoué ({e}), fallback séquentiel", logging.DEBUG)
+
+            # Fallback : traitement séquentiel
+            results = []
             for text in texts:
                 try:
                     ents = self.model.predict_entities(text, labels, threshold=threshold) or []
                     results.append(ents)
                 except Exception as e:
-                    _log(f"Erreur inférence pour texte: {e}", logging.WARNING)
+                    _log(f"Erreur inférence: {e}", logging.WARNING)
                     results.append([])
-
-        return results
+            return results
 
 
 class ParallelNERPipeline:
@@ -247,7 +273,7 @@ class ParallelNERPipeline:
         self.batch_size = batch_size
         self.max_parallel_models = max_parallel_models
         self.threshold = threshold
-        self.labels = labels or GLINER_ALL_LABELS[:20]
+        self.labels = labels or GLINER_PII_FOCUSED_LABELS
 
         if model_names is None:
             model_names = _GLINER_PRESETS.get("best", ["urchade/gliner_medium-v2.1"])
@@ -317,7 +343,9 @@ class ParallelNERPipeline:
             return []
 
         sent_spans = split_sentences(text)
-        chunks = [(s, e, text[s:e]) for s, e in sent_spans]
+        # Agréger les petites phrases → moins de forward passes
+        agg_spans = aggregate_chunks(sent_spans, text, max_chars=400)
+        chunks = [(s, e, text[s:e]) for s, e in agg_spans]
 
         # _log(f"Traitement de {len(chunks)} chunks avec {len(self.models)} modèles")
 
@@ -399,13 +427,20 @@ def create_optimized_pipeline(
     preset = config.get("gliner_preset", "best")
     model_names = _GLINER_PRESETS.get(preset, _GLINER_PRESETS["balanced"])
 
+    labels = config.get("labels") or get_gliner_labels(
+        profile=config.get("label_profile"),
+        preset=preset,
+    )
+
     pipeline = ParallelNERPipeline(
         model_names=model_names,
+        labels=labels,
         device="cuda",
         batch_size=batch_size,
         max_parallel_models=config.get("max_parallel_models", 3),
         use_fp16=config.get("use_fp16", True),
         use_compile=config.get("use_torch_compile", False),
+        threshold=config.get("threshold", 0.35),
     )
 
     if config.get("prefetch_models"):

@@ -2,6 +2,7 @@ langgraph
 langchain
 langchain-core
 pydantic
+openai>=1.0.0
 # Dépendances héritées du pipeline original
 torch
 gliner

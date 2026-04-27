@@ -16,6 +16,7 @@ This Streamlit app allows you to visualize and analyze the errors made by the an
    streamlit run app.py
    ```
 
+cd /mnt/f/IA/Anonymisation/eval/streamlit_app && conda run -n ano --no-capture-output streamlit run app.py --server.headless true --server.port 8501 
 2. Open your browser at the URL shown (usually http://localhost:8501).
 
 3. Select a report from the sidebar.

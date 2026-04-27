@@ -74,3 +74,21 @@ models/
 # Documentation générée
 docs/_build/
 site/
+.pi/
+.playwright-mcp/
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Evaluation outputs
+eval/evaluation/reports/
+eval/evaluation/runs/
+
+# Eval datasets (generated caches)
+eval/datasets/*_cache/
+eval/datasets/**/cache/
+eval/datasets/hf_cache/
+
+# Atlas_anno generated data
+Atlas_anno/data/
+Atlas_anno/.env

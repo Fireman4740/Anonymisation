@@ -1,0 +1,47 @@
+direct_identifiers:
+  - PERSON_NAME
+  - EMAIL
+  - PHONE
+  - USERNAME
+  - ACCOUNT_ID
+  - ORG_NAME_STRONG
+  - PROJECT_NAME_STRONG
+quasi_identifiers:
+  - ROLE
+  - DEGREE
+  - AGE_RANGE
+  - TENURE
+  - TEAM
+  - DEPARTMENT
+  - LOCATION
+  - NATIONALITY
+  - CERTIFICATION
+  - SKILL_RARE
+  - EVENT_DATE
+  - PRODUCT_CONTEXT
+  - UNIQUE_ROLE
+  - RARE_RESPONSIBILITY
+  - COMPOSITIONAL_QID
+sensitive_attributes:
+  - HEALTH
+  - ETHNICITY
+  - RELIGION
+  - DISABILITY
+  - FAMILY_STATUS
+  - SEXUAL_ORIENTATION
+  - LEGAL
+  - FINANCIAL
+style_signals:
+  - SIGNATURE_PATTERN
+  - WRITING_TIC
+  - JARGON_PATTERN
+  - SAME_AUTHOR_SIGNAL
+doc_labels:
+  - direct_risk_level
+  - qid_risk_level
+  - compositional_risk_level
+  - style_risk_level
+  - overall_reid_risk
+  - utility_sensitivity
+  - human_review_required
+

@@ -1,6 +1,6 @@
 pipeline:
   name: "Anonymisation Pipeline"
-  version: "2.0"
+  version: "2.1"
 
   # Configuration globale
   global:
@@ -8,29 +8,61 @@ pipeline:
     log_level: "INFO"
     work_dir: "./workspace"
 
+  # ===========================================================================
   # Configuration des Noeuds
+  # ===========================================================================
   nodes:
-    # --- DETECTION NODE ---
+    # -------------------------------------------------------------------------
+    # DETECTION NODE
+    # Paramètres d'ablation supportés dans state.config (runtime) :
+    #   enable_detection    : bool  — activer/désactiver le nœud entier
+    #   enable_deterministic: bool  — activer/désactiver le sous-module regex
+    #   enable_ai           : bool  — activer/désactiver le sous-module NER IA
+    #   detection_mode      : "serial"|"parallel"
+    #   ner_provider        : "gliner"|"flair"|"spacy"
+    #   gliner_preset       : "fast"|"balanced"|"accuracy"|"best"|"full"|"pii"|"multitask"
+    #   gliner_models       : List[str]  — liste explicite de modèles (écrase le preset)
+    #   gliner_threshold    : float      — seuil de confiance GLiNER (0.0–1.0)
+    #   entity_profile      : "pii"|"news_ner"|"conll2003"|"hybrid"
+    #   gliner_label_profile: alias de entity_profile pour GLiNER
+    #   gliner_labels       : List[str] — labels GLiNER explicites
+    #   ner_min_vote        : float      — seuil de vote agrégé (1.0=un modèle, 2.0=consensus 2+)
+    #   ner_min_len         : int        — longueur minimale d'une entité IA
+    # -------------------------------------------------------------------------
     detection:
       enabled: true
-      execution_mode: "serial" # "serial" ou "parallel"
-      
+      execution_mode: "parallel" # "serial" ou "parallel"
+
       # Sous-module: Détection Déterministe (Regex/Algo)
       deterministic:
         enabled: true
-        patterns_config_path: "config/patterns_config.yaml" # Fichier externe pour les regex
-        # Les patterns spécifiques sont définis dans patterns_config.yaml
+        patterns_config_path: "config/patterns_config.yaml"
 
       # Sous-module: Détection IA (NER)
       ai_ner:
         enabled: true
-        provider: "gliner" # Choix: "gliner", "flair", "spacy"
-        threshold: 0.35
+        provider: "gliner" # "gliner" | "flair" | "spacy"
+        threshold: 0.25
         warmup: true
-        
-        # Config spécifique GLiNER (si provider = "gliner")
+
+        # -----------------------------------------------------------------------
+        # Config GLiNER
+        # Presets disponibles (voir ensemble.py) :
+        #   fast       : ["urchade/gliner_small-v2.1"]
+        #   balanced   : ["urchade/gliner_medium-v2.1"]
+        #   accuracy   : ["urchade/gliner_large-v2.1", "urchade/gliner_multi-v2.1"]
+        #   pii        : ["urchade/gliner_multi_pii-v1"]                  ← spécialisé PII
+        #   multitask  : ["knowledgator/gliner-multitask-v1.0"]
+        #   best       : ["urchade/gliner_large-v2.1",                    ← recommandé production
+        #                 "urchade/gliner_multi_pii-v1"]
+        #   full       : 4 modèles — plus lent, pour expérimentation
+        #
+        # Pour l'étude d'ablation multi-modèle, utiliser gliner_models (runtime)
+        # ou changer preset ici et relancer le benchmark.
+        # -----------------------------------------------------------------------
         gliner:
-          preset: "best" # "fast", "balanced", "accuracy", "best"
+          preset: "best"
+          label_profile: "pii"
           use_gpu: true
           gpu_config:
             vram_gb: 24
@@ -40,36 +72,97 @@ pipeline:
             use_torch_compile: false
             optimization_level: "high"
             prefetch_models: true
-        
-        # Config spécifique Flair (si provider = "flair")
+
+        # Config Flair (si provider = "flair")
         flair:
           model_path: "flair/ner-french"
-        
-        # Config spécifique Spacy (si provider = "spacy")
+
+        # Config Spacy (si provider = "spacy")
         spacy:
           model_name: "fr_core_news_sm"
 
-    # --- ANONYMIZATION NODE ---
+    # -------------------------------------------------------------------------
+    # ANONYMIZATION NODE
+    # Paramètres d'ablation supportés dans state.config (runtime) :
+    #   enable_anonymization : bool            — activer/désactiver le nœud
+    #   anon_strategy        : str             — stratégie globale par défaut
+    #                                            "pseudo"|"mask"|"generalize"|"redact"
+    #   anon_policy          : Dict[str, str]  — override par type d'entité
+    #                            ex: {"PERSON": "pseudo", "LOC": "generalize"}
+    #   scope_id             : str             — scope du pseudonyme
+    # -------------------------------------------------------------------------
     anonymization:
       enabled: true
-      strategy: "pseudo" # "pseudo", "mask", "redact"
-      
-      # Configuration de la pseudonymisation (consistante)
-      pseudonymization:
-        # salt: Géré par variables d'environnement (PIPEGRAPH_SEC_PSEUDO_SALT)
-        format: "[{type}_{hash}]" # ex: [PER_A1B]
-      
+      strategy: "pseudo" # Stratégie globale par défaut
+
       # Politique par type d'entité (override la stratégie globale)
+      # Stratégies disponibles :
+      #   pseudo     : pseudonyme cohérent (même texte → même pseudonyme dans le scope)
+      #   mask       : masquage partiel adapté au type (ex: j*******@email.com)
+      #   generalize : remplacement par [TYPE] (ex: [LOC], [DATE])
+      #   redact     : remplacement par [TYPE_REDACTED] (plus explicite que generalize)
       policy:
-        PER: 
+        PERSON:
           action: "pseudo"
-        LOC: 
-          action: "generalize" # Paris -> [VILLE]
-        DATE: 
-          action: "generalize" # 12/05/2023 -> [DATE]
-        PHONE: 
-          action: "mask" # 06 12 34 56 78 -> 06 ** ** ** 78
+        PER:
+          action: "pseudo"
+        LOC:
+          action: "generalize"
+        LOCATION:
+          action: "generalize"
+        GPE:
+          action: "generalize"
+        DATE:
+          action: "generalize"
+        PHONE:
+          action: "mask"
+        TELEPHONE:
+          action: "mask"
         EMAIL:
-          action: "mask" # jean.dupont@email.com -> j***@email.com
+          action: "mask"
         IBAN:
-          action: "redact" # -> [IBAN]
+          action: "redact"
+        BANK_ACCOUNT:
+          action: "redact"
+        CREDIT_CARD:
+          action: "redact"
+        SSN:
+          action: "redact"
+        NATIONAL_ID:
+          action: "redact"
+        PASSPORT:
+          action: "redact"
+        IP_ADDRESS:
+          action: "mask"
+        USERNAME:
+          action: "pseudo"
+
+    # -------------------------------------------------------------------------
+    # LLM DETECTION NODE
+    # Paramètres d'ablation supportés dans state.config (runtime) :
+    #   enable_llm_detection : bool — activer/désactiver ce nœud
+    #   disable_llm          : bool — désactiver tous les nœuds LLM
+    # -------------------------------------------------------------------------
+    llm_detection:
+      enabled: true
+
+    # -------------------------------------------------------------------------
+    # LLM AUDIT NODE (RUPTA)
+    # Paramètres d'ablation supportés dans state.config (runtime) :
+    #   enable_llm_audit     : bool — activer/désactiver l'audit
+    #   rupta_enabled        : bool — activer la boucle RUPTA
+    #   rupta_max_iterations : int  — nombre max d'itérations de réécriture
+    #   rupta_p_threshold    : int  — seuil de privacy score (0-100)
+    #   disable_llm          : bool — désactiver tous les nœuds LLM
+    # -------------------------------------------------------------------------
+    llm_audit:
+      enabled: true
+
+    # -------------------------------------------------------------------------
+    # LLM PARAPHRASE NODE (RUPTA)
+    # Paramètres d'ablation supportés dans state.config (runtime) :
+    #   enable_llm_paraphrase: bool — activer/désactiver la paraphrase
+    #   disable_llm          : bool — désactiver tous les nœuds LLM
+    # -------------------------------------------------------------------------
+    llm_paraphrase:
+      enabled: true

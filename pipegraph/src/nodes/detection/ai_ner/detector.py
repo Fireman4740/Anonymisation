@@ -2,8 +2,9 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import logging
 
-from .ensemble import run_gliner, warm_up_models
+from .ensemble import get_gliner_labels, run_gliner, warm_up_models
 from .gpu_optimizer import create_optimized_pipeline, GPU_CONFIG
+from src.utils.entity_utils import normalize_entity_profile
 
 # Imports optionnels pour les autres librairies IA (Legacy / Alternatives)
 try:
@@ -78,16 +79,31 @@ class AINerDetector:
         self.config = config or {}
         self.provider = self.config.get("provider", "gliner")  # gliner, flair, spacy
         self.gpu_pipeline = None
-        self.use_gpu = self.config.get("use_gpu", False)
+        self._default_gliner_profile = self._resolve_gliner_profile(self.config)
+
+        # Lecture du sous-config gliner (support YAML nested: ai_ner.gliner.*)
+        self._gliner_sub = self.config.get("gliner", {})
+        self.use_gpu = self._gliner_sub.get("use_gpu", self.config.get("use_gpu", False))
 
         # --- GLiNER Setup ---
         if self.provider == "gliner":
             # Tentative d'initialisation du pipeline GPU optimisé si demandé
             if self.use_gpu:
                 try:
-                    # On peut passer une config spécifique au GPU optimizer
-                    gpu_conf = self.config.get("gpu_config", GPU_CONFIG)
-                    gpu_conf["enabled"] = True
+                    # Merge des defaults GPU avec les overrides YAML
+                    yaml_gpu_conf = self._gliner_sub.get(
+                        "gpu_config", self.config.get("gpu_config", {})
+                    )
+                    gpu_conf = {**GPU_CONFIG, **yaml_gpu_conf}
+                    gpu_conf["enabled"] = True  # forcé car use_gpu=True
+                    gpu_conf["threshold"] = self.config.get("threshold", 0.35)
+                    gpu_conf["label_profile"] = self._default_gliner_profile
+                    gpu_conf["labels"] = get_gliner_labels(
+                        profile=self._default_gliner_profile,
+                        preset=self._gliner_sub.get(
+                            "preset", self.config.get("preset", "balanced")
+                        ),
+                    )
                     self.gpu_pipeline = create_optimized_pipeline(gpu_conf)
                     if self.gpu_pipeline:
                         logger.info("✅ Pipeline NER GPU optimisé chargé.")
@@ -101,7 +117,10 @@ class AINerDetector:
             # Warmup si nécessaire (pour le mode standard)
             if not self.gpu_pipeline and self.config.get("warmup", True):
                 try:
-                    warm_up_models(gliner_preset=self.config.get("preset", "balanced"))
+                    _warmup_preset = self._gliner_sub.get(
+                        "preset", self.config.get("preset", "balanced")
+                    )
+                    warm_up_models(gliner_preset=_warmup_preset)
                 except Exception as e:
                     logger.warning(f"Warmup failed: {e}")
 
@@ -195,43 +214,111 @@ class AINerDetector:
             logger.error(f"Erreur chargement Spacy: {e}")
             self.spacy_nlp = None
 
-    def detect(self, text: str) -> List[AIEntity]:
-        """Exécute la détection NER selon le provider configuré."""
+    def detect(self, text: str, config_override: Optional[Dict[str, Any]] = None) -> List[AIEntity]:
+        """
+        Exécute la détection NER selon le provider configuré.
+
+        Args:
+            text: Texte à analyser.
+            config_override: Surcharges runtime pour l'ablation (priorité sur self.config).
+                Clés supportées :
+                  - ``gliner_preset``   : "fast"|"balanced"|"accuracy"|"best"|"full"|"pii"
+                  - ``gliner_models``   : List[str] — liste explicite de modèles GLiNER
+                  - ``gliner_threshold``: float — seuil de confiance GLiNER
+                  - ``gliner_label_profile`` / ``entity_profile`` : "pii"|"news_ner"|"conll2003"|"hybrid"
+                  - ``gliner_labels``   : List[str] — labels GLiNER explicites
+                  - ``ner_provider``    : "gliner"|"flair"|"spacy" — provider à la volée
+        """
+        eff = {**self.config, **(config_override or {})}
+        provider = eff.get("ner_provider", self.provider)
+
         logger.debug(
-            f"Début de l'analyse AI-NER (Provider: {self.provider}, GPU: {self.use_gpu})..."
+            f"Début de l'analyse AI-NER (Provider: {provider}, GPU: {self.use_gpu})..."
         )
         entities = []
 
         try:
-            if self.provider == "gliner":
-                entities = self._detect_gliner(text)
-            elif self.provider == "flair":
+            if provider == "gliner":
+                entities = self._detect_gliner(text, eff, config_override or {})
+            elif provider == "flair":
                 entities = self._detect_flair(text)
-            elif self.provider == "spacy":
+            elif provider == "spacy":
                 entities = self._detect_spacy(text)
             else:
-                logger.warning(f"Provider inconnu: {self.provider}")
+                logger.warning(f"Provider inconnu: {provider}")
 
         except Exception as e:
-            logger.error(f"Erreur lors de la détection NER ({self.provider}): {e}")
+            logger.error(f"Erreur lors de la détection NER ({provider}): {e}")
 
         logger.debug(f"Fin de l'analyse AI-NER. {len(entities)} entités trouvées.")
         return entities
 
-    def _detect_gliner(self, text: str) -> List[AIEntity]:
+    def _resolve_gliner_profile(self, eff_config: Optional[Dict[str, Any]] = None) -> str:
+        eff = eff_config or self.config
+        _gliner_sub = eff.get("gliner", {})
+        profile = (
+            eff.get("gliner_label_profile")
+            or eff.get("entity_profile")
+            or _gliner_sub.get("label_profile")
+            or eff.get("label_profile")
+            or "pii"
+        )
+        return normalize_entity_profile(profile) or "pii"
+
+    def _detect_gliner(
+        self,
+        text: str,
+        eff_config: Optional[Dict[str, Any]] = None,
+        runtime_override: Optional[Dict[str, Any]] = None,
+    ) -> List[AIEntity]:
+        """Détection GLiNER avec paramètres effectifs (self.config + overrides runtime)."""
+        eff = eff_config or self.config
         entities = []
-        if self.gpu_pipeline:
+        _gliner_sub = eff.get("gliner", {})
+        preset = (
+            eff.get("gliner_preset")
+            or _gliner_sub.get("preset")
+            or self.config.get("preset", "balanced")
+        )
+        threshold = float(
+            eff.get("gliner_threshold")
+            or eff.get("threshold")
+            or self.config.get("threshold", 0.35)
+        )
+        custom_models = eff.get("gliner_models") or None
+        custom_labels = eff.get("gliner_labels") or None
+        label_profile = self._resolve_gliner_profile(eff)
+
+        override_keys = {
+            "gliner_preset",
+            "gliner_models",
+            "gliner_threshold",
+            "gliner_label_profile",
+            "entity_profile",
+            "gliner_labels",
+        }
+        has_runtime_gliner_override = any(k in (runtime_override or {}) for k in override_keys)
+
+        if self.gpu_pipeline and not has_runtime_gliner_override:
             # Mode GPU Optimisé
             logger.debug("Utilisation du pipeline GPU optimisé")
             raw_results = self.gpu_pipeline.predict(text)
         else:
-            # Mode Standard (CPU ou GPU simple via ensemble.py)
-            preset = self.config.get("preset", "balanced")
-            threshold = self.config.get("threshold", 0.35)
+            # Mode Standard — les overrides runtime s'appliquent ici
             logger.debug(
-                f"Utilisation du modèle standard (Preset: {preset}, Threshold: {threshold})"
+                f"Utilisation du modèle standard "
+                f"(Preset: {preset}, Threshold: {threshold}, "
+                f"Custom models: {custom_models}, Label profile: {label_profile}, "
+                f"Custom labels: {custom_labels})"
             )
-            raw_results = run_gliner(text, preset=preset, threshold=threshold)
+            raw_results = run_gliner(
+                text,
+                preset=preset,
+                threshold=threshold,
+                model_names=custom_models,
+                labels=custom_labels,
+                label_profile=label_profile,
+            )
 
         logger.debug(f"{len(raw_results)} résultats bruts GLiNER")
 

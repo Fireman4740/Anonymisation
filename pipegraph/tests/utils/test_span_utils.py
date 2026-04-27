@@ -297,3 +297,62 @@ class TestSourcePriority:
         for source, priority in SOURCE_PRIORITY.items():
             if source != "unknown":
                 assert priority >= SOURCE_PRIORITY["unknown"]
+
+    def test_llm_higher_than_gliner(self):
+        """Test that LLM source has higher priority than GLiNER/NER sources."""
+        assert SOURCE_PRIORITY["llm"] > SOURCE_PRIORITY["gliner"]
+        assert SOURCE_PRIORITY["llm"] > SOURCE_PRIORITY["flair"]
+        assert SOURCE_PRIORITY["llm"] > SOURCE_PRIORITY["spacy"]
+        assert SOURCE_PRIORITY["llm"] > SOURCE_PRIORITY["ai"]
+
+    def test_llm_lower_than_regex(self):
+        """Test that LLM source has lower priority than regex/deterministic."""
+        assert SOURCE_PRIORITY["llm"] < SOURCE_PRIORITY["regex"]
+        assert SOURCE_PRIORITY["llm"] < SOURCE_PRIORITY["deterministic"]
+        assert SOURCE_PRIORITY["llm"] < SOURCE_PRIORITY["validator"]
+
+
+class TestLLMOverlapResolution:
+    """Tests that LLM entities interact correctly with other sources during overlap resolution."""
+
+    def test_llm_replaces_gliner_on_overlap(self):
+        """LLM (priority 7) should replace GLiNER (priority 5) on overlapping spans with different labels."""
+        entities = [
+            {"start": 0, "end": 10, "type": "PER", "source": "gliner", "score": 0.9},
+            {"start": 0, "end": 12, "type": "PER", "source": "llm", "score": 1.0},
+        ]
+        result = resolve_overlaps(entities, strategy="priority_longest")
+        assert len(result) == 1
+        assert result[0]["source"] == "llm"
+
+    def test_regex_replaces_llm_on_overlap(self):
+        """Regex (priority 10) should replace LLM (priority 7) on overlapping spans with different labels."""
+        entities = [
+            {"start": 0, "end": 15, "type": "QUASI_ID", "source": "llm", "score": 1.0},
+            {"start": 0, "end": 15, "type": "EMAIL", "source": "regex", "score": 1.0},
+        ]
+        result = resolve_overlaps(entities, strategy="priority_longest")
+        assert len(result) == 1
+        assert result[0]["source"] == "regex"
+
+    def test_llm_kept_when_no_overlap(self):
+        """LLM entities should be kept when they don't overlap with other sources."""
+        entities = [
+            {"start": 0, "end": 5, "type": "PER", "source": "regex", "score": 1.0},
+            {"start": 10, "end": 20, "type": "OCCUPATION", "source": "llm", "score": 0.85},
+            {"start": 25, "end": 30, "type": "LOC", "source": "gliner", "score": 0.7},
+        ]
+        result = resolve_overlaps(entities, strategy="priority_longest")
+        assert len(result) == 3
+
+    def test_llm_entities_survive_merge(self):
+        """LLM entities should appear in merged results when not overlapping."""
+        existing = [
+            {"start": 0, "end": 5, "type": "PER", "source": "regex", "score": 1.0},
+        ]
+        llm_new = [
+            {"start": 10, "end": 20, "type": "AGE", "source": "llm", "score": 0.85},
+        ]
+        result = merge_entity_lists(existing, llm_new, resolve_overlapping=True)
+        assert len(result) == 2
+        assert any(e["source"] == "llm" for e in result)

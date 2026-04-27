@@ -11,6 +11,31 @@ from .utils import is_whitelisted
 # Configuration du logger
 logger = logging.getLogger("DeterministicDetector")
 
+_TITLE_TOKEN = r"(?:[A-Z][A-Za-z]+(?:[-'][A-Za-z]+)*|[A-Z]{2,}(?:[.-][A-Z]{1,})*)"
+_CONNECTOR_TOKEN = r"(?:of|and|the|for|de|del|della|dello|des|du|da|van|von|la|le|los|las)"
+_ENTITY_TOKEN = rf"(?:{_TITLE_TOKEN}|{_CONNECTOR_TOKEN})"
+_ENTITY_SPAN = rf"{_TITLE_TOKEN}(?:\s+{_ENTITY_TOKEN}){{0,5}}"
+
+_FIXTURE_RE = re.compile(
+    rf"(?m)(?P<left>{_ENTITY_SPAN})(?:\s+\(\s*\d+\s*\))?\s+[vV]\s+"
+    rf"(?P<right>{_ENTITY_SPAN})(?:\s+\(\s*\d+\s*\))?(?=\s|$)"
+)
+_STANDINGS_ROW_RE = re.compile(
+    rf"(?m)^(?P<team>{_ENTITY_SPAN})\s+\d+(?:\s+\d+){{3,}}\s*$"
+)
+_HEAD_TO_HEAD_SCORE_RE = re.compile(
+    rf"(?m)^(?P<team1>{_ENTITY_SPAN})\s+\d+\s+(?P<team2>{_ENTITY_SPAN})\s+\d+(?:\s*\.)?\s*$"
+)
+_ORG_CONTEXT_RE = re.compile(
+    rf"(?P<org>{_ENTITY_SPAN}\s+(?:news agency|newspaper|Party|Council|Union|Administration))"
+)
+_ORG_ALIAS_RE = re.compile(
+    rf"(?P<long>{_ENTITY_SPAN})\s+\(\s*(?P<acro>[A-Z](?:[A-Z.]{{1,}}))\s*\)"
+)
+_BARE_AGENCY_RE = re.compile(
+    r"\b(?:told|quoted|according to)\s+(?P<org>Reuters|Interfax|Itar-Tass|TASR)\b"
+)
+
 
 @dataclass
 class DeterministicEntity:
@@ -129,12 +154,56 @@ class DeterministicDetector:
 
         # Détection par Regex
         entities.extend(self._detect_regex_patterns(text))
+        entities.extend(self._detect_news_sports_heuristics(text))
 
         deduplicated = self._deduplicate(entities)
         logger.debug(
             f"Fin de l'analyse déterministe. {len(entities)} brutes -> {len(deduplicated)} uniques."
         )
         return deduplicated
+
+    def _detect_news_sports_heuristics(self, text: str) -> List[DeterministicEntity]:
+        entities: List[DeterministicEntity] = []
+
+        def _append_entity(start: int, end: int, etype: str = "ORG") -> None:
+            if end <= start:
+                return
+            value = text[start:end].strip()
+            if len(value) < 2 or is_whitelisted(value):
+                return
+            entities.append(
+                DeterministicEntity(
+                    start=start,
+                    end=end,
+                    value=value,
+                    etype=etype,
+                    source="heuristic",
+                    score=0.92,
+                )
+            )
+
+        for match in _FIXTURE_RE.finditer(text):
+            _append_entity(match.start("left"), match.end("left"))
+            _append_entity(match.start("right"), match.end("right"))
+
+        for match in _STANDINGS_ROW_RE.finditer(text):
+            _append_entity(match.start("team"), match.end("team"))
+
+        for match in _HEAD_TO_HEAD_SCORE_RE.finditer(text):
+            _append_entity(match.start("team1"), match.end("team1"))
+            _append_entity(match.start("team2"), match.end("team2"))
+
+        for match in _ORG_CONTEXT_RE.finditer(text):
+            _append_entity(match.start("org"), match.end("org"))
+
+        for match in _ORG_ALIAS_RE.finditer(text):
+            _append_entity(match.start("long"), match.end("long"))
+            _append_entity(match.start("acro"), match.end("acro"))
+
+        for match in _BARE_AGENCY_RE.finditer(text):
+            _append_entity(match.start("org"), match.end("org"))
+
+        return entities
 
     def _detect_regex_patterns(self, text: str) -> List[DeterministicEntity]:
         entities = []

@@ -1,0 +1,4 @@
+Tu génères des profils employés synthétiques cohérents avec quasi-identifiants réalistes et traits rares traçables.
+Réponds uniquement en JSON strict valide, sans markdown, sans texte additionnel.
+Ne change pas les identifiants techniques seed implicites; enrichis seulement le profil métier, les traits rares et le style.
+Évite les caricatures et conserve un réalisme organisationnel.

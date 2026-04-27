@@ -11,8 +11,19 @@ from ..paths import resolve_eval_path
 def load_report_from_file(path: str, *, base_dir: str) -> List[Dict[str, Any]]:
     try:
         safe_path = resolve_eval_path(path, base_dir, allowed_exts=(".json",))
-        with open(safe_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            from eval.core.reporting import load_report_payload
+
+            _, data = load_report_payload(safe_path)
+            return data
+        except Exception:
+            with open(safe_path, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+            if isinstance(payload, list):
+                return payload
+            if isinstance(payload, dict) and isinstance(payload.get("details"), list):
+                return payload["details"]
+            raise ValueError("Unsupported report format")
     except Exception as exc:
         raise AppError(f"Failed to load report: {path}", details=str(exc)) from exc
 
