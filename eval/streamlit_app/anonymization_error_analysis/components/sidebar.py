@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
 
+from eval.core.profiles import EVAL_MODE_CHOICES, MASKING_MODE_CHOICES, PROFILE_CHOICES
+
 from ..core.constants import (
     DATASET_KINDS,
     DETECTION_MODES,
@@ -247,6 +249,17 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
 
     st.sidebar.markdown("---")
     st.sidebar.caption("Modules & Pipeline")
+    profile = st.sidebar.selectbox("Profil dataset", PROFILE_CHOICES, index=0)
+    eval_mode = st.sidebar.selectbox(
+        "Mode évaluation",
+        EVAL_MODE_CHOICES,
+        index=EVAL_MODE_CHOICES.index("both"),
+    )
+    masking_mode = st.sidebar.selectbox(
+        "Mode masquage",
+        MASKING_MODE_CHOICES,
+        index=MASKING_MODE_CHOICES.index("benchmark"),
+    )
     enable_detection = st.sidebar.checkbox("Détection Regex/GLiNER", value=True)
     enable_deterministic = st.sidebar.checkbox("Déterministe (Regex)", value=True)
     enable_ai = st.sidebar.checkbox("AI (GLiNER)", value=True)
@@ -287,6 +300,9 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
             enable_ai=enable_ai,
             enable_anonymization=enable_anonymization,
             detection_mode=str(detection_mode),
+            profile=str(profile),
+            eval_mode=str(eval_mode),
+            masking_mode=str(masking_mode),
             llm_detection_enabled=llm_detection_enabled,
             llm_audit_enabled=llm_audit_enabled,
             llm_paraphrase_enabled=llm_paraphrase_enabled,
@@ -310,6 +326,9 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
             enable_ai=enable_ai,
             enable_anonymization=enable_anonymization,
             detection_mode=detection_mode,
+            profile=str(profile),
+            eval_mode=str(eval_mode),
+            masking_mode=str(masking_mode),
             llm_detection_enabled=llm_detection_enabled,
             llm_audit_enabled=llm_audit_enabled,
             llm_paraphrase_enabled=llm_paraphrase_enabled,

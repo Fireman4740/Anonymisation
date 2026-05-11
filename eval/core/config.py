@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Mapping, Optional
 
+from eval.core.profiles import apply_profile_to_config
+
 LLM_CONFIG_ALIASES: Dict[str, str] = {
     "enable_llm_detection": "llm_detection",
     "enable_llm_audit": "llm_audit",
@@ -23,6 +25,20 @@ def normalize_runtime_config(config: Optional[Mapping[str, Any]] = None) -> Dict
         if canonical_key not in runtime and legacy_key in runtime:
             runtime[canonical_key] = bool(runtime[legacy_key])
 
+    if runtime.get("rupta_enabled") is True:
+        runtime.setdefault("llm_audit", True)
+        runtime.setdefault("llm_paraphrase", True)
+
+    if runtime.get("disable_llm") is True:
+        runtime["llm_detection"] = False
+        runtime["llm_verification"] = False
+        runtime["llm_audit"] = False
+        runtime["llm_paraphrase"] = False
+        runtime["rupta_enabled"] = False
+
+    runtime["eval_mode"] = str(runtime.get("eval_mode") or "both").lower()
+    runtime["masking_mode"] = str(runtime.get("masking_mode") or "benchmark").lower()
+
     return runtime
 
 
@@ -41,6 +57,12 @@ def build_runtime_config(
     rupta_max_iterations: Optional[int] = None,
     rupta_p_threshold: Optional[int] = None,
     disable_llm: Optional[bool] = None,
+    llm_provider: Optional[str] = None,
+    llm_model: Optional[str] = None,
+    profile: Optional[str] = None,
+    dataset_key: Optional[str] = None,
+    eval_mode: str = "both",
+    masking_mode: str = "benchmark",
     extra: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
     config: Dict[str, Any] = {
@@ -60,6 +82,13 @@ def build_runtime_config(
         "rupta_max_iterations": rupta_max_iterations,
         "rupta_p_threshold": rupta_p_threshold,
         "disable_llm": disable_llm,
+        "llm_provider": llm_provider,
+        "llm_model": llm_model,
+        "profile": profile,
+        "eval_profile": profile,
+        "dataset_key": dataset_key,
+        "eval_mode": eval_mode,
+        "masking_mode": masking_mode,
     }
     for key, value in optional_values.items():
         if value is not None:
@@ -68,4 +97,13 @@ def build_runtime_config(
     if extra:
         config.update(dict(extra))
 
-    return normalize_runtime_config(config)
+    normalized = normalize_runtime_config(config)
+    if dataset_key or normalized.get("dataset_key") or profile or normalized.get("profile"):
+        normalized = apply_profile_to_config(
+            normalized,
+            dataset_key=dataset_key or normalized.get("dataset_key"),
+            profile_name=profile or normalized.get("profile") or normalized.get("eval_profile") or "auto",
+            eval_mode=normalized.get("eval_mode"),
+            masking_mode=normalized.get("masking_mode"),
+        )
+    return normalize_runtime_config(normalized)

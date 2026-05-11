@@ -10,12 +10,25 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
+try:
+    import sacrebleu as _sacrebleu  # type: ignore[reportMissingImports]
+    _SACREBLEU_AVAILABLE = True
+except ImportError:
+    _SACREBLEU_AVAILABLE = False
+
 from eval.core.bootstrap import (
     ensure_pipegraph_importable as core_ensure_pipegraph_importable,
     load_pipegraph as core_load_pipegraph,
     project_root,
 )
 from eval.core.config import normalize_runtime_config
+from eval.core.profiles import (
+    apply_profile_to_config,
+    mask_text_with_profile,
+    profile_diagnostics,
+    project_spans,
+    resolve_eval_profile,
+)
 
 logger = logging.getLogger("pipegraph_eval")
 
@@ -67,6 +80,49 @@ def _dedupe_spans(spans: Iterable[Span]) -> List[Span]:
     return out
 
 
+def compute_bleu(original: str, anonymized: str) -> float:
+    """BLEU score entre le texte original et le texte anonymisé (métrique d'utilité RAT-Bench).
+
+    Une valeur proche de 1.0 indique que le texte a peu changé (haute utilité).
+    Une valeur proche de 0.0 indique une réécriture forte (faible utilité).
+    """
+    if not original or not anonymized:
+        return 0.0
+    if original == anonymized:
+        return 1.0
+    if _SACREBLEU_AVAILABLE:
+        try:
+            result = _sacrebleu.sentence_bleu(anonymized, [original])
+            return round(float(result.score) / 100.0, 4)
+        except Exception:
+            pass
+    # Fallback: bigram BLEU sans librairie
+    def _ngrams(tokens: List[str], n: int) -> Dict[Tuple[str, ...], int]:
+        counts: Dict[Tuple[str, ...], int] = {}
+        for i in range(len(tokens) - n + 1):
+            gram = tuple(tokens[i : i + n])
+            counts[gram] = counts.get(gram, 0) + 1
+        return counts
+
+    ref_tokens = original.split()
+    hyp_tokens = anonymized.split()
+    if not hyp_tokens:
+        return 0.0
+    total_clip, total_hyp = 0, 0
+    for n in (1, 2):
+        ref_ng = _ngrams(ref_tokens, n)
+        hyp_ng = _ngrams(hyp_tokens, n)
+        clip = sum(min(c, ref_ng.get(g, 0)) for g, c in hyp_ng.items())
+        total_clip += clip
+        total_hyp += max(0, len(hyp_tokens) - n + 1)
+    if total_hyp == 0:
+        return 0.0
+    import math
+    bp = min(1.0, math.exp(1 - len(ref_tokens) / len(hyp_tokens))) if len(hyp_tokens) < len(ref_tokens) else 1.0
+    precision = total_clip / total_hyp
+    return round(bp * precision, 4)
+
+
 def spans_from_pipegraph_entities(entities: Sequence[Dict[str, Any]], label_fallback: str = "PRED") -> List[Span]:
     spans: List[Span] = []
     for ent in entities:
@@ -89,7 +145,7 @@ def evaluate_spans(
 
     Returns global metrics **and** per-label TP/FP/FN breakdowns
     (``tp_by_label``, ``fp_by_label``, ``fn_by_label``) so that
-    downstream consumers (e.g. ``compute_label_metrics``) can aggregate
+    downstream consumers (e.g. ``eval.core.metrics.label_metrics``) can aggregate
     performance per entity type.
 
     Parameters
@@ -122,6 +178,17 @@ def evaluate_spans(
     exact_tp_by_label: Dict[str, int] = {}
     exact_fn_by_label: Dict[str, int] = {}
 
+    # --- Strict-match counters (exact (start, end, label) triplet) ---
+    # Taxonomy: Chinchor & Sundheim (1993), confirmed by CoNLL# (Rueda et al., 2024)
+    strict_tp_gt = 0
+    strict_fn_gt = 0
+    strict_tp_pred = 0
+    strict_fp_pred = 0
+    n_missed = 0        # GT not covered by any pred (overlap)
+    n_spurious = 0      # Scoped pred with no GT overlap
+    n_boundary_error = 0  # Pred overlaps GT but offsets differ
+    n_type_error = 0    # Pred has exact offsets but wrong label
+
     # Recall: GT covered by at least one pred (ALL preds, any label)
     tp_gt = 0
     fn_gt = 0
@@ -129,19 +196,20 @@ def evaluate_spans(
     exact_fn_gt = 0
     for g in gt:
         g_start, g_end, g_label = g
-        overlaps = [
+        overlapping_preds = [
             p for p in all_preds
             if calculate_overlap((g_start, g_end), (p[0], p[1]))
         ]
-        covered = bool(overlaps)
+        covered = bool(overlapping_preds)
         if covered:
             tp_gt += 1
             tp_by_label[g_label] = tp_by_label.get(g_label, 0) + 1
         else:
             fn_gt += 1
             fn_by_label[g_label] = fn_by_label.get(g_label, 0) + 1
+            n_missed += 1
 
-        exact_match = any(p[2] == g_label for p in overlaps)
+        exact_match = any(p[2] == g_label for p in overlapping_preds)
         if exact_match:
             exact_tp_gt += 1
             exact_tp_by_label[g_label] = exact_tp_by_label.get(g_label, 0) + 1
@@ -149,17 +217,39 @@ def evaluate_spans(
             exact_fn_gt += 1
             exact_fn_by_label[g_label] = exact_fn_by_label.get(g_label, 0) + 1
 
+        # Strict recall: exact (start, end, label) match using ALL preds
+        if any(p[0] == g_start and p[1] == g_end and p[2] == g_label for p in all_preds):
+            strict_tp_gt += 1
+        else:
+            strict_fn_gt += 1
+
     # Precision: only scoped preds overlapping at least one GT
     tp_pred = 0
     fp_pred = 0
+    gt_set = {(g[0], g[1], g[2]) for g in gt}
     for p in scoped_preds:
         p_start, p_end, p_label = p
-        overlaps = any(calculate_overlap((p_start, p_end), (g[0], g[1])) for g in gt)
-        if overlaps:
+        overlapping_gt = [g for g in gt if calculate_overlap((p_start, p_end), (g[0], g[1]))]
+        if overlapping_gt:
             tp_pred += 1
+            # Error classification for non-exact matches
+            exact_gt_match = any(g[0] == p_start and g[1] == p_end and g[2] == p_label for g in overlapping_gt)
+            if not exact_gt_match:
+                same_bounds = any(g[0] == p_start and g[1] == p_end for g in overlapping_gt)
+                if same_bounds:
+                    n_type_error += 1
+                else:
+                    n_boundary_error += 1
         else:
             fp_pred += 1
             fp_by_label[p_label] = fp_by_label.get(p_label, 0) + 1
+            n_spurious += 1
+
+        # Strict precision: exact (start, end, label) match
+        if (p_start, p_end, p_label) in gt_set:
+            strict_tp_pred += 1
+        else:
+            strict_fp_pred += 1
 
     precision = tp_pred / (tp_pred + fp_pred) if (tp_pred + fp_pred) else 0.0
     recall = tp_gt / (tp_gt + fn_gt) if (tp_gt + fn_gt) else 0.0
@@ -167,6 +257,8 @@ def evaluate_spans(
         exact_tp_gt / (exact_tp_gt + exact_fn_gt)
         if (exact_tp_gt + exact_fn_gt) else 0.0
     )
+    strict_precision = strict_tp_pred / len(scoped_preds) if scoped_preds else 0.0
+    strict_recall = strict_tp_gt / len(gt) if gt else 0.0
 
     return {
         "precision": precision,
@@ -190,6 +282,22 @@ def evaluate_spans(
         "fn_by_label": fn_by_label,
         "exact_tp_by_label": exact_tp_by_label,
         "exact_fn_by_label": exact_fn_by_label,
+        # Strict entity-level metrics (CoNLL-2003 / PII-Bench standard)
+        "strict_precision": round(strict_precision, 4),
+        "strict_recall": round(strict_recall, 4),
+        "strict_f1": round(_f2(strict_precision, strict_recall, beta=1.0), 4),
+        "strict_f2": round(_f2(strict_precision, strict_recall, beta=2.0), 4),
+        "strict_precision_tp": strict_tp_pred,
+        "strict_precision_fp": strict_fp_pred,
+        "strict_recall_tp": strict_tp_gt,
+        "strict_recall_fn": strict_fn_gt,
+        # Error taxonomy (Chinchor & Sundheim 1993)
+        "error_classification": {
+            "missed": n_missed,
+            "spurious": n_spurious,
+            "boundary_error": n_boundary_error,
+            "type_error": n_type_error,
+        },
     }
 
 
@@ -363,6 +471,14 @@ def run_pipegraph_on_text(
     config: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     runtime_config = normalize_runtime_config(config)
+    if runtime_config.get("dataset_key") or runtime_config.get("profile") or runtime_config.get("eval_profile"):
+        runtime_config = apply_profile_to_config(
+            runtime_config,
+            dataset_key=runtime_config.get("dataset_key"),
+            profile_name=runtime_config.get("profile") or runtime_config.get("eval_profile") or "auto",
+            eval_mode=runtime_config.get("eval_mode"),
+            masking_mode=runtime_config.get("masking_mode"),
+        )
     initial_state = create_initial_state(text, runtime_config)
     return pipeline.invoke(initial_state)
 
@@ -388,6 +504,21 @@ def build_report(
     """
     # --- Determine effective concurrency -----------------------------------
     runtime_config = normalize_runtime_config(config)
+    if runtime_config.get("dataset_key") or runtime_config.get("profile") or runtime_config.get("eval_profile"):
+        runtime_config = apply_profile_to_config(
+            runtime_config,
+            dataset_key=runtime_config.get("dataset_key"),
+            profile_name=runtime_config.get("profile") or runtime_config.get("eval_profile") or "auto",
+            eval_mode=runtime_config.get("eval_mode"),
+            masking_mode=runtime_config.get("masking_mode"),
+        )
+    active_profile = resolve_eval_profile(
+        runtime_config.get("profile") or runtime_config.get("eval_profile") or "auto",
+        dataset_key=runtime_config.get("dataset_key"),
+    )
+    eval_mode = str(runtime_config.get("eval_mode") or "both").lower()
+    masking_mode = str(runtime_config.get("masking_mode") or "benchmark").lower()
+    benchmark_allowed_labels = allowed_labels if allowed_labels is not None else active_profile.allowed_labels
 
     if max_workers is None:
         # Auto-detect: parallel only for OpenRouter
@@ -428,16 +559,83 @@ def build_report(
         pred_spans = spans_from_pipegraph_entities(
             final_state.get("entities", [])
         )
-        anonymized_text = final_state.get("text", text)
-        metrics = evaluate_spans(text, gt_spans, pred_spans, allowed_labels=allowed_labels)
+        pipeline_anonymized_text = final_state.get("text", text)
+
+        canonical_gt = project_spans(gt_spans, active_profile, target="canonical")
+        canonical_predictions = project_spans(pred_spans, active_profile, target="canonical")
+        benchmark_gt = project_spans(gt_spans, active_profile, target="benchmark")
+        benchmark_predictions = project_spans(pred_spans, active_profile, target="benchmark")
+
+        canonical_metrics = evaluate_spans(
+            text, canonical_gt, canonical_predictions, allowed_labels=None
+        )
+        benchmark_metrics = evaluate_spans(
+            text, benchmark_gt, benchmark_predictions, allowed_labels=benchmark_allowed_labels
+        )
+
+        if eval_mode == "canonical":
+            metrics = canonical_metrics
+            display_gt = canonical_gt
+            display_predictions = canonical_predictions
+        else:
+            metrics = benchmark_metrics
+            display_gt = benchmark_gt
+            display_predictions = benchmark_predictions
+
+        benchmark_anonymized_text, masked_counts = mask_text_with_profile(
+            text, benchmark_predictions, active_profile
+        )
+        anonymized_text = (
+            benchmark_anonymized_text
+            if masking_mode == "benchmark"
+            else pipeline_anonymized_text
+        )
         return {
             "doc_id": doc_id,
             **metrics,
+            "bleu_score": compute_bleu(text, anonymized_text),
             "full_text": text,
             "anonymized_text": anonymized_text,
+            "pipeline_anonymized_text": pipeline_anonymized_text,
+            "benchmark_anonymized_text": benchmark_anonymized_text,
             "text_snippet": text[:200],
-            "ground_truth": gt_spans,
-            "predictions": pred_spans,
+            "raw_ground_truth": gt_spans,
+            "ground_truth": display_gt,
+            "predictions": display_predictions,
+            "raw_predictions": pred_spans,
+            "canonical_ground_truth": canonical_gt,
+            "canonical_predictions": canonical_predictions,
+            "benchmark_ground_truth": benchmark_gt,
+            "benchmark_predictions": benchmark_predictions,
+            "canonical_metrics": canonical_metrics,
+            "benchmark_metrics": benchmark_metrics,
+            "eval_mode": eval_mode,
+            "masking_mode": masking_mode,
+            "masking_profile": runtime_config.get("masking_profile", active_profile.name),
+            "masking_counts": masked_counts,
+            "effective_config": runtime_config,
+            "runtime_diagnostics": {
+                "eval_profile": active_profile.name,
+                "dataset_key": runtime_config.get("dataset_key"),
+                "llm_detection": runtime_config.get("llm_detection"),
+                "llm_verification": runtime_config.get("llm_verification"),
+                "llm_audit": runtime_config.get("llm_audit"),
+                "llm_paraphrase": runtime_config.get("llm_paraphrase"),
+                "rupta_enabled": runtime_config.get("rupta_enabled"),
+                "llm_provider": runtime_config.get("llm_provider"),
+                "llm_model": runtime_config.get("llm_model"),
+                "entity_profile": runtime_config.get("entity_profile"),
+                "gliner_label_profile": runtime_config.get("gliner_label_profile"),
+                "gliner_labels": runtime_config.get("gliner_labels"),
+                "masking_profile": runtime_config.get("masking_profile"),
+            },
+            "profile_diagnostics": profile_diagnostics(active_profile),
+            "entity_counts": {
+                "raw_predictions": len(pred_spans),
+                "canonical_predictions": len(canonical_predictions),
+                "benchmark_predictions": len(benchmark_predictions),
+                "ground_truth": len(gt_spans),
+            },
             # LLM / RUPTA
             "privacy_score": final_state.get("privacy_score"),
             "rupta_iterations": final_state.get("iteration", 0),
@@ -455,8 +653,8 @@ def build_report(
                     "label": label,
                     "text": text[s:e],
                 }
-                for (s, e, label) in gt_spans
-                if not any(calculate_overlap((s, e), (p[0], p[1])) for p in pred_spans)
+                for (s, e, label) in display_gt
+                if not any(calculate_overlap((s, e), (p[0], p[1])) for p in display_predictions)
             ],
         }
 
@@ -579,4 +777,70 @@ def build_docs_from_db_bio(dataset_path: str, limit: Optional[int] = None) -> Li
         text = str(rec.get("text", ""))
         gt = gt_spans_from_db_bio_record(rec)
         out.append((doc_id, text, gt))
+    return out
+
+
+# PersonalReddit attribute → canonical PII label mapping
+_PERSONALREDDIT_ATTR_LABEL: Dict[str, str] = {
+    "age": "AGE",
+    "sex": "DEMOGRAPHIC",
+    "city_country": "LOCATION",
+    "birth_city_country": "LOCATION",
+    "education": "OCCUPATION",
+    "occupation": "OCCUPATION",
+    "income": "AMOUNT",
+    "income_level": "DEMOGRAPHIC",
+    "relationship_status": "DEMOGRAPHIC",
+}
+
+
+def _gt_spans_from_personalreddit(record: Dict[str, Any]) -> List[Span]:
+    """Extract GT spans from a PersonalReddit record.
+
+    Searches for each personality attribute value in the response text.
+    Label is mapped to a canonical PII type.
+    """
+    text = str(record.get("response", ""))
+    personality = record.get("personality") or {}
+    spans: List[Span] = []
+    seen: set[Tuple[int, int]] = set()
+    for attr, value in personality.items():
+        if not value:
+            continue
+        label = _PERSONALREDDIT_ATTR_LABEL.get(attr, "SENSITIVE_ATTR")
+        needle = str(value).strip()
+        if not needle or needle.lower() in ("unknown", "none", "n/a"):
+            continue
+        for start, end in find_all_occurrences_case_insensitive(text, needle):
+            if (start, end) not in seen:
+                seen.add((start, end))
+                spans.append((start, end, label))
+    spans.sort(key=lambda s: (s[0], s[1]))
+    return spans
+
+
+def build_docs_from_personalreddit(dataset_path: str, limit: Optional[int] = None) -> List[Tuple[str, str, List[Span]]]:
+    """Load PersonalReddit synthetic dataset (eth-sri/llmprivacy via RUPTA).
+
+    Expected JSONL format: each line has ``response`` (text) and ``personality`` (dict of attributes).
+    Ground-truth spans are constructed by fuzzy-matching attribute values in the response.
+    """
+    out: List[Tuple[str, str, List[Span]]] = []
+    with open(dataset_path, "r", encoding="utf-8") as fh:
+        for i, line in enumerate(fh):
+            if limit is not None and len(out) >= limit:
+                break
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            text = str(rec.get("response", ""))
+            if not text:
+                continue
+            doc_id = f"personalreddit_{i}"
+            gt = _gt_spans_from_personalreddit(rec)
+            out.append((doc_id, text, gt))
     return out

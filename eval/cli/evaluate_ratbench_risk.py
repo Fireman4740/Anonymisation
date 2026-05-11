@@ -520,7 +520,7 @@ def evaluate_ratbench_risk_from_pipeline(
         for doc in report:
             orig = doc.get("full_text", "")
             anon = doc.get("anonymized_text", "")
-            if orig and anon and orig != anon:
+            if orig and anon:
                 pre_anonymized_texts[orig] = anon
 
     population_df, is_real_pums = _load_population(profiles)

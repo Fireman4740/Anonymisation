@@ -2,7 +2,7 @@ import sys
 import os
 import re
 from typing import Dict, Any
-import yaml
+import json
 
 from src.state import PipelineState
 from .deterministic.detector import DeterministicDetector
@@ -27,13 +27,13 @@ class DetectionNode:
     def __init__(self):
         self._pipegraph_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 
-        # Chargement de la configuration globale
-        config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../config/pipeline_config.yaml"))
+        # Chargement de la configuration globale depuis config.json
+        config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../config.json"))
         self.global_config = {}
         try:
             if os.path.exists(config_path):
-                with open(config_path, "r") as f:
-                    self.global_config = yaml.safe_load(f) or {}
+                with open(config_path, "r", encoding="utf-8") as f:
+                    self.global_config = json.load(f) or {}
                 print(f"✅ Configuration chargée depuis {config_path}")
             else:
                 print(f"⚠️ Fichier de config introuvable: {config_path}")
@@ -227,4 +227,3 @@ class DetectionNode:
         print(f"Entités trouvées: {len(entities_found)} après fusion (Det: {len(det_results)}, AI: {len(ai_results)})")
 
         return {"entities": entities_found}
-

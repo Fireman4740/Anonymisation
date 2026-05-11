@@ -55,6 +55,12 @@ for _p in (EVAL_DIR, PROJECT_ROOT):
 
 from eval.core.bootstrap import load_pipegraph
 from eval.core.datasets import get_allowed_labels, load_benchmark_docs
+from eval.core.profiles import (
+    EVAL_MODE_CHOICES,
+    MASKING_MODE_CHOICES,
+    PROFILE_CHOICES,
+    apply_profile_to_config,
+)
 from eval.core.reporting import aggregate_document_metrics
 from eval.pipegraph_eval_local import build_report
 from eval.run_store import save_run, utc_now_iso
@@ -478,15 +484,28 @@ def _load_docs(
     )
 
 
-def _augment_dataset_runtime_config(dataset: str, config: Dict[str, Any]) -> Dict[str, Any]:
+def _augment_dataset_runtime_config(
+    dataset: str,
+    config: Dict[str, Any],
+    *,
+    profile: str = "auto",
+    eval_mode: str = "both",
+    masking_mode: str = "benchmark",
+    llm_provider: Optional[str] = None,
+    llm_model: Optional[str] = None,
+) -> Dict[str, Any]:
     runtime = dict(config)
-    if dataset == "conll2003":
-        runtime.setdefault("entity_profile", "news_ner")
-        runtime.setdefault("gliner_label_profile", "news_ner")
-    else:
-        runtime.setdefault("entity_profile", "pii")
-        runtime.setdefault("gliner_label_profile", "pii")
-    return runtime
+    if llm_provider:
+        runtime["llm_provider"] = llm_provider
+    if llm_model:
+        runtime["llm_model"] = llm_model
+    return apply_profile_to_config(
+        runtime,
+        dataset_key=dataset,
+        profile_name=runtime.get("profile") or runtime.get("eval_profile") or profile,
+        eval_mode=runtime.get("eval_mode") or eval_mode,
+        masking_mode=runtime.get("masking_mode") or masking_mode,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -599,6 +618,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             "Utile pour mesurer la contribution du LLM sur toutes les variantes NER/threshold."
         ),
     )
+    parser.add_argument("--no-llm", action="store_true", help="Force la désactivation LLM sur toutes les configs")
+    parser.add_argument("--with-rupta", action="store_true", help="Force RUPTA actif sur toutes les configs LLM")
+    parser.add_argument("--llm-provider", default=None, help="Provider LLM runtime (ex: openrouter, ollama)")
+    parser.add_argument("--llm-model", default=None, help="Modèle LLM runtime à utiliser pour tous les rôles")
+    parser.add_argument("--profile", choices=PROFILE_CHOICES, default="auto", help="Profil dataset (défaut: auto)")
+    parser.add_argument("--eval-mode", choices=EVAL_MODE_CHOICES, default="both", help="Mode d'évaluation")
+    parser.add_argument("--masking-mode", choices=MASKING_MODE_CHOICES, default="benchmark", help="Mode de masquage")
     parser.add_argument(
         "-j", "--parallel-configs",
         dest="parallel_configs",
@@ -638,6 +664,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         llm_patch: Dict[str, Any] = {
             "disable_llm": False,
             "llm_detection": True,
+            "llm_verification": True,
             "llm_audit": True,
             "llm_paraphrase": True,
             "rupta_enabled": True,
@@ -646,12 +673,45 @@ def main(argv: Optional[List[str]] = None) -> int:
             entry["config"].update(llm_patch)
         print("⚡ Mode --with-llm : LLM forcé actif sur toutes les configs")
 
+    if args.with_rupta:
+        rupta_patch: Dict[str, Any] = {
+            "disable_llm": False,
+            "llm_audit": True,
+            "llm_paraphrase": True,
+            "rupta_enabled": True,
+        }
+        for entry in grid:
+            entry["config"].update(rupta_patch)
+        print("⚡ Mode --with-rupta : RUPTA forcé actif sur toutes les configs")
+
+    if args.no_llm:
+        no_llm_patch: Dict[str, Any] = {
+            "disable_llm": True,
+            "llm_detection": False,
+            "llm_verification": False,
+            "llm_audit": False,
+            "llm_paraphrase": False,
+            "rupta_enabled": False,
+        }
+        for entry in grid:
+            entry["config"].update(no_llm_patch)
+        print("⚡ Mode --no-llm : LLM désactivé sur toutes les configs")
+
     if args.configs_only:
         print(f"\nGrille '{args.suite}' — {len(grid)} configurations:")
         for i, cfg_entry in enumerate(grid, 1):
+            effective_cfg = _augment_dataset_runtime_config(
+                args.dataset,
+                cfg_entry["config"],
+                profile=args.profile,
+                eval_mode=args.eval_mode,
+                masking_mode=args.masking_mode,
+                llm_provider=args.llm_provider,
+                llm_model=args.llm_model,
+            )
             print(f"\n  [{i}] {cfg_entry['name']}")
             print(f"       {cfg_entry.get('description', '')}")
-            print(f"       config: {json.dumps(cfg_entry['config'])}")
+            print(f"       config: {json.dumps(effective_cfg)}")
         return 0
 
     # Charger le pipeline et les documents
@@ -675,7 +735,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
 
     # Label-scope filtering
-    ds_allowed = get_allowed_labels(args.dataset)
+    ds_allowed = get_allowed_labels(args.dataset, profile=args.profile)
     if ds_allowed is not None:
         print(f"   → Filtrage des prédictions : labels autorisés = {sorted(ds_allowed)}", flush=True)
 
@@ -711,7 +771,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     ) -> Dict[str, Any]:
         name = cfg_entry["name"]
         desc = cfg_entry.get("description", "")
-        run_config = _augment_dataset_runtime_config(dataset, cfg_entry["config"])
+        run_config = _augment_dataset_runtime_config(
+            args.dataset,
+            cfg_entry["config"],
+            profile=args.profile,
+            eval_mode=args.eval_mode,
+            masking_mode=args.masking_mode,
+            llm_provider=args.llm_provider,
+            llm_model=args.llm_model,
+        )
 
         with _print_lock:
             print(f"\n[{i:02d}/{len(grid)}] ⏳ {name}", flush=True)
@@ -821,7 +889,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         for i, cfg_entry in enumerate(grid, 1):
             name = cfg_entry["name"]
             desc = cfg_entry.get("description", "")
-            run_config = _augment_dataset_runtime_config(dataset, cfg_entry["config"])
+            run_config = _augment_dataset_runtime_config(
+                args.dataset,
+                cfg_entry["config"],
+                profile=args.profile,
+                eval_mode=args.eval_mode,
+                masking_mode=args.masking_mode,
+                llm_provider=args.llm_provider,
+                llm_model=args.llm_model,
+            )
             print(f"\n[{i:02d}/{len(grid)}] {name}", flush=True)
             print(f"       {desc}", flush=True)
             print(f"       config: {json.dumps(run_config)}", flush=True)
@@ -937,6 +1013,13 @@ def main(argv: Optional[List[str]] = None) -> int:
         "dataset": dataset_name,
         "limit": args.limit,
         "with_llm": args.with_llm,
+        "no_llm": args.no_llm,
+        "with_rupta": args.with_rupta,
+        "profile": args.profile,
+        "eval_mode": args.eval_mode,
+        "masking_mode": args.masking_mode,
+        "llm_provider": args.llm_provider,
+        "llm_model": args.llm_model,
         "n_configs": len(grid),
         "results": results,
     }

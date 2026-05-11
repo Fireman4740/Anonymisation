@@ -2,11 +2,10 @@ import sys
 import os
 import re
 import logging
+import json
 from typing import Dict, Any, List, Optional
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-
-import yaml
 
 from src.state import PipelineState
 from src.config import settings
@@ -74,6 +73,7 @@ def apply_strategy(
       - ``mask``       : masquage partiel adapté au type
       - ``generalize`` : remplacement par ``[TYPE]``
       - ``redact``     : remplacement complet par ``[TYPE_REDACTED]``
+      - ``sensitive``  : remplacement benchmark générique ``[SENSITIVE]``
 
     L'ordre de priorité :
     1. policy_overrides (runtime, depuis state.config)
@@ -107,6 +107,9 @@ def apply_strategy(
     if action == "redact":
         return f"[{entity_type.upper()}_REDACTED]"
 
+    if action == "sensitive":
+        return "[SENSITIVE]"
+
     # fallback
     if mapper:
         return mapper.placeholder(entity_type, entity_text)
@@ -116,24 +119,24 @@ def apply_strategy(
 class AnonymizationNode:
     def __init__(self):
         # Utilisation des settings centralisés et sécurisés
-        self.secret = settings.security.PSEUDO_SECRET.get_secret_value()
+        self.secret = settings.security.pseudo_secret_value()
         settings.security.validate_secrets()
 
         self.default_scope = "default_scope"
         self._mappers: Dict[str, Any] = {}
 
-        # --- Chargement de la politique d'anonymisation depuis pipeline_config.yaml ---
+        # --- Chargement de la politique d'anonymisation depuis config.json ---
         self._yaml_policy: Dict[str, str] = {}
         self._yaml_global_strategy: str = "pseudo"
         _config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../../config/pipeline_config.yaml")
+            os.path.join(os.path.dirname(__file__), "../../../config.json")
         )
         try:
             if os.path.exists(_config_path):
                 with open(_config_path, "r", encoding="utf-8") as f:
-                    raw_yaml = yaml.safe_load(f) or {}
+                    raw_config = json.load(f) or {}
                 anon_node = (
-                    raw_yaml.get("pipeline", {})
+                    raw_config.get("pipeline", {})
                     .get("nodes", {})
                     .get("anonymization", {})
                 )
@@ -150,7 +153,7 @@ class AnonymizationNode:
                     f"stratégie globale='{self._yaml_global_strategy}'"
                 )
         except Exception as e:
-            logger.warning(f"Impossible de charger la politique depuis le YAML: {e}")
+            logger.warning(f"Impossible de charger la politique depuis config.json: {e}")
 
     def _get_mapper(self, scope_id: str) -> Any:
         if not PseudoMapper:

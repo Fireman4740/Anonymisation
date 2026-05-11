@@ -42,7 +42,18 @@ Each record (profile) contains:
 ## Usage
 
 ```bash
-python eval/cli/ratbench.py --level 1 --limit 50
-python eval/cli/ratbench.py --level 2 --limit 50 --save-run
-python eval/cli/ratbench.py --language english --level 1 --limit 100
+python -m eval.run_pipeline_evaluation \
+  --datasets ratbench \
+  --ratbench-languages english \
+  --ratbench-levels 1 \
+  --limit 50
+
+python -m eval.run_pipeline_evaluation \
+  --datasets ratbench \
+  --ratbench-languages english \
+  --ratbench-levels 1 2 3 \
+  --skip-risk \
+  --limit 100
 ```
+
+`eval/cli/ratbench.py` reste disponible comme wrapper de compatibilité.

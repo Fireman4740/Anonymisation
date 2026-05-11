@@ -58,8 +58,15 @@ def render_ratbench_dashboard(
     else:
         st.warning("⚠️ LLM désactivé pour cette évaluation", icon="⚠️")
 
+    st.caption(
+        f"Profil: {cfg_run.get('eval_profile') or cfg_run.get('profile') or 'n/a'} | "
+        f"Mode évaluation: {cfg_run.get('eval_mode', 'n/a')} | "
+        f"Mode masquage: {cfg_run.get('masking_mode', 'n/a')}"
+    )
+
     # --- Métriques globales ---
     _render_summary_metrics(summary)
+    _render_dual_metrics(report)
 
     st.markdown("---")
 
@@ -183,6 +190,24 @@ def _render_summary_metrics(summary: Dict[str, Any]) -> None:
             str(summary.get("llm_entities_total", 0)),
             help="Quasi-identifiants détectés uniquement par le LLM Detection",
         )
+
+
+def _avg_nested_metric(report: List[Dict[str, Any]], key: str, metric: str) -> float:
+    vals = [float(doc.get(key, {}).get(metric, 0.0)) for doc in report if isinstance(doc.get(key), dict)]
+    return sum(vals) / len(vals) if vals else 0.0
+
+
+def _render_dual_metrics(report: List[Dict[str, Any]]) -> None:
+    if not report or not any("canonical_metrics" in doc or "benchmark_metrics" in doc for doc in report):
+        return
+    st.markdown("**Métriques canonique vs benchmark**")
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    c1.metric("Canonique P", f"{_avg_nested_metric(report, 'canonical_metrics', 'precision'):.2%}")
+    c2.metric("Canonique R", f"{_avg_nested_metric(report, 'canonical_metrics', 'recall'):.2%}")
+    c3.metric("Canonique F2", f"{_avg_nested_metric(report, 'canonical_metrics', 'f2'):.2%}")
+    c4.metric("Benchmark P", f"{_avg_nested_metric(report, 'benchmark_metrics', 'precision'):.2%}")
+    c5.metric("Benchmark R", f"{_avg_nested_metric(report, 'benchmark_metrics', 'recall'):.2%}")
+    c6.metric("Benchmark F2", f"{_avg_nested_metric(report, 'benchmark_metrics', 'f2'):.2%}")
 
 
 def _metric_table(rows: List[Dict[str, Any]], pct_cols: List[str]) -> None:

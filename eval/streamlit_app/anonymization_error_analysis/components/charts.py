@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import streamlit as st
 
@@ -132,31 +132,69 @@ def render_charts(
 
 
 def render_llm_export_view(
-    report: List[Dict[str, Any]], label_metrics: Dict[str, Dict[str, float]] | None
+    report: List[Dict[str, Any]],
+    label_metrics: Optional[Dict[str, Dict[str, float]]] = None,
+    meta: Optional[Dict[str, Any]] = None,
 ) -> None:
     if not report:
         st.info("Aucune donnée disponible pour l'export.")
         return
 
-    # 1. Calcul des métriques globales (recalcul rapide si non fournies, ou extraction de report)
-    #    On suppose ici qu'on peut réutiliser les mêmes calculs de base que dans 'compute_dataset_metrics'
-    #    pour avoir Total Docs / Leaky Docs, et la moyenne P/R.
     total_docs = len(report)
     leaky_docs = sum(1 for d in report if d.get("leaks_count", 0) > 0)
 
-    # Moyenne simple des précisions/rappels (attention aux None)
     precisions = [d.get("precision", 0.0) for d in report if d.get("precision") is not None]
     recalls = [d.get("recall", 0.0) for d in report if d.get("recall") is not None]
 
-    # Utiliser une division flottante même si vide (bien que total_docs > 0 checké avant par "if not report")
     avg_precision = (sum(precisions) / len(precisions)) if precisions else 0.0
     avg_recall = (sum(recalls) / len(recalls)) if recalls else 0.0
 
-    # 2. Construction du texte
     lines = []
     lines.append(
         "Voici les métriques d'évaluation d'un modèle d'anonymisation sur un jeu de données de test."
     )
+
+    # --- Section Présentation du Dataset ---
+    if meta:
+        dataset = meta.get("dataset", {})
+        dataset_name = dataset.get("name") or meta.get("subtitle") or "N/A"
+        split = dataset.get("split") or "N/A"
+        limit = dataset.get("limit")
+        limit_str = str(limit) if limit is not None else "Complet"
+        entity_types = ", ".join(sorted(label_metrics.keys())) if label_metrics else "N/A"
+
+        lines.append("")
+        lines.append("### Présentation du Dataset")
+        lines.append(f"- **Nom** : {dataset_name}")
+        lines.append(f"- **Split** : {split}")
+        lines.append(f"- **Nombre de documents évalués** : {total_docs}")
+        lines.append(f"- **Limite appliquée** : {limit_str}")
+        lines.append(f"- **Types d'entités** : {entity_types}")
+
+        # --- Section Configuration du Run ---
+        cfg = meta.get("config", {})
+        profile = meta.get("profile") or cfg.get("profile", "N/A")
+        eval_mode = meta.get("eval_mode") or cfg.get("eval_mode", "N/A")
+        masking_mode = meta.get("masking_mode") or cfg.get("masking_mode", "N/A")
+
+        def _yn(val: Any) -> str:
+            return "oui" if val else "non"
+
+        lines.append("")
+        lines.append("### Configuration du Run")
+        lines.append(f"- **Profil** : {profile}")
+        lines.append(f"- **Mode évaluation** : {eval_mode}")
+        lines.append(f"- **Mode masquage** : {masking_mode}")
+        lines.append(f"- **Détection déterministe** : {_yn(cfg.get('enable_deterministic'))}")
+        lines.append(f"- **Détection AI NER** : {_yn(cfg.get('enable_ai'))}")
+        lines.append(f"- **LLM Détection** : {_yn(cfg.get('llm_detection'))}")
+        lines.append(f"- **LLM Audit** : {_yn(cfg.get('llm_audit'))}")
+        rupta = cfg.get("rupta_enabled") or cfg.get("rupta", {}).get("enabled", False)
+        rupta_iter = cfg.get("rupta_max_iterations") or cfg.get("rupta", {}).get("max_iterations", "")
+        rupta_thr = cfg.get("rupta_p_threshold") or cfg.get("rupta", {}).get("p_threshold", "")
+        rupta_detail = f" (max_iter={rupta_iter}, seuil={rupta_thr})" if rupta else ""
+        lines.append(f"- **RUPTA** : {_yn(rupta)}{rupta_detail}")
+        lines.append(f"- **Anonymisation** : {_yn(cfg.get('enable_anonymization'))}")
     lines.append("")
     lines.append("### Statistiques Globales")
     lines.append(f"- **Nombre total de documents** : {total_docs}")

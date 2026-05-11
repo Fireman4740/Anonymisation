@@ -76,7 +76,7 @@ _GPU_CONFIG = {
     "optimization_level": "high",  # low, medium, high
 }
 
-_DEBUG = os.getenv("NER_GPU_DEBUG", "0").lower() in {"1", "true", "yes"}
+_DEBUG = False
 
 logger = logging.getLogger("GpuOptimizer")
 
@@ -90,7 +90,7 @@ def _log(msg: str, level: int = logging.DEBUG) -> None:
 
 
 def load_gpu_config(config_path: Optional[str] = None) -> Dict[str, Any]:
-    """Charge la configuration GPU depuis config.json ou les variables d'env."""
+    """Charge la configuration GPU depuis config.json."""
     config = dict(_GPU_CONFIG)
 
     if config_path is None:
@@ -109,30 +109,6 @@ def load_gpu_config(config_path: Optional[str] = None) -> Dict[str, Any]:
             _log(f"Configuration GPU chargée depuis {config_path}", logging.INFO)
         except Exception as e:
             _log(f"Erreur lors du chargement de config.json : {e}", logging.WARNING)
-
-    if os.getenv("NER_GPU_ENABLED"):
-        config["enabled"] = os.getenv("NER_GPU_ENABLED", "0").lower() in {"1", "true", "yes"}
-    if os.getenv("NER_GPU_BATCH_SIZE"):
-        try:
-            config["batch_size"] = int(os.getenv("NER_GPU_BATCH_SIZE", "32"))
-        except ValueError:
-            pass
-    if os.getenv("NER_GPU_VRAM_GB"):
-        try:
-            config["vram_gb"] = int(os.getenv("NER_GPU_VRAM_GB", "24"))
-        except ValueError:
-            pass
-    if os.getenv("NER_GPU_COMPILE"):
-        config["use_torch_compile"] = os.getenv("NER_GPU_COMPILE", "0").lower() in {
-            "1",
-            "true",
-            "yes",
-        }
-    if os.getenv("NER_GPU_PARALLEL_MODELS"):
-        try:
-            config["max_parallel_models"] = int(os.getenv("NER_GPU_PARALLEL_MODELS", "3"))
-        except ValueError:
-            pass
 
     return config
 

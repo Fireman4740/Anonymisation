@@ -1,37 +1,28 @@
-# Journal d'avancement 25-11
+# Journal d'avancement
 
-J'ai travaillé sur les points suivants aujourd'hui :
+## Etat actuel
 
-- création d'un nouveau pippeline d'annonymistion en utilisant langgraph. Je me suis basé sur le pipeline existant dans src/pipeline/ mais en utilisant langgraph pour la gestion des étapes.
-- Je suis reparti a la base du code pour mieux comprendre comment intégrer langgraph.
-- J'ai commencé a implémenter la détéction des PII en utilisant langgraph.
-- J'ai fait un interface de visualistation des erreurs dans streamlit pour mieux comprendre les erreurs du pipeline.
+- PipeGraph est le pipeline local principal d'anonymisation.
+- L'evaluation officielle passe par `python -m eval.run_pipeline_evaluation`.
+- Les anciens scripts `eval/run_full_benchmark.py`, `eval/cli/tab.py` et `eval/cli/ratbench.py` sont des wrappers de compatibilite.
+- Les sorties officielles sont ecrites dans `artifacts/eval-runs/<run-id>/`.
+- Les axes exposes sont `span_detection`, `anonymization_leakage`, `ratbench_reid_risk`, `utility_preservation` et `runtime`.
 
-Next steps:
-Je veux continuer l'application streamlit de visualisation en intégra directement les scripts d'évaluation.
-Il faut que je formalise un script d'évaluation pour chaque dataset car ils n'ont la meme utiliser et métriques.
-Je veux racorder le pipeline graphe au streamlit pour évaluer au fur et a mesure des modifications du pipeline.
+## Fait
 
-Pour le pipeline je souhaite me consentrer pour le moment sur la détection la plus fiable possible des PII et du masquage.
-Les prochaines étapes sont d'optimiser le code qui utilse les ner et scpacy. Il faut refaire le code de merge en regex et Ner.
-J'aimerai tester un genre de concil avec les ner et un llm ultra rapide pour augmenter les performaces.
+- [x] Pipeline LangGraph PipeGraph.
+- [x] Evaluation locale PipeGraph dans Streamlit.
+- [x] Runner officiel multi-datasets.
+- [x] TAB, DB-bio, RAT-Bench, CoNLL2003 et dataset synthetique local raccordes au runner officiel.
+- [x] RAT-Bench: fuite textuelle + risque de re-identification via OpenRouter quand `OPENROUTER_API_KEY` est disponible.
+- [x] Documentation evaluation mise a jour.
+- [x] Dead code des wrappers d'evaluation nettoye.
 
-## TO DO list
+## A faire
 
-- [x] **Copilot instructions** : Générer / mettre à jour `.github/copilot-instructions.md` (architecture, commandes utiles, conventions).
-
-- [x] **Streamlit** : Intégrer directement l'évaluation du pipeline LangGraph (PipeGraph) dans l'application (exécution locale + barre de progression + sauvegarde des runs + historique).
-- [ ] **Évaluation** : Formaliser un script d'évaluation spécifique pour chaque dataset (métriques et usages différents).
-  - [x] **TAB (Text Anonymization Benchmark)** : Dataset de référence juridique (CEDH).
-  - [ ] **Gretel AI Synthetic PII Finance** : Données synthétiques multilingues (dont FR).
-  - [ ] **AI4Privacy PII Masking** : Grand volume pour validation NER.
-  - [x] **DB-bio** : Supporté dans l'évaluation PipeGraph (GT reconstruit depuis `people` dans le texte + fallback prénom…nom).
-  - [ ] **PersonalReddit** : Posts personnels (style narratif) pour stress-test généralisation PII.
-- [x] **Intégration** : Raccorder le pipeline LangGraph au Streamlit pour une évaluation au fur et à mesure des modifications (mode "Évaluer PipeGraph (local)").
-- [ ] **Pipeline (Détection)** : Optimiser le code utilisant les NER et spaCy.
-- [ ] **Pipeline (Merge)** : Refaire le code de fusion entre les résultats Regex et NER.
-- [ ] **Expérimentation** : Tester une approche "conseil" combinant NER et un LLM rapide pour améliorer les performances de détection.
-
-Notes état actuel:
-- Datasets déjà utilisables depuis Streamlit (évaluation locale PipeGraph) : `TAB`, `anonymization_dataset` (standard/max), `DB-bio`.
-- Les scripts d'évaluation "par dataset" restent à formaliser (métriques différentes selon les jeux).
+- [ ] Ajouter un vrai scorer d'utilite DB-bio/RUPTA au lieu du statut `proxy`.
+- [ ] Integrer PersonalReddit au runner officiel si le dataset devient utile pour les comparaisons.
+- [ ] Ajouter un mode resume/checkpoint pour les evaluations longues si necessaire.
+- [ ] Optimiser la detection NER/spaCy/GLiNER et mesurer l'impact via le runner officiel.
+- [ ] Revoir la logique de fusion regex + NER sur les erreurs recurrentes observees dans les rapports.
+- [ ] Tester une strategie de validation rapide par LLM local/Ollama ou OpenRouter sur les cas ambigus.

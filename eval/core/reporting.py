@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple  # noqa: F401
 
 from eval.core.config import normalize_runtime_config
 from eval.run_store import utc_now_iso
@@ -69,7 +69,20 @@ def aggregate_document_metrics(report: DocumentReport) -> Dict[str, Any]:
     )
     micro_f2 = _f2(micro_precision, micro_recall, beta=2.0)
 
-    return {
+    bleu_scores = [float(doc["bleu_score"]) for doc in report if "bleu_score" in doc]
+    macro_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else None
+
+    # Strict-match aggregations (present when evaluate_spans() extended)
+    def _macro(key: str) -> Optional[float]:
+        vals = [float(doc[key]) for doc in report if key in doc]
+        return round(sum(vals) / len(vals), 4) if vals else None
+
+    def _micro_strict(tp_key: str, fp_fn_key: str) -> Optional[float]:
+        tp = sum(int(doc.get(tp_key, 0)) for doc in report if tp_key in doc)
+        denom = sum(int(doc.get(tp_key, 0)) + int(doc.get(fp_fn_key, 0)) for doc in report if tp_key in doc)
+        return round(tp / denom, 4) if denom > 0 else None
+
+    result: Dict[str, Any] = {
         "n_documents": n_documents,
         "macro_precision": round(macro_precision, 4),
         "macro_recall": round(macro_recall, 4),
@@ -82,7 +95,24 @@ def aggregate_document_metrics(report: DocumentReport) -> Dict[str, Any]:
         "total_predictions": sum(int(doc.get("pred_count", 0)) for doc in report),
         "total_ground_truth": sum(int(doc.get("truth_count", 0)) for doc in report),
         "total_leaks": sum(int(doc.get("leaks_count", 0)) for doc in report),
+        "macro_bleu": round(macro_bleu, 4) if macro_bleu is not None else None,
     }
+
+    # Strict-match metrics (only when available in the report)
+    if any("strict_precision" in doc for doc in report):
+        result["macro_strict_precision"] = _macro("strict_precision")
+        result["macro_strict_recall"] = _macro("strict_recall")
+        result["macro_strict_f1"] = _macro("strict_f1")
+        result["macro_strict_f2"] = _macro("strict_f2")
+        result["micro_strict_precision"] = _micro_strict("strict_precision_tp", "strict_precision_fp")
+        result["micro_strict_recall"] = _micro_strict("strict_recall_tp", "strict_recall_fn")
+        # Error classification totals
+        for err_key in ("missed", "spurious", "boundary_error", "type_error"):
+            result[f"total_{err_key}"] = sum(
+                int((doc.get("error_classification") or {}).get(err_key, 0)) for doc in report
+            )
+
+    return result
 
 
 def build_report_meta(

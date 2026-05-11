@@ -6,8 +6,6 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
-import yaml
-
 
 PIPEGRAPH_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = PIPEGRAPH_ROOT.parent
@@ -15,7 +13,7 @@ ATLAS_ROOT = WORKSPACE_ROOT / "Atlas_anno"
 DEFAULT_ANNOTATED_INPUT = ATLAS_ROOT / "data" / "annotations" / "preannotations.jsonl"
 DEFAULT_RAW_INPUT = ATLAS_ROOT / "data" / "raw_docs" / "raw_docs.jsonl"
 DEFAULT_OUTPUT_DIR = ATLAS_ROOT / "data" / "anonymized"
-PIPEGRAPH_CONFIG_PATH = PIPEGRAPH_ROOT / "config" / "pipeline_config.yaml"
+PIPEGRAPH_CONFIG_PATH = PIPEGRAPH_ROOT / "config.json"
 PURE_PROFILES = ("pseudo", "mask", "generalize", "redact")
 SUPPORTED_PROFILES = (*PURE_PROFILES, "mixed", "all")
 
@@ -43,7 +41,7 @@ def _load_pipegraph_policy() -> Tuple[str, Dict[str, str]]:
     if not PIPEGRAPH_CONFIG_PATH.exists():
         return "pseudo", {}
     with PIPEGRAPH_CONFIG_PATH.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle) or {}
+        raw = json.load(handle) or {}
     anonymization = raw.get("pipeline", {}).get("nodes", {}).get("anonymization", {})
     global_strategy = str(anonymization.get("strategy", "pseudo"))
     policy: Dict[str, str] = {}

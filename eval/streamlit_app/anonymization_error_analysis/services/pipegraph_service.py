@@ -45,7 +45,7 @@ def run_pipegraph_eval(
             create_initial_state,
             config=config,
             progress_cb=progress_cb,
-            allowed_labels=get_allowed_labels(dataset_key),
+            allowed_labels=get_allowed_labels(dataset_key, profile=str(config.get("eval_profile") or config.get("profile") or "auto")),
         )
     except Exception as exc:
         raise AppError("PipeGraph evaluation failed", details=str(exc)) from exc

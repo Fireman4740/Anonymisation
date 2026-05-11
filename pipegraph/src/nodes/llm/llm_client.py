@@ -41,6 +41,32 @@ _OPENROUTER_APP_NAME = "PipeGraph-Anonymisation"
 _OPENROUTER_SITE_URL = "https://github.com/Fireman4740/Anonymisation"
 
 
+def _resolve_ollama_base_url(url: str) -> str:
+    """
+    In WSL2 NAT mode, localhost refers to the WSL VM, not the Windows host.
+    Replace localhost with the Windows host IP (default gateway from /proc/net/route).
+    """
+    if "localhost" not in url and "127.0.0.1" not in url:
+        return url
+    if not os.path.exists("/proc/net/route"):
+        return url
+
+    try:
+        with open("/proc/net/route") as f:
+            next(f)  # skip header
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) >= 3 and parts[1] == "00000000":
+                    gw_bytes = bytes.fromhex(parts[2])
+                    host_ip = ".".join(str(b) for b in reversed(gw_bytes))
+                    resolved = url.replace("localhost", host_ip).replace("127.0.0.1", host_ip)
+                    logger.debug(f"WSL2 NAT — Ollama base_url rewritten: {url} → {resolved}")
+                    return resolved
+    except Exception:
+        pass
+    return url
+
+
 # ---------------------------------------------------------------------------
 # JSON extraction helper — used by _extract_content for reasoning models
 # ---------------------------------------------------------------------------
@@ -94,6 +120,10 @@ def _find_json_block(text: str) -> Optional[str]:
 # Conservative estimates — better to under-fill than overflow.
 # ---------------------------------------------------------------------------
 _MODEL_CONTEXT_WINDOWS: Dict[str, int] = {
+    # Ollama local models
+    "gemma4:26b": 131_072,
+    "gemma4:12b": 131_072,
+    "gemma4:4b": 131_072,
     # OpenAI
     "openai/gpt-oss-20b": 8_192,
     "openai/gpt-4o-mini": 128_000,
@@ -129,7 +159,12 @@ _MODEL_CONTEXT_WINDOWS: Dict[str, int] = {
 # chain-of-thought before the actual answer.  We multiply max_tokens by this
 # factor to give them enough budget for both reasoning AND the answer.
 _REASONING_MODELS: Dict[str, float] = {
-    "openai/gpt-oss-20b": 3.0,     # uses ~2K reasoning tokens typically
+    # Ollama local reasoning models
+    "gemma4:26b": 4.0,   # thinking model: ~6K chars reasoning before answer
+    "gemma4:12b": 4.0,
+    "gemma4:4b": 4.0,
+    # OpenRouter
+    "openai/gpt-oss-20b": 3.0,
     "deepseek/deepseek-r1": 3.0,
     "deepseek/deepseek-r1:free": 3.0,
     "qwen/qwen3-vl-235b-a22b-thinking": 3.0,
@@ -350,10 +385,9 @@ def _resolve_model(
 
     Priority chain (first non-None wins):
       1. model_override  (from state.config at runtime — ablation / CLI)
-      2. Environment variable  (OPENROUTER_MODEL_<ROLE> → OPENROUTER_MODEL)
-      3. config.json per-role  (openrouter.models.<role> / llm.models.<role>)
-      4. config.json global    (openrouter.model / llm.model)
-      5. Hard-coded default    (google/gemma-3-27b-it)
+      2. config.json per-role  (openrouter.models.<role> / llm.models.<role>)
+      3. config.json global    (openrouter.model / llm.model)
+      4. Hard-coded default    (google/gemma-3-27b-it)
     """
     _DEFAULT_MODEL = "google/gemma-3-27b-it"
 
@@ -361,16 +395,7 @@ def _resolve_model(
     if model_override:
         return model_override
 
-    # 2. env vars via LLMEnvSettings
-    try:
-        from src.config.settings import LLMEnvSettings  # type: ignore
-        env_model = LLMEnvSettings().model_for(role, provider)
-        if env_model:
-            return env_model
-    except Exception:
-        pass
-
-    # 3 & 4. config.json — per-role then global
+    # 2 & 3. config.json — per-role then global
     section_key = "openrouter" if provider == "openrouter" else "llm"
     section = cfg.get(section_key, {})
 
@@ -448,7 +473,9 @@ class LLMClient:
         else:
             # Ollama (or any other OpenAI-compatible server)
             llm_cfg = cfg.get("llm", {})
-            self.base_url = llm_cfg.get("base_url", "http://localhost:11434/v1")
+            self.base_url = _resolve_ollama_base_url(
+                llm_cfg.get("base_url", "http://localhost:11434/v1")
+            )
             self.model = _resolve_model(role, effective_provider, cfg, model_override)
             self.timeout = float(llm_cfg.get("timeout_seconds", 90))
             self.retry_count = int(llm_cfg.get("retry_count", 1))
@@ -781,6 +808,26 @@ class LLMClient:
             f"LLM exhausted all models and retries "
             f"(role={self.role}, models={models_to_try}): {last_error}"
         )
+
+        # Cross-provider fallback: if primary provider is unreachable, try fallback_provider
+        fallback_provider_name = section.get("fallback_provider")
+        if fallback_provider_name and fallback_provider_name != self.provider and last_error is not None:
+            is_conn_error = "Connection error" in str(last_error) or "ConnectionError" in type(last_error).__name__
+            if is_conn_error:
+                logger.info(
+                    f"LLM ({self.role}) provider '{self.provider}' unreachable — "
+                    f"falling back to '{fallback_provider_name}'"
+                )
+                try:
+                    fallback_client = LLMClient(role=self.role, provider=fallback_provider_name)
+                    return fallback_client.chat(
+                        messages, temperature=temperature, max_tokens=max_tokens
+                    )
+                except Exception as fb_err:
+                    logger.warning(
+                        f"LLM fallback provider '{fallback_provider_name}' also failed: {fb_err}"
+                    )
+
         return None
 
     # ------------------------------------------------------------------

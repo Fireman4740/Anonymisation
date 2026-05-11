@@ -22,6 +22,9 @@ class LocalEvalConfig:
     enable_ai: bool
     enable_anonymization: bool
     detection_mode: str
+    profile: str
+    eval_mode: str
+    masking_mode: str
     llm_detection_enabled: bool
     llm_audit_enabled: bool
     llm_paraphrase_enabled: bool
@@ -43,6 +46,9 @@ class RATBenchEvalConfig:
     enable_ai: bool
     enable_anonymization: bool
     detection_mode: str
+    profile: str
+    eval_mode: str
+    masking_mode: str
     # LLM / RUPTA
     llm_detection_enabled: bool
     llm_audit_enabled: bool

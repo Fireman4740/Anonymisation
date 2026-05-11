@@ -6,10 +6,12 @@ from typing import Any, FrozenSet, List, Optional, Set, Tuple
 from eval.pipegraph_eval_local import (
     build_docs_from_anonymization_dataset,
     build_docs_from_db_bio,
+    build_docs_from_personalreddit,
     build_docs_from_tab,
 )
 from eval.ratbench_loader import build_docs_from_ratbench
 from eval.conll2003_loader import build_docs_from_conll2003, get_conll2003_dataset_name
+from eval.core.profiles import resolve_eval_profile
 
 Span = Tuple[int, int, str]
 DatasetDoc = Tuple[str, str, List[Span]]
@@ -24,6 +26,9 @@ DATASET_ALIASES: dict[str, str] = {
     "ratbench": "ratbench",
     "conll2003": "conll2003",
     "cleanconll2003": "conll2003",
+    "personalreddit": "personalreddit",
+    "personal-reddit": "personalreddit",
+    "reddit": "personalreddit",
 }
 
 # ---------------------------------------------------------------------------
@@ -44,10 +49,11 @@ DATASET_LABEL_SCOPE: dict[str, Optional[FrozenSet[str]]] = {
     "conll2003": frozenset({"PER", "ORG", "LOC", "MISC"}),
     # DB-bio: biographical texts — only person names annotated
     "dbbio": frozenset({"PER", "PERSON"}),
-    # TAB / anonymization / ratbench: broad PII — no filtering
+    # TAB / anonymization / ratbench / personalreddit: broad PII — no filtering
     "tab": None,
     "anonymization": None,
     "ratbench": None,
+    "personalreddit": None,
 }
 
 
@@ -59,10 +65,13 @@ def uses_news_ner_profile(dataset: str) -> bool:
     return normalize_dataset_key(dataset) == "conll2003"
 
 
-def get_allowed_labels(dataset: str) -> Optional[FrozenSet[str]]:
+def get_allowed_labels(dataset: str, profile: str = "auto") -> Optional[FrozenSet[str]]:
     """Return the set of labels valid for *dataset*, or ``None`` if all
     labels should be kept (no filtering)."""
-    return DATASET_LABEL_SCOPE.get(normalize_dataset_key(dataset))
+    try:
+        return resolve_eval_profile(profile, dataset_key=dataset).allowed_labels
+    except Exception:
+        return DATASET_LABEL_SCOPE.get(normalize_dataset_key(dataset))
 
 
 def _infer_conll_split(dataset_path: str) -> str:
@@ -127,4 +136,12 @@ def load_benchmark_docs(
     if dataset in {"conll2003", "cleanconll2003"}:
         return build_docs_from_conll2003(limit=limit, split=split), get_conll2003_dataset_name(split)
 
-    raise ValueError(f"Dataset inconnu: {dataset!r}. Choix: tab, dbbio, anonymization, ratbench, conll2003")
+    if dataset == "personalreddit":
+        path = os.path.join(project_root, "eval", "datasets", "PersonalReddit", "Reddit_synthetic", f"{split}.jsonl")
+        if not os.path.exists(path):
+            path = os.path.join(project_root, "eval", "datasets", "PersonalReddit", "Reddit_synthetic", "test.jsonl")
+        return build_docs_from_personalreddit(path, limit=limit), f"PersonalReddit/{split}"
+
+    raise ValueError(
+        f"Dataset inconnu: {dataset!r}. Choix: tab, dbbio, anonymization, ratbench, conll2003, personalreddit"
+    )

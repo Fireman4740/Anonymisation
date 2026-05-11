@@ -20,6 +20,11 @@ def _f2(precision: float, recall: float, beta: float = 2.0) -> float:
     return (1.0 + b2) * precision * recall / denom
 
 
+# R_succ threshold from RAT-Bench paper (arXiv 2602.12806, §4): R > 0.2 → re-identified
+# Equivalent to k-anonymity k=5 (1/k = 0.2)
+_RATBENCH_RISK_THRESHOLD = 0.2
+
+
 def aggregate_ratbench_metrics(report: DocumentReport) -> Dict[str, Any]:
     if not report:
         return {
@@ -33,6 +38,9 @@ def aggregate_ratbench_metrics(report: DocumentReport) -> Dict[str, Any]:
             "total_predictions": 0,
             "total_ground_truth": 0,
             "total_leaks": 0,
+            "r_succ_rate": None,
+            "avg_risk": None,
+            "macro_bleu": None,
         }
 
     n_documents = len(report)
@@ -52,6 +60,18 @@ def aggregate_ratbench_metrics(report: DocumentReport) -> Dict[str, Any]:
         else 0.0
     )
 
+    # R_succ: fraction of records with re-identification risk R > θ=0.2 (RAT-Bench paper §4)
+    risk_docs = [doc for doc in report if "risk" in doc]
+    r_succ_rate: Optional[float] = None
+    avg_risk: Optional[float] = None
+    if risk_docs:
+        risks = [float(doc["risk"]) for doc in risk_docs]
+        avg_risk = round(sum(risks) / len(risks), 4)
+        r_succ_rate = round(sum(1 for r in risks if r > _RATBENCH_RISK_THRESHOLD) / len(risks), 4)
+
+    bleu_docs = [float(doc["bleu_score"]) for doc in report if "bleu_score" in doc]
+    macro_bleu = round(sum(bleu_docs) / len(bleu_docs), 4) if bleu_docs else None
+
     return {
         "n_documents": n_documents,
         "macro_precision": round(sum(float(doc.get("precision", 0.0)) for doc in report) / n_documents, 4),
@@ -63,6 +83,10 @@ def aggregate_ratbench_metrics(report: DocumentReport) -> Dict[str, Any]:
         "total_predictions": sum(int(doc.get("pred_count", 0)) for doc in report),
         "total_ground_truth": sum(int(doc.get("truth_count", 0)) for doc in report),
         "total_leaks": sum(int(doc.get("leaks_count", 0)) for doc in report),
+        # Primary RAT-Bench risk metrics (paper §4)
+        "r_succ_rate": r_succ_rate,      # fraction where R > 0.2 (lower = better)
+        "avg_risk": avg_risk,             # mean R across documents
+        "macro_bleu": macro_bleu,         # utility: text preservation (higher = better)
     }
 
 

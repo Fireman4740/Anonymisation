@@ -3,37 +3,30 @@ Tests for configuration settings.
 """
 
 import pytest
-import os
-
-
-# Skip all tests if the required env var is not set (avoids import errors)
-pytestmark = pytest.mark.skipif(
-    not os.environ.get("PIPEGRAPH_SEC_PSEUDO_SECRET"), reason="PIPEGRAPH_SEC_PSEUDO_SECRET not set"
-)
 
 
 def test_security_settings_validation():
     """Test that production mode enforces secure secrets."""
     from src.config import SecuritySettings
 
-    # Simulate production environment
-    original_env = os.environ.get("PIPEGRAPH_SEC_ENV")
-    original_secret = os.environ.get("PIPEGRAPH_SEC_PSEUDO_SECRET")
+    settings = SecuritySettings(
+        PSEUDO_SECRET="temp_development_secret_do_not_use_in_prod",
+        PSEUDO_SALT="default-salt-change-me",
+        ENV="production",
+    )
+    with pytest.raises(ValueError, match="Cannot use default development secret"):
+        settings.validate_secrets()
 
-    try:
-        os.environ["PIPEGRAPH_SEC_ENV"] = "production"
-        os.environ["PIPEGRAPH_SEC_PSEUDO_SECRET"] = "temp_development_secret_do_not_use_in_prod"
 
-        with pytest.raises(ValueError, match="Cannot use default development secret"):
-            SecuritySettings().validate_secrets()
-    finally:
-        # Restore original values
-        if original_env:
-            os.environ["PIPEGRAPH_SEC_ENV"] = original_env
-        else:
-            os.environ.pop("PIPEGRAPH_SEC_ENV", None)
-        if original_secret:
-            os.environ["PIPEGRAPH_SEC_PSEUDO_SECRET"] = original_secret
+def test_pipeline_settings_load_from_config_json():
+    """Non-secret PipeGraph settings come from config.json, not .env."""
+    from src.config import settings
+
+    assert settings.security.ENV == "development"
+    assert settings.gpu.ENABLED is True
+    assert settings.gpu.BATCH_SIZE == 32
+    assert settings.detection.DEFAULT_THRESHOLD == 0.35
+    assert settings.detection.PATTERNS_PATH == "config/patterns_config.yaml"
 
 
 def test_pseudo_mapper_determinism():

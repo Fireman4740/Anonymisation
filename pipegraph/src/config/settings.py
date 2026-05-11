@@ -1,39 +1,74 @@
-"""
-Centralized Pydantic settings for PipeGraph.
-Handles environment variables, secrets, and configuration defaults.
-"""
+"""Centralized Pydantic settings for PipeGraph."""
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import Field, SecretStr, computed_field
+from typing import Dict, Any, Optional
+from pydantic import BaseModel, Field, SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import json
 import os
 
 
-class SecuritySettings(BaseSettings):
+_CONFIG_CACHE: Optional[Dict[str, Any]] = None
+
+
+def _config_path() -> str:
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.path.abspath(os.path.join(here, "../../config.json"))
+
+
+def load_config() -> Dict[str, Any]:
+    """Load PipeGraph config.json once per process."""
+    global _CONFIG_CACHE
+    if _CONFIG_CACHE is not None:
+        return _CONFIG_CACHE
+
+    path = _config_path()
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            _CONFIG_CACHE = json.load(f)
+    else:
+        _CONFIG_CACHE = {}
+    return _CONFIG_CACHE
+
+
+def _section(name: str) -> Dict[str, Any]:
+    value = load_config().get(name, {})
+    return value if isinstance(value, dict) else {}
+
+
+class SecuritySettings(BaseModel):
     """Security-related settings (secrets, salts, etc)."""
 
-    model_config = SettingsConfigDict(env_prefix="PIPEGRAPH_SEC_", env_file=".env", extra="ignore")
-
     PSEUDO_SECRET: SecretStr = Field(
-        default="temp_development_secret_do_not_use_in_prod",
-        description="Master secret for pseudonymization hashing. MUST be set in production via PIPEGRAPH_SEC_PSEUDO_SECRET env var.",
+        default_factory=lambda: _section("security").get(
+            "pseudo_secret", "temp_development_secret_do_not_use_in_prod"
+        ),
+        description="Master secret for pseudonymization hashing.",
     )
     PSEUDO_SALT: str = Field(
-        "default-salt-change-me",
-        description="Salt for pseudonymization. Should be changed in production.",
+        default_factory=lambda: _section("security").get("pseudo_salt", "default-salt-change-me"),
+        description="Salt for pseudonymization.",
     )
-    ENV: str = Field("development", description="Environment: development or production")
+    ENV: str = Field(
+        default_factory=lambda: _section("security").get("env", "development"),
+        description="Environment: development or production",
+    )
 
     @computed_field
     @property
     def is_production(self) -> bool:
         return self.ENV.lower() == "production"
 
+    def pseudo_secret_value(self) -> str:
+        value = self.PSEUDO_SECRET
+        if hasattr(value, "get_secret_value"):
+            return value.get_secret_value()
+        return str(value)
+
     def validate_secrets(self):
         """Ensure secrets are strong in production."""
         if self.is_production:
             if (
-                self.PSEUDO_SECRET.get_secret_value()
+                self.pseudo_secret_value()
                 == "temp_development_secret_do_not_use_in_prod"
             ):
                 raise ValueError("Cannot use default development secret in production!")
@@ -41,26 +76,28 @@ class SecuritySettings(BaseSettings):
                 raise ValueError("Cannot use default salt in production!")
 
 
-class GPUSettings(BaseSettings):
+class GPUSettings(BaseModel):
     """GPU and Model optimization settings."""
 
-    model_config = SettingsConfigDict(env_prefix="NER_GPU_", env_file=".env", extra="ignore")
-
-    ENABLED: bool = Field(False, description="Enable GPU acceleration")
-    VRAM_GB: int = Field(24, description="Available VRAM in GB")
-    BATCH_SIZE: int = Field(32, description="Inference batch size")
-    USE_FP16: bool = Field(True, description="Use FP16 precision")
-    MAX_PARALLEL_MODELS: int = Field(3, description="Max concurrent models")
-    COMPILE: bool = Field(False, description="Use torch.compile")
+    ENABLED: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("enabled", False)), description="Enable GPU acceleration")
+    VRAM_GB: int = Field(default_factory=lambda: int(_section("ner_gpu").get("vram_gb", 24)), description="Available VRAM in GB")
+    BATCH_SIZE: int = Field(default_factory=lambda: int(_section("ner_gpu").get("batch_size", 32)), description="Inference batch size")
+    USE_FP16: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("use_fp16", True)), description="Use FP16 precision")
+    MAX_PARALLEL_MODELS: int = Field(default_factory=lambda: int(_section("ner_gpu").get("max_parallel_models", 3)), description="Max concurrent models")
+    COMPILE: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("use_torch_compile", False)), description="Use torch.compile")
 
 
-class DetectionSettings(BaseSettings):
+class DetectionSettings(BaseModel):
     """Global detection settings."""
 
-    model_config = SettingsConfigDict(env_prefix="PIPEGRAPH_DET_", env_file=".env", extra="ignore")
-
-    DEFAULT_THRESHOLD: float = Field(0.35, description="Default confidence threshold")
-    PATTERNS_PATH: str = Field("config/patterns_config.yaml", description="Path to regex patterns")
+    DEFAULT_THRESHOLD: float = Field(
+        default_factory=lambda: float(_section("detection").get("default_threshold", 0.35)),
+        description="Default confidence threshold",
+    )
+    PATTERNS_PATH: str = Field(
+        default_factory=lambda: str(_section("detection").get("patterns_path", "config/patterns_config.yaml")),
+        description="Path to regex patterns",
+    )
 
     # Path resolution helper
     def resolve_patterns_path(self, root_dir: str) -> str:
@@ -83,20 +120,6 @@ class LLMEnvSettings(BaseSettings):
         description="OpenRouter API key. Set OPENROUTER_API_KEY in .env to use OpenRouter as LLM provider.",
     )
 
-    # --- OpenRouter model overrides ---
-    # Global (all roles): OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct
-    OPENROUTER_MODEL: Optional[str] = Field(default=None, description="OpenRouter model for all roles (overrides config.json)")
-    OPENROUTER_MODEL_DETECT: Optional[str] = Field(default=None, description="OpenRouter model for detection role")
-    OPENROUTER_MODEL_AUDIT: Optional[str] = Field(default=None, description="OpenRouter model for audit role")
-    OPENROUTER_MODEL_PARAPHRASE: Optional[str] = Field(default=None, description="OpenRouter model for paraphrase role")
-
-    # --- Ollama / local model overrides ---
-    # Global (all roles): LLM_MODEL=openai/gpt-oss-20b
-    LLM_MODEL: Optional[str] = Field(default=None, description="Local LLM model for all roles (overrides config.json)")
-    LLM_MODEL_DETECT: Optional[str] = Field(default=None, description="Local model for detection role")
-    LLM_MODEL_AUDIT: Optional[str] = Field(default=None, description="Local model for audit role")
-    LLM_MODEL_PARAPHRASE: Optional[str] = Field(default=None, description="Local model for paraphrase role")
-
     # --- Helpers ---
     @property
     def openrouter_key(self) -> str:
@@ -112,28 +135,7 @@ class LLMEnvSettings(BaseSettings):
     def has_openrouter_key(self) -> bool:
         return self.OPENROUTER_API_KEY is not None
 
-    def model_for(self, role: str, provider: str) -> Optional[str]:
-        """
-        Return the env-configured model for the given role+provider, or None.
-        Priority: role-specific > global.
-        """
-        if provider == "openrouter":
-            per_role = {
-                "detect": self.OPENROUTER_MODEL_DETECT,
-                "audit": self.OPENROUTER_MODEL_AUDIT,
-                "paraphrase": self.OPENROUTER_MODEL_PARAPHRASE,
-            }.get(role)
-            return per_role or self.OPENROUTER_MODEL
-        else:
-            per_role = {
-                "detect": self.LLM_MODEL_DETECT,
-                "audit": self.LLM_MODEL_AUDIT,
-                "paraphrase": self.LLM_MODEL_PARAPHRASE,
-            }.get(role)
-            return per_role or self.LLM_MODEL
-
-
-class PipelineSettings(BaseSettings):
+class PipelineSettings(BaseModel):
     """Main aggregator for settings."""
 
     security: SecuritySettings = Field(default_factory=lambda: SecuritySettings())
@@ -141,7 +143,7 @@ class PipelineSettings(BaseSettings):
     detection: DetectionSettings = Field(default_factory=lambda: DetectionSettings())
     llm_env: LLMEnvSettings = Field(default_factory=lambda: LLMEnvSettings())
 
-    DEBUG: bool = Field(default=False, validation_alias="PIPEGRAPH_DEBUG")
+    DEBUG: bool = Field(default_factory=lambda: bool(_section("runtime").get("debug", False)))
 
 
 class LLMSettings:
@@ -176,7 +178,8 @@ class LLMSettings:
         return int(self._raw.get("llm", {}).get("retry_count", 1))
 
     def model_for(self, role: str) -> str:
-        return self._raw.get("llm", {}).get("models", {}).get(role, "openai/gpt-oss-20b")
+        llm = self._raw.get("llm", {})
+        return llm.get("models", {}).get(role) or llm.get("model", "openai/gpt-oss-20b")
 
     @property
     def supports_response_format(self) -> bool:

@@ -92,3 +92,10 @@ eval/datasets/hf_cache/
 # Atlas_anno generated data
 Atlas_anno/data/
 Atlas_anno/.env
+Atlas_anno/*
+
+.researchclaw_cache/*
+arc_pipegraph/*
+artifacts/*
+
+docs/kb/*

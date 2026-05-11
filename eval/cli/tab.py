@@ -2,77 +2,83 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 from typing import Optional
 
-from eval.cli.common import build_standard_runtime_config, save_detailed_report, save_optional_run
-from eval.core.bootstrap import load_pipegraph, project_root
-from eval.pipegraph_eval_local import build_docs_from_tab, build_report
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, "..", ".."))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from eval.core.profiles import EVAL_MODE_CHOICES, MASKING_MODE_CHOICES, PROFILE_CHOICES
+from eval.run_pipeline_evaluation import run_evaluation
 
 
-def _default_tab_path(repo_root: str, split: str) -> str:
-    return os.path.join(repo_root, "eval", "datasets", "TAB", f"{split}.jsonl")
-
-
-def _default_out_path(repo_root: str, split: str) -> str:
-    return os.path.join(repo_root, "eval", "evaluation", "reports", f"report_TAB_pipegraph_{split}_details.json")
+def _legacy_out_to_output_dir(out_path: Optional[str]) -> Optional[str]:
+    if not out_path:
+        return None
+    root, ext = os.path.splitext(out_path)
+    return f"{root}_official" if ext else out_path
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="Évalue PipeGraph localement sur TAB et génère un report Streamlit.")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Compatibility wrapper for TAB evaluation. "
+            "Prefer: python -m eval.run_pipeline_evaluation --datasets tab"
+        )
+    )
     parser.add_argument("--split", choices=["test", "dev", "train"], default="test")
     parser.add_argument("--limit", type=int, default=200)
-    parser.add_argument("--in", dest="in_path", default=None, help="Chemin vers TAB <split>.jsonl")
-    parser.add_argument("--out", dest="out_path", default=None, help="Chemin du report JSON à écrire")
+    parser.add_argument("--in", dest="in_path", default=None, help="Accepted for legacy compatibility.")
+    parser.add_argument("--out", dest="out_path", default=None)
     parser.add_argument("--enable-detection", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--enable-deterministic", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--enable-ai", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--enable-anonymization", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--detection-mode", choices=["serial", "parallel"], default="serial")
-    parser.add_argument("--run-name", default=None, help="Nom optionnel du run (utilisé si --save-run)")
-    parser.add_argument("--save-run", action="store_true", help="Sauvegarde meta+data dans eval/evaluation/runs/")
+    parser.add_argument("--no-llm", action="store_true")
+    parser.add_argument("--with-llm", action="store_true", help="Accepted for legacy compatibility.")
+    parser.add_argument("--with-rupta", action="store_true", help="Accepted for legacy compatibility.")
+    parser.add_argument("--llm-provider", default=None)
+    parser.add_argument("--llm-model", default=None)
+    parser.add_argument("--profile", choices=PROFILE_CHOICES, default="auto")
+    parser.add_argument("--eval-mode", choices=EVAL_MODE_CHOICES, default="both")
+    parser.add_argument("--masking-mode", choices=MASKING_MODE_CHOICES, default="benchmark")
+    parser.add_argument("--run-name", default=None, help="Accepted for legacy compatibility.")
+    parser.add_argument("--save-run", action="store_true")
     args = parser.parse_args(argv)
 
-    repo_root = project_root()
-    in_path = args.in_path or _default_tab_path(repo_root, args.split)
-    out_path = args.out_path or _default_out_path(repo_root, args.split)
+    if args.in_path:
+        print("TAB wrapper: --in is ignored; the official dataset registry chooses the TAB split path.")
 
-    create_pipeline_graph, create_initial_state = load_pipegraph()
-    pipeline = create_pipeline_graph()
-
-    config = build_standard_runtime_config(
-        enable_detection=bool(args.enable_detection),
-        enable_deterministic=bool(args.enable_deterministic),
-        enable_ai=bool(args.enable_ai),
-        enable_anonymization=bool(args.enable_anonymization),
-        detection_mode=str(args.detection_mode),
+    payload = run_evaluation(
+        argparse.Namespace(
+            candidate=None,
+            datasets=["tab"],
+            split=args.split,
+            limit=int(args.limit) if args.limit else None,
+            output=_legacy_out_to_output_dir(args.out_path),
+            save_runs=bool(args.save_run),
+            doc_workers=1,
+            profile=str(args.profile),
+            eval_mode=str(args.eval_mode),
+            masking_mode=str(args.masking_mode),
+            language="english",
+            ratbench_languages=None,
+            ratbench_levels=[1],
+            llm_provider=args.llm_provider,
+            llm_model=args.llm_model,
+            llm_attacker_model=None,
+            no_llm=bool(args.no_llm),
+            skip_risk=True,
+            require_risk=False,
+            risk_limit=None,
+        )
     )
-    limit = int(args.limit) if args.limit else None
-    docs = build_docs_from_tab(in_path, limit=limit)
-    report = build_report(docs, pipeline, create_initial_state, config=config)
-
-    report_meta = save_detailed_report(
-        out_path=out_path,
-        dataset_name=f"TAB/{args.split}",
-        dataset_path=in_path,
-        limit=limit,
-        config=config,
-        report=report,
-        run_name=args.run_name,
-    )
-    print(f"Wrote {len(report)} docs to: {out_path}")
-
-    saved = save_optional_run(
-        enabled=bool(args.save_run),
-        runs_dir=os.path.join(repo_root, "eval", "evaluation", "runs"),
-        report=report,
-        meta=report_meta,
-        run_name=args.run_name,
-    )
-    if saved:
-        print(f"Saved run: {saved}")
-
-    return 0
+    print(f"Official evaluation written to: {payload.get('output_dir')}")
+    return 0 if payload.get("status") in {"ok", "partial"} else 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

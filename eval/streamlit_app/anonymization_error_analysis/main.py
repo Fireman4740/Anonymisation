@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import streamlit as st
 
 from eval.core.config import build_runtime_config
-from eval.core.datasets import uses_news_ner_profile
 
 from .components.feedback import show_empty_state, show_error
 from .components.sidebar import render_sidebar_ui
@@ -132,8 +131,23 @@ def _run_benchmark(
     elif cfg.local_config:
         res = _run_local_eval(cfg=cfg.local_config, runs_dir=runs_dir, datasets_dir=datasets_dir, run_store=run_store)
         if res:
-            report, label = res
-            meta = {"title": "Evaluation PipeGraph", "subtitle": label, "source": "local_eval"}
+            report, label, run_config = res
+            meta = {
+                "title": "Evaluation PipeGraph",
+                "subtitle": label,
+                "source": "local_eval",
+                "config": run_config,
+                "dataset": {
+                    "name": cfg.local_config.dataset_label,
+                    "path": cfg.local_config.dataset_path,
+                    "split": cfg.local_config.split,
+                    "limit": None if cfg.local_config.run_full_dataset else cfg.local_config.limit,
+                },
+                "run_name": cfg.local_config.run_name or None,
+                "profile": cfg.local_config.profile,
+                "eval_mode": cfg.local_config.eval_mode,
+                "masking_mode": cfg.local_config.masking_mode,
+            }
             render_dashboard(report, meta)
 
 # Local Eval implementation
@@ -156,13 +170,11 @@ def _run_local_eval(
         rupta_enabled=bool(cfg.rupta_enabled),
         rupta_max_iterations=int(cfg.rupta_max_iterations),
         rupta_p_threshold=int(cfg.rupta_p_threshold),
+        dataset_key=str(cfg.dataset_kind),
+        profile=str(cfg.profile),
+        eval_mode=str(cfg.eval_mode),
+        masking_mode=str(cfg.masking_mode),
     )
-    if uses_news_ner_profile(cfg.dataset_kind):
-        config.setdefault("entity_profile", "news_ner")
-        config.setdefault("gliner_label_profile", "news_ner")
-    else:
-        config.setdefault("entity_profile", "pii")
-        config.setdefault("gliner_label_profile", "pii")
 
     st.subheader("Configuration effective")
     with st.expander("Détails"):
@@ -249,7 +261,7 @@ def _run_local_eval(
             except Exception as exc:
                 show_error(exc, title="Echec sauvegarde run")
 
-    return report, f"pipegraph_{cfg.dataset_label}"
+    return report, f"pipegraph_{cfg.dataset_label}", config
 
 
 def _run_ratbench_eval_ui(
@@ -274,6 +286,10 @@ def _run_ratbench_eval_ui(
         rupta_enabled=bool(cfg.rupta_enabled),
         rupta_max_iterations=int(cfg.rupta_max_iterations),
         rupta_p_threshold=int(cfg.rupta_p_threshold),
+        dataset_key="ratbench",
+        profile=str(cfg.profile),
+        eval_mode=str(cfg.eval_mode),
+        masking_mode=str(cfg.masking_mode),
     )
 
     with st.expander("Configuration effective", expanded=False):

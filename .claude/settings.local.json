@@ -1,7 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python *)"
+      "Bash(python *)",
+      "PowerShell(New-NetFirewallRule -DisplayName \"Ollama WSL Access\" -Direction Inbound -Protocol TCP -LocalPort 11434 -Action Allow -Profile Any -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetFirewallRule -DisplayName \"Ollama WSL Access\")",
+      "PowerShell(\\([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent\\(\\)\\).IsInRole\\([Security.Principal.WindowsBuiltInRole]::Administrator\\))",
+      "PowerShell(Remove-Item -Path \"$env:USERPROFILE\\\\.wslconfig\" -Force -ErrorAction SilentlyContinue; wsl --shutdown; Start-Sleep -Seconds 3; wsl --status 2>&1 | Select-Object -First 5)",
+      "PowerShell(wsl -e bash -c 'ip route show default')",
+      "PowerShell(wsl -e bash -c 'curl -s --max-time 5 http://172.28.224.1:11434/api/tags')",
+      "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\\\\docs\\\\evaluation\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "mcp__claude_ai_alphaXiv__paper_search",
+      "Bash(grep -E \"\\\\.py$\")",
+      "mcp__claude_ai_alphaXiv__get_paper_content",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//mnt/f/IA/**)",
+      "Bash(conda run *)",
+      "Bash(wsl -e bash -c \"cd /mnt/f/IA/Anonymisation && conda run -n ano python -c 'from eval.evaluate import _build_config; print\\(\\\\\"import OK\\\\\"\\)' 2>&1\")",
+      "Bash(wsl -e bash -c \"source /root/miniconda3/etc/profile.d/conda.sh && conda activate ano && cd /mnt/f/IA/Anonymisation && python -c 'from eval.evaluate import _build_config; print\\(\\\\\"import OK\\\\\"\\)' 2>&1\")",
+      "Bash(wsl -e bash -c \"find /home -name 'conda.sh' 2>/dev/null | head -5; find /opt -name 'conda.sh' 2>/dev/null | head -5; which python3 2>/dev/null\")"
     ]
   }
 }

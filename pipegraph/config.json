@@ -1,13 +1,14 @@
 {
-	"_doc": "Un seul champ 'model' suffit. Pour overrider par rôle, ajoutez models.detect / models.audit / models.paraphrase.",
+	"_doc": "config.json est la source de configuration PipeGraph. .env ne doit contenir que les clés API.",
 
 	"llm": {
-		"provider": "ollama",
-		"model": "gemma4:26b",
+		"provider": "openrouter",
+		"model": "google/gemma-4-26b-a4b-it",
 		"base_url": "http://localhost:11434/v1",
 		"api_key": "",
 		"retry_count": 1,
 		"fallback_model": null,
+		"fallback_provider": "openrouter",
 		"supports_response_format": false,
 		"timeout_seconds": 90
 	},
@@ -46,19 +47,109 @@
 	},
 
 	"runtime": {
+		"debug": false,
 		"log_level": "INFO",
 		"timeout_seconds": 60
+	},
+
+	"security": {
+		"pseudo_secret": "change-me-to-a-long-random-string",
+		"pseudo_salt": "change-me-to-a-unique-salt",
+		"env": "development"
+	},
+
+	"detection": {
+		"default_threshold": 0.35,
+		"patterns_path": "config/patterns_config.yaml"
 	},
 
 	"ner_gpu": {
 		"enabled": true,
 		"vram_gb": 24,
-		"batch_size": 64,
+		"batch_size": 32,
 		"max_parallel_models": 3,
 		"use_fp16": true,
 		"use_torch_compile": false,
 		"gliner_preset": "best",
 		"prefetch_models": true,
 		"optimization_level": "high"
+	},
+
+	"pipeline": {
+		"name": "Anonymisation Pipeline",
+		"version": "2.1",
+		"global": {
+			"debug": true,
+			"log_level": "INFO",
+			"work_dir": "./workspace"
+		},
+		"nodes": {
+			"detection": {
+				"enabled": true,
+				"execution_mode": "parallel",
+				"deterministic": {
+					"enabled": true,
+					"patterns_config_path": "config/patterns_config.yaml"
+				},
+				"ai_ner": {
+					"enabled": true,
+					"provider": "gliner",
+					"threshold": 0.25,
+					"warmup": true,
+					"gliner": {
+						"preset": "best",
+						"label_profile": "pii",
+						"use_gpu": true,
+						"gpu_config": {
+							"vram_gb": 24,
+							"batch_size": 64,
+							"max_parallel_models": 3,
+							"use_fp16": true,
+							"use_torch_compile": false,
+							"optimization_level": "high",
+							"prefetch_models": true
+						}
+					},
+					"flair": {
+						"model_path": "flair/ner-french"
+					},
+					"spacy": {
+						"model_name": "fr_core_news_sm"
+					}
+				}
+			},
+			"anonymization": {
+				"enabled": true,
+				"strategy": "pseudo",
+				"policy": {
+					"PERSON": {"action": "pseudo"},
+					"PER": {"action": "pseudo"},
+					"LOC": {"action": "generalize"},
+					"LOCATION": {"action": "generalize"},
+					"GPE": {"action": "generalize"},
+					"DATE": {"action": "generalize"},
+					"PHONE": {"action": "mask"},
+					"TELEPHONE": {"action": "mask"},
+					"EMAIL": {"action": "mask"},
+					"IBAN": {"action": "redact"},
+					"BANK_ACCOUNT": {"action": "redact"},
+					"CREDIT_CARD": {"action": "redact"},
+					"SSN": {"action": "redact"},
+					"NATIONAL_ID": {"action": "redact"},
+					"PASSPORT": {"action": "redact"},
+					"IP_ADDRESS": {"action": "mask"},
+					"USERNAME": {"action": "pseudo"}
+				}
+			},
+			"llm_detection": {
+				"enabled": true
+			},
+			"llm_audit": {
+				"enabled": true
+			},
+			"llm_paraphrase": {
+				"enabled": true
+			}
+		}
 	}
 }

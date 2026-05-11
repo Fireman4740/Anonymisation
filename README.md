@@ -10,7 +10,7 @@
 Ce dépôt regroupe trois volets complémentaires :
 
 - **PipeGraph** (dossier `pipegraph/`) : pipeline d'anonymisation LangGraph.
-- **Évaluation** (dossier `eval/`) : benchmarks, rapports et application Streamlit.
+- **Évaluation** (dossier `eval/`) : runner officiel, benchmarks, rapports et application Streamlit.
 - **Atlas_anno** (dossier `Atlas_anno/`) : génération et préannotation de datasets.
 
 ## 🧱 Architecture (PipeGraph)
@@ -19,7 +19,7 @@ Ce dépôt regroupe trois volets complémentaires :
 - Transformation : anonymisation, pseudonymisation, généralisation
 - LLM optionnels : détection, audit (RUPTA), paraphrase
 
-La configuration se fait via `pipegraph/config.json` et `pipegraph/config/pipeline_config.yaml`.
+La configuration PipeGraph se fait via `pipegraph/config.json`.
 
 ## 🚀 Démarrage rapide
 
@@ -53,17 +53,50 @@ Installer les dépendances communes (si besoin) :
 pip install -r requirements.txt
 ```
 
-Exemples :
+Deux points d'entrée :
+
+| Script | Usage |
+| --- | --- |
+| `python eval/evaluate.py` | Script unifié — benchmark, ablation, dataset standalone |
+| `python -m eval.run_pipeline_evaluation` | Runner officiel ARC/ResearchClaw |
+
+### `eval/evaluate.py` — commandes rapides
 
 ```bash
-# Benchmark complet (sans risque LLM)
-python eval/run_full_benchmark.py --skip-risk --limit 50
+# Benchmark multi-dataset sans LLM
+python eval/evaluate.py benchmark \
+  --datasets tab dbbio anonymization \
+  --limit 50 --no-llm --skip-risk
 
-# TAB
-python eval/cli/tab.py --split test --limit 50 --save-run
+# Benchmark avec métriques strictes (standard CoNLL/PII-Bench)
+python eval/evaluate.py benchmark \
+  --datasets tab ratbench --limit 50 --strict
 
-# RAT-Benchm
-python eval/cli/ratbench.py --level 1 --limit 50 --save-run
+# RAT-Bench niveau 1 uniquement
+python eval/evaluate.py benchmark \
+  --datasets ratbench --levels 1 --limit 50 --skip-risk
+
+# Ablation des nœuds sur TAB
+python eval/evaluate.py ablation \
+  --dataset tab --suite nodes --limit 20
+
+# Évaluation standalone d'un dataset
+python eval/evaluate.py dataset \
+  --dataset personalreddit --limit 100 --save-run
+```
+
+### Runner officiel
+
+```bash
+# Évaluation officielle rapide sans risque LLM
+python -m eval.run_pipeline_evaluation \
+  --datasets tab dbbio anonymization conll2003 \
+  --skip-risk --limit 50
+
+# Avec RAT-Bench niveau 1
+python -m eval.run_pipeline_evaluation \
+  --datasets tab dbbio ratbench conll2003 anonymization \
+  --ratbench-levels 1 --ratbench-languages english --limit 50
 ```
 
 ### Streamlit
@@ -72,7 +105,7 @@ python eval/cli/ratbench.py --level 1 --limit 50 --save-run
 streamlit run eval/streamlit_app/app.py
 ```
 
-Les rapports sont écrits dans `eval/evaluation/reports/` et `eval/evaluation/runs/`.
+Les sorties officielles sont écrites dans `artifacts/eval-runs/<run-id>/`. Le script `evaluate.py` écrit dans `eval/evaluation/reports/` et `eval/evaluation/runs/`.
 
 ## 🧪 Tests
 
@@ -84,8 +117,10 @@ pytest Atlas_anno/tests/
 
 ## 🧭 Documentation par module
 
+- `docs/README.md` — documentation détaillée du dépôt
 - `pipegraph/README.md` — pipeline LangGraph
-- `eval/README.md` — scripts d'évaluation et formats de sortie
+- `eval/README.md` — runner officiel, scripts d'évaluation et formats de sortie
+- `docs/evaluation/README.md` — détails datasets, métriques et rapports
 - `Atlas_anno/README.md` — génération et préannotation de données
 
 ## 📁 Structure du repo
@@ -104,7 +139,7 @@ Anonymisation/
 ## 🔐 Variables d'environnement
 
 - `OPENROUTER_API_KEY` (si LLM activé)
-- `.env` (optionnel, lu par certains scripts)
+- `.env` doit rester limité aux clés API; la configuration PipeGraph vit dans `pipegraph/config.json`.
 
 ## 📝 Licence
 
