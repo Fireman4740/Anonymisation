@@ -14,6 +14,7 @@ def run_pipegraph_eval(
     limit: Optional[int],
     config: Dict[str, Any],
     progress_cb: Optional[Any] = None,
+    doc_workers: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     try:
         from eval.core.datasets import get_allowed_labels, load_local_dataset_docs, normalize_dataset_key
@@ -45,6 +46,7 @@ def run_pipegraph_eval(
             create_initial_state,
             config=config,
             progress_cb=progress_cb,
+            max_workers=doc_workers,
             allowed_labels=get_allowed_labels(dataset_key, profile=str(config.get("eval_profile") or config.get("profile") or "auto")),
         )
     except Exception as exc:

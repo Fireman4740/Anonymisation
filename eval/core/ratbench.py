@@ -164,8 +164,16 @@ def build_ratbench_report(
     create_initial_state: Any,
     config: Optional[Dict[str, Any]] = None,
     progress_cb: Optional[Any] = None,
+    max_workers: Optional[int] = None,
 ) -> DocumentReport:
-    report = build_report(docs, pipeline, create_initial_state, config=config, progress_cb=progress_cb)
+    report = build_report(
+        docs,
+        pipeline,
+        create_initial_state,
+        config=config,
+        progress_cb=progress_cb,
+        max_workers=max_workers,
+    )
 
     profile_by_doc_id = {
         f"ratbench_{profile.get('id', '')}_L{profile.get('difficulty', '?')}": profile

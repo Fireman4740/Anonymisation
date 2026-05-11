@@ -19,12 +19,12 @@ Runtime bypass: state.config.llm_verification = False  or  disable_llm = True
 from __future__ import annotations
 
 import logging
-import re
 from typing import Any, Dict, List, Optional
 
 from src.state import PipelineState
 from src.utils.entity_utils import normalize_entity_profile, normalize_entity_type
 from src.nodes.llm.llm_client import LLMClient, load_full_config, estimate_max_prompt_chars
+from src.utils.text_utils import build_chunks
 
 logger = logging.getLogger("LLMVerificationNode")
 
@@ -67,49 +67,6 @@ IMPORTANT: Output ONLY valid JSON array. No explanation, no markdown."""
 
 # Prompt overhead (system + template without {text}/{entities_json})
 _PROMPT_OVERHEAD_CHARS = 1100
-
-
-# ---------------------------------------------------------------------------
-# Chunking (reuse pattern from detection nodes)
-# ---------------------------------------------------------------------------
-
-def _split_sentences(text: str) -> List[str]:
-    parts = re.split(r'(?<=[.!?])\s+(?=[A-ZÀ-ÖØ-Þ])|(?:\n\s*\n)', text)
-    return [p for p in parts if p and p.strip()]
-
-
-def _build_chunks(text: str, max_chars: int) -> List[Dict[str, Any]]:
-    """Group sentences into chunks with their offset in the original text."""
-    sentences = _split_sentences(text)
-    if not sentences:
-        return [{"text": text, "offset": 0}] if text.strip() else []
-
-    chunks: List[Dict[str, Any]] = []
-    current_text = ""
-    current_offset = 0
-    search_from = 0
-
-    for sent in sentences:
-        idx = text.find(sent, search_from)
-        if idx == -1:
-            idx = search_from
-
-        if not current_text:
-            current_text = sent
-            current_offset = idx
-        elif len(current_text) + len(sent) + 1 <= max_chars:
-            gap = text[current_offset + len(current_text):idx]
-            current_text += gap + sent
-        else:
-            chunks.append({"text": current_text, "offset": current_offset})
-            current_text = sent
-            current_offset = idx
-
-        search_from = idx + len(sent)
-
-    if current_text:
-        chunks.append({"text": current_text, "offset": current_offset})
-    return chunks
 
 
 # ---------------------------------------------------------------------------
@@ -307,7 +264,7 @@ class LLMVerificationNode:
             client.model, reserved_output_tokens=2048
         )
         max_text_per_chunk = max(500, max_prompt_chars - _PROMPT_OVERHEAD_CHARS)
-        chunks = _build_chunks(text, max_text_per_chunk)
+        chunks = build_chunks(text, max_text_per_chunk)
 
         if not chunks:
             return {}

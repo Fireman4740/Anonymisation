@@ -136,9 +136,52 @@ Anonymisation/
 └── README.md
 ```
 
+## 🤖 LLM local (Ollama)
+
+> **Architecture :** Ollama tourne sur Windows, l'évaluation Streamlit tourne dans WSL. L'IP du host Windows est détectée automatiquement via la passerelle WSL2 (`/proc/net/route`).
+
+### 1) Démarrer Ollama sur Windows
+
+```powershell
+# Session courante — écoute sur toutes les interfaces (requis pour WSL)
+$env:OLLAMA_HOST = "http://0.0.0.0:11434"
+ollama serve
+```
+
+Pour rendre le changement permanent (nouvelles sessions PowerShell) :
+
+```powershell
+setx OLLAMA_HOST "http://0.0.0.0:11434"
+# Relancer PowerShell, puis :
+ollama serve
+```
+
+> Par défaut Ollama écoute uniquement sur `127.0.0.1`, qui est inaccessible depuis WSL.
+> `0.0.0.0` expose le serveur sur toutes les interfaces, y compris la passerelle WSL2.
+
+### 2) Configurer `pipegraph/config.json`
+
+```json
+{
+  "llm": {
+    "provider": "ollama",
+    "model": "llama3.2:latest",
+    "base_url": "http://localhost:11434/v1"
+  }
+}
+```
+
+> L'URL `localhost` est automatiquement convertie vers l'IP du host Windows en WSL2. Aucune modification manuelle n'est nécessaire.
+
+### 3) Dans l'interface Streamlit
+
+Sélectionner le provider **ollama** dans la sidebar. La liste de modèles disponibles se charge automatiquement depuis l'API Ollama.
+
+---
+
 ## 🔐 Variables d'environnement
 
-- `OPENROUTER_API_KEY` (si LLM activé)
+- `OPENROUTER_API_KEY` (si provider OpenRouter activé)
 - `.env` doit rester limité aux clés API; la configuration PipeGraph vit dans `pipegraph/config.json`.
 
 ## 📝 Licence

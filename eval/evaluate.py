@@ -264,6 +264,7 @@ def _benchmark_one_dataset(
     ts: str,
     save_runs: bool,
     skip_risk: bool,
+    progress_cb: Optional[Any] = None,
 ) -> Dict[str, Any]:
     try:
         docs, dataset_name = load_benchmark_docs(
@@ -294,7 +295,8 @@ def _benchmark_one_dataset(
     doc_workers: int = getattr(args, "doc_workers", 1)
     t0 = time.time()
     report = build_report(docs, pipeline, create_initial_state, config=config,
-                          allowed_labels=allowed_labels, max_workers=doc_workers)
+                          allowed_labels=allowed_labels, max_workers=doc_workers,
+                          progress_cb=progress_cb)
     elapsed = round(time.time() - t0, 2)
 
     # Attach RAT-Bench metadata
@@ -632,6 +634,39 @@ def main(argv: Optional[List[str]] = None) -> int:
         return _run_dataset(args)
     print(f"[ERROR] Sous-commande inconnue: {cmd}", file=sys.stderr)
     return 1
+
+
+def build_eval_config(
+    *,
+    dataset: str,
+    profile: str = "auto",
+    eval_mode: str = "both",
+    masking_mode: str = "benchmark",
+    no_llm: bool = False,
+    detection_mode: str = "parallel",
+    llm_provider: Optional[str] = None,
+    llm_model: Optional[str] = None,
+    detection_threshold: Optional[float] = None,
+    paraphrase_intensity: Optional[int] = None,
+    extra: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Public wrapper around _build_config for use from the Streamlit UI."""
+    cfg = _build_config(
+        dataset=dataset,
+        profile=profile,
+        eval_mode=eval_mode,
+        masking_mode=masking_mode,
+        no_llm=no_llm,
+        detection_mode=detection_mode,
+        llm_provider=llm_provider,
+        llm_model=llm_model,
+        extra=extra,
+    )
+    if detection_threshold is not None:
+        cfg["detection_threshold"] = detection_threshold
+    if paraphrase_intensity is not None:
+        cfg["paraphrase_intensity"] = paraphrase_intensity
+    return cfg
 
 
 if __name__ == "__main__":

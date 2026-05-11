@@ -31,6 +31,11 @@ class LocalEvalConfig:
     rupta_enabled: bool
     rupta_max_iterations: int
     rupta_p_threshold: int
+    llm_model: str
+    llm_provider: str
+    detection_threshold: float
+    paraphrase_intensity: int
+    doc_workers: Optional[int]
     save_run: bool
     run_name: str
 
@@ -56,6 +61,11 @@ class RATBenchEvalConfig:
     rupta_enabled: bool
     rupta_max_iterations: int
     rupta_p_threshold: int
+    llm_model: str
+    llm_provider: str
+    detection_threshold: float
+    paraphrase_intensity: int
+    doc_workers: Optional[int]
     # Risk re-identification
     enable_risk_eval: bool
     save_run: bool

@@ -336,16 +336,38 @@ def download_ratbench(
         return cached_path
 
     logger.info(f"Downloading RAT-Bench dataset ({language}) from HuggingFace...")
+    records: List[Dict[str, Any]] = []
 
+    # Attempt 1: standard load_dataset (generates local Arrow cache)
     try:
         from datasets import load_dataset  # type: ignore
-
         ds = load_dataset("imperial-cpg/rat-bench", language, split="train")
         records = [dict(row) for row in ds]  # type: ignore
+        logger.info(f"Loaded {len(records)} records via load_dataset")
     except Exception as e:
-        logger.warning(f"HuggingFace datasets library download failed: {e}")
-        logger.info("Falling back to direct URL download...")
+        logger.warning(f"load_dataset failed: {e}")
+
+    # Attempt 2: streaming mode — bypasses Arrow generation, reads records directly
+    if not records:
+        try:
+            from datasets import load_dataset  # type: ignore
+            logger.warning("Retrying with streaming=True to bypass Arrow generation errors...")
+            ds = load_dataset("imperial-cpg/rat-bench", language, split="train", streaming=True)
+            records = [dict(row) for row in ds]  # type: ignore
+            logger.warning(f"Loaded {len(records)} records via streaming")
+        except Exception as e:
+            logger.warning(f"Streaming load_dataset also failed: {e}")
+
+    # Attempt 3: direct HuggingFace datasets server API (paginated)
+    if not records:
+        logger.warning("Falling back to direct URL download...")
         records = _download_via_url(language)
+
+    if not records:
+        raise RuntimeError(
+            f"All download attempts failed for RAT-Bench language={language}. "
+            "Check network connectivity and HuggingFace availability."
+        )
 
     with open(cached_path, "w", encoding="utf-8") as f:
         json.dump(records, f, ensure_ascii=False, indent=2)
@@ -355,22 +377,34 @@ def download_ratbench(
 
 
 def _download_via_url(language: str) -> List[Dict[str, Any]]:
-    """Fallback: download parquet via HuggingFace API and convert to dicts."""
+    """Fallback: download via HuggingFace datasets server API with pagination."""
     import urllib.request
-    import tempfile
 
-    # HuggingFace exposes a direct JSON API for small datasets
-    api_url = (
+    base_url = (
         f"https://datasets-server.huggingface.co/rows"
-        f"?dataset=imperial-cpg/rat-bench&config={language}&split=train&offset=0&length=500"
+        f"?dataset=imperial-cpg/rat-bench&config={language}&split=train"
     )
+    PAGE_SIZE = 100
+    records: List[Dict[str, Any]] = []
+    offset = 0
 
-    req = urllib.request.Request(api_url, headers={"User-Agent": "Anonymisation-Eval/1.0"})
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
+    while True:
+        url = f"{base_url}&offset={offset}&length={PAGE_SIZE}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Anonymisation-Eval/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
 
-    rows = data.get("rows", [])
-    records = [row.get("row", row) for row in rows]
+        rows = data.get("rows", [])
+        if not rows and "error" in data:
+            raise RuntimeError(f"HuggingFace datasets server error: {data['error']}")
+        if not rows:
+            break
+        records.extend(row.get("row", row) for row in rows)
+
+        if len(rows) < PAGE_SIZE:
+            break
+        offset += PAGE_SIZE
+
     logger.info(f"Downloaded {len(records)} records via API for language={language}")
     return records
 

@@ -79,12 +79,30 @@ class SecuritySettings(BaseModel):
 class GPUSettings(BaseModel):
     """GPU and Model optimization settings."""
 
-    ENABLED: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("enabled", False)), description="Enable GPU acceleration")
-    VRAM_GB: int = Field(default_factory=lambda: int(_section("ner_gpu").get("vram_gb", 24)), description="Available VRAM in GB")
-    BATCH_SIZE: int = Field(default_factory=lambda: int(_section("ner_gpu").get("batch_size", 32)), description="Inference batch size")
-    USE_FP16: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("use_fp16", True)), description="Use FP16 precision")
-    MAX_PARALLEL_MODELS: int = Field(default_factory=lambda: int(_section("ner_gpu").get("max_parallel_models", 3)), description="Max concurrent models")
-    COMPILE: bool = Field(default_factory=lambda: bool(_section("ner_gpu").get("use_torch_compile", False)), description="Use torch.compile")
+    ENABLED: bool = Field(
+        default_factory=lambda: bool(_section("ner_gpu").get("enabled", False)),
+        description="Enable GPU acceleration",
+    )
+    VRAM_GB: int = Field(
+        default_factory=lambda: int(_section("ner_gpu").get("vram_gb", 24)),
+        description="Available VRAM in GB",
+    )
+    BATCH_SIZE: int = Field(
+        default_factory=lambda: int(_section("ner_gpu").get("batch_size", 32)),
+        description="Inference batch size",
+    )
+    USE_FP16: bool = Field(
+        default_factory=lambda: bool(_section("ner_gpu").get("use_fp16", True)),
+        description="Use FP16 precision",
+    )
+    MAX_PARALLEL_MODELS: int = Field(
+        default_factory=lambda: int(_section("ner_gpu").get("max_parallel_models", 3)),
+        description="Max concurrent models",
+    )
+    COMPILE: bool = Field(
+        default_factory=lambda: bool(_section("ner_gpu").get("use_torch_compile", False)),
+        description="Use torch.compile",
+    )
 
 
 class DetectionSettings(BaseModel):
@@ -153,16 +171,16 @@ class LLMSettings:
     """
 
     def __init__(self, config_path: Optional[str] = None):
-        import json
-
         if config_path is None:
-            here = os.path.dirname(os.path.abspath(__file__))
-            config_path = os.path.abspath(os.path.join(here, "../../config.json"))
-
-        self._raw: Dict[str, Any] = {}
-        if os.path.exists(config_path):
-            with open(config_path, "r", encoding="utf-8") as f:
-                self._raw = json.load(f)
+            self._raw = load_config()
+        else:
+            import json
+            self._raw = {}
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    self._raw = json.load(f)
+            except (FileNotFoundError, OSError):
+                pass
 
     # --- LLM connection --------------------------------------------------
     @property

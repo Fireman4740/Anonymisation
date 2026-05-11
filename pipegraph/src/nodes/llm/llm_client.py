@@ -345,17 +345,14 @@ def _get_openrouter_api_key() -> str:
         # (fonctionne même si le CWD n'est pas la racine du projet)
         try:
             here = os.path.dirname(os.path.abspath(__file__))
-            # nodes/llm → nodes → src → pipegraph → project_root
             dotenv_path = os.path.abspath(os.path.join(here, "../../../../.env"))
-            if os.path.exists(dotenv_path):
-                # Lire brute-force sans dépendance python-dotenv
-                with open(dotenv_path, "r", encoding="utf-8") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith("OPENROUTER_API_KEY=") and not line.startswith("#"):
-                            key = line.split("=", 1)[1].strip().strip('"').strip("'")
-                            break
-        except Exception:
+            with open(dotenv_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("OPENROUTER_API_KEY=") and not line.startswith("#"):
+                        key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        break
+        except (FileNotFoundError, OSError):
             pass
     if not key:
         # Dernier recours : pydantic LLMEnvSettings (env_file relatif au CWD)
@@ -453,12 +450,10 @@ class LLMClient:
             self.timeout: float = float(or_cfg.get("timeout_seconds", 60))
             self.retry_count: int = int(or_cfg.get("retry_count", 2))
             self.supports_json_format: bool = bool(or_cfg.get("supports_response_format", True))
-            # OpenRouter required headers
             self._extra_headers = {
                 "HTTP-Referer": _OPENROUTER_SITE_URL,
                 "X-Title": _OPENROUTER_APP_NAME,
             }
-            # Warn if using a small-context reasoning model (fundamentally broken)
             mult = _reasoning_multiplier(self.model)
             ctx = _MODEL_CONTEXT_WINDOWS.get(self.model, 8_192)
             if mult > 1.0 and ctx <= 16_000:
@@ -469,6 +464,13 @@ class LLMClient:
                     f"Consider using a non-reasoning model like "
                     f"google/gemma-3-27b-it or deepseek/deepseek-chat-v3-0324:free."
                 )
+            # Cache retry settings
+            self._max_retries: int = int(or_cfg.get("retry_count", or_cfg.get("max_retries", self._MAX_RETRIES)))
+            self._base_delay: float = float(or_cfg.get("retry_base_delay", self._RETRY_BASE_DELAY))
+            self._max_delay: float = float(or_cfg.get("retry_max_delay", self._RETRY_MAX_DELAY))
+            fallback_model = or_cfg.get("fallback_model")
+            self._fallback_provider: Optional[str] = or_cfg.get("fallback_provider")
+            self._max_workers: int = int(or_cfg.get("max_workers", self._DEFAULT_WORKERS))
             logger.debug(f"LLMClient configured for OpenRouter — model={self.model}")
         else:
             # Ollama (or any other OpenAI-compatible server)
@@ -480,7 +482,18 @@ class LLMClient:
             self.timeout = float(llm_cfg.get("timeout_seconds", 90))
             self.retry_count = int(llm_cfg.get("retry_count", 1))
             self.supports_json_format = bool(llm_cfg.get("supports_response_format", False))
+            # Cache retry settings
+            self._max_retries = int(llm_cfg.get("retry_count", llm_cfg.get("max_retries", self._MAX_RETRIES)))
+            self._base_delay = float(llm_cfg.get("retry_base_delay", self._RETRY_BASE_DELAY))
+            self._max_delay = float(llm_cfg.get("retry_max_delay", self._RETRY_MAX_DELAY))
+            fallback_model = llm_cfg.get("fallback_model")
+            self._fallback_provider: Optional[str] = llm_cfg.get("fallback_provider")
+            self._max_workers = int(llm_cfg.get("max_workers", self._DEFAULT_WORKERS))
             logger.debug(f"LLMClient configured for {effective_provider} — model={self.model}")
+
+        self._models_to_try: List[str] = [self.model]
+        if fallback_model and fallback_model != self.model:
+            self._models_to_try.append(fallback_model)
 
     @classmethod
     def create(cls, role: str = "detect", state_config: Optional[Dict[str, Any]] = None) -> "LLMClient":
@@ -638,21 +651,13 @@ class LLMClient:
         responses).  On persistent empty responses, attempts the fallback model
         if configured.  Returns ``None`` only if all attempts fail.
         """
-        cfg = load_full_config()
-        section = cfg.get("openrouter", {}) if self.provider == "openrouter" else cfg.get("llm", {})
-        max_retries = int(section.get("retry_count", section.get("max_retries", self._MAX_RETRIES)))
-        base_delay = float(section.get("retry_base_delay", self._RETRY_BASE_DELAY))
-        max_delay = float(section.get("retry_max_delay", self._RETRY_MAX_DELAY))
-
-        # Models to try: primary, then fallback if configured and different
-        fallback_model = section.get("fallback_model")
-        models_to_try = [self.model]
-        if fallback_model and fallback_model != self.model:
-            models_to_try.append(fallback_model)
+        max_retries = self._max_retries
+        base_delay = self._base_delay
+        max_delay = self._max_delay
 
         last_error: Optional[Exception] = None
 
-        for model_idx, current_model in enumerate(models_to_try):
+        for model_idx, current_model in enumerate(self._models_to_try):
             if model_idx > 0:
                 logger.info(
                     f"LLM ({self.role}/{self.provider}) switching to fallback model: {current_model}"
@@ -806,11 +811,11 @@ class LLMClient:
         # All models exhausted
         logger.warning(
             f"LLM exhausted all models and retries "
-            f"(role={self.role}, models={models_to_try}): {last_error}"
+            f"(role={self.role}, models={self._models_to_try}): {last_error}"
         )
 
         # Cross-provider fallback: if primary provider is unreachable, try fallback_provider
-        fallback_provider_name = section.get("fallback_provider")
+        fallback_provider_name = self._fallback_provider
         if fallback_provider_name and fallback_provider_name != self.provider and last_error is not None:
             is_conn_error = "Connection error" in str(last_error) or "ConnectionError" in type(last_error).__name__
             if is_conn_error:
@@ -858,9 +863,7 @@ class LLMClient:
             order as ``message_sets``.
         """
         if max_workers is None:
-            cfg = load_full_config()
-            section = cfg.get("openrouter", {}) if self.provider == "openrouter" else cfg.get("llm", {})
-            max_workers = int(section.get("max_workers", self._DEFAULT_WORKERS))
+            max_workers = self._max_workers
 
         n = len(message_sets)
         if n == 0:
@@ -913,10 +916,7 @@ class LLMClient:
         Attempt to automatically repair a truncated or malformed JSON string.
         (e.g., handles truncated output from small OSS models)
         """
-        # Remove trailing space/newline
         text = text.strip()
-        
-        # Simple stack-based parsing to close unclosed strings, objects and arrays.
         stack = []
         in_string = False
         escape = False

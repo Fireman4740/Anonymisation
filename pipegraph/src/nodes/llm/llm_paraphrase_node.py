@@ -16,11 +16,11 @@ Runtime bypass: state.config.disable_llm = True
 from __future__ import annotations
 
 import logging
-import re
 from typing import Any, Dict, List, Optional
 
 from src.state import PipelineState
 from src.nodes.llm.llm_client import LLMClient, load_full_config, estimate_max_prompt_chars
+from src.utils.text_utils import build_chunks
 
 logger = logging.getLogger("LLMParaphraseNode")
 
@@ -61,56 +61,6 @@ _INTENSITY_LABELS = {
 
 # Prompt overhead (system + template without {text})
 _PROMPT_OVERHEAD_CHARS = 800
-
-
-# ---------------------------------------------------------------------------
-# Chunking
-# ---------------------------------------------------------------------------
-
-def _split_sentences(text: str) -> List[str]:
-    parts = re.split(r'(?<=[.!?])\s+(?=[A-ZÀ-ÖØ-Þ])|(?:\n\s*\n)', text)
-    return [p for p in parts if p and p.strip()]
-
-
-def _build_chunks(text: str, max_chars: int) -> List[Dict[str, Any]]:
-    """
-    Group sentences into chunks with their offset in the original text.
-    Returns list of {"text": ..., "offset": ..., "separator": ...}
-    """
-    sentences = _split_sentences(text)
-    if not sentences:
-        return [{"text": text, "offset": 0, "separator": ""}] if text.strip() else []
-
-    chunks: List[Dict[str, Any]] = []
-    current_text = ""
-    current_offset = 0
-    search_from = 0
-
-    for sent in sentences:
-        idx = text.find(sent, search_from)
-        if idx == -1:
-            idx = search_from
-
-        if not current_text:
-            current_text = sent
-            current_offset = idx
-        elif len(current_text) + len(sent) + 1 <= max_chars:
-            gap = text[current_offset + len(current_text):idx]
-            current_text += gap + sent
-        else:
-            # Capture the separator between this chunk and the next
-            chunk_end = current_offset + len(current_text)
-            sep = text[chunk_end:idx]
-            chunks.append({"text": current_text, "offset": current_offset, "separator": sep})
-            current_text = sent
-            current_offset = idx
-
-        search_from = idx + len(sent)
-
-    if current_text:
-        chunks.append({"text": current_text, "offset": current_offset, "separator": ""})
-
-    return chunks
 
 
 # ---------------------------------------------------------------------------
@@ -210,7 +160,7 @@ class LLMParaphraseNode:
         client = self._client(runtime)
         max_prompt_chars = estimate_max_prompt_chars(client.model, reserved_output_tokens=4096)
         max_text_per_chunk = max(500, max_prompt_chars - _PROMPT_OVERHEAD_CHARS)
-        chunks = _build_chunks(text, max_text_per_chunk)
+        chunks = build_chunks(text, max_text_per_chunk)
 
         if not chunks:
             return {"iteration": iteration}

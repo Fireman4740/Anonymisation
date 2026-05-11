@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
 
-from eval.core.config import build_runtime_config
+from eval.evaluate import build_eval_config
 
 from .components.feedback import show_empty_state, show_error
 from .components.sidebar import render_sidebar_ui
@@ -147,10 +147,11 @@ def _run_benchmark(
                 "profile": cfg.local_config.profile,
                 "eval_mode": cfg.local_config.eval_mode,
                 "masking_mode": cfg.local_config.masking_mode,
+                "doc_workers": cfg.local_config.doc_workers,
             }
             render_dashboard(report, meta)
 
-# Local Eval implementation
+# Local Eval implementation — uses evaluate.py as the central backend
 def _run_local_eval(
     *,
     cfg,
@@ -158,28 +159,37 @@ def _run_local_eval(
     datasets_dir: str,
     run_store,
 ) -> Optional[Tuple[List[Dict[str, Any]], str]]:
-    config: Dict[str, Any] = build_runtime_config(
-        enable_detection=bool(cfg.enable_detection),
-        enable_deterministic=bool(cfg.enable_deterministic),
-        enable_ai=bool(cfg.enable_ai),
-        enable_anonymization=bool(cfg.enable_anonymization),
-        detection_mode=str(cfg.detection_mode),
-        llm_detection=bool(cfg.llm_detection_enabled),
-        llm_audit=bool(cfg.llm_audit_enabled),
-        llm_paraphrase=bool(cfg.llm_paraphrase_enabled),
-        rupta_enabled=bool(cfg.rupta_enabled),
-        rupta_max_iterations=int(cfg.rupta_max_iterations),
-        rupta_p_threshold=int(cfg.rupta_p_threshold),
-        dataset_key=str(cfg.dataset_kind),
+    no_llm = not (cfg.llm_detection_enabled or cfg.llm_audit_enabled or cfg.llm_paraphrase_enabled)
+    config: Dict[str, Any] = build_eval_config(
+        dataset=str(cfg.dataset_kind),
         profile=str(cfg.profile),
         eval_mode=str(cfg.eval_mode),
         masking_mode=str(cfg.masking_mode),
+        no_llm=no_llm,
+        detection_mode=str(cfg.detection_mode),
+        llm_provider=str(cfg.llm_provider) if cfg.llm_provider else None,
+        llm_model=str(cfg.llm_model) if cfg.llm_model else None,
+        detection_threshold=float(cfg.detection_threshold),
+        paraphrase_intensity=int(cfg.paraphrase_intensity),
+        extra={
+            "enable_detection": bool(cfg.enable_detection),
+            "enable_deterministic": bool(cfg.enable_deterministic),
+            "enable_ai": bool(cfg.enable_ai),
+            "enable_anonymization": bool(cfg.enable_anonymization),
+            "llm_detection": bool(cfg.llm_detection_enabled),
+            "llm_audit": bool(cfg.llm_audit_enabled),
+            "llm_paraphrase": bool(cfg.llm_paraphrase_enabled),
+            "rupta_enabled": bool(cfg.rupta_enabled),
+            "rupta_max_iterations": int(cfg.rupta_max_iterations),
+            "rupta_p_threshold": int(cfg.rupta_p_threshold),
+        },
     )
 
     st.subheader("Configuration effective")
     with st.expander("Détails"):
         st.code(json.dumps(config, ensure_ascii=False, indent=2), language="json")
     st.caption(f"Dataset: {cfg.dataset_path}")
+    st.caption(f"Workers documents demandés: {cfg.doc_workers if cfg.doc_workers is not None else 'Auto'}")
 
     launch_label = "▶ Lancer l'évaluation (complet)" if cfg.run_full_dataset else "▶ Lancer l'évaluation"
     if not st.button(launch_label, type="primary"):
@@ -189,7 +199,6 @@ def _run_local_eval(
     status = st.empty()
     live = _LiveConsole(title="Logs d'évaluation en direct")
     live.push("Démarrage de l'évaluation...")
-
 
     def _progress_cb(i: int, total: int, doc_id: str) -> None:
         if total <= 0:
@@ -217,6 +226,7 @@ def _run_local_eval(
                 limit=None if cfg.run_full_dataset else int(cfg.limit),
                 config=config,
                 progress_cb=_progress_cb,
+                doc_workers=cfg.doc_workers,
             )
         live.push("Évaluation terminée avec succès.")
     except Exception as exc:
@@ -232,6 +242,17 @@ def _run_local_eval(
         data=json.dumps(report, ensure_ascii=False, indent=2).encode("utf-8"),
         file_name=f"pipegraph_report_{cfg.dataset_label.replace('/', '_')}.json",
         mime="application/json",
+    )
+
+    effective_workers = (
+        ((report[0].get("effective_config") or {}).get("doc_workers"))
+        if report
+        else (cfg.doc_workers if cfg.doc_workers is not None else "Auto")
+    )
+    st.caption(
+        "Stratégie effective: "
+        f"documents={len(report)} | workers={effective_workers} | "
+        f"provider={config.get('llm_provider') or 'config.json'} | detection={cfg.detection_mode}"
     )
 
     if cfg.save_run:
@@ -250,6 +271,7 @@ def _run_local_eval(
                     },
                     "limit": (None if cfg.run_full_dataset else cfg.limit),
                     "config": config,
+                    "doc_workers": effective_workers,
                 }
                 saved_path = run_store.save_run(
                     runs_dir,
@@ -274,26 +296,35 @@ def _run_ratbench_eval_ui(
     lvl_str = f"Level {cfg.level}" if cfg.level else "Tous niveaux"
     st.subheader(f"RAT-Bench — {cfg.language.capitalize()} / {lvl_str}")
 
-    config: Dict[str, Any] = build_runtime_config(
-        enable_detection=bool(cfg.enable_detection),
-        enable_deterministic=bool(cfg.enable_deterministic),
-        enable_ai=bool(cfg.enable_ai),
-        enable_anonymization=bool(cfg.enable_anonymization),
-        detection_mode=str(cfg.detection_mode),
-        llm_detection=bool(cfg.llm_detection_enabled),
-        llm_audit=bool(cfg.llm_audit_enabled),
-        llm_paraphrase=bool(cfg.llm_paraphrase_enabled),
-        rupta_enabled=bool(cfg.rupta_enabled),
-        rupta_max_iterations=int(cfg.rupta_max_iterations),
-        rupta_p_threshold=int(cfg.rupta_p_threshold),
-        dataset_key="ratbench",
+    no_llm = not (cfg.llm_detection_enabled or cfg.llm_audit_enabled or cfg.llm_paraphrase_enabled)
+    config: Dict[str, Any] = build_eval_config(
+        dataset="ratbench",
         profile=str(cfg.profile),
         eval_mode=str(cfg.eval_mode),
         masking_mode=str(cfg.masking_mode),
+        no_llm=no_llm,
+        detection_mode=str(cfg.detection_mode),
+        llm_provider=str(cfg.llm_provider) if cfg.llm_provider else None,
+        llm_model=str(cfg.llm_model) if cfg.llm_model else None,
+        detection_threshold=float(cfg.detection_threshold),
+        paraphrase_intensity=int(cfg.paraphrase_intensity),
+        extra={
+            "enable_detection": bool(cfg.enable_detection),
+            "enable_deterministic": bool(cfg.enable_deterministic),
+            "enable_ai": bool(cfg.enable_ai),
+            "enable_anonymization": bool(cfg.enable_anonymization),
+            "llm_detection": bool(cfg.llm_detection_enabled),
+            "llm_audit": bool(cfg.llm_audit_enabled),
+            "llm_paraphrase": bool(cfg.llm_paraphrase_enabled),
+            "rupta_enabled": bool(cfg.rupta_enabled),
+            "rupta_max_iterations": int(cfg.rupta_max_iterations),
+            "rupta_p_threshold": int(cfg.rupta_p_threshold),
+        },
     )
 
     with st.expander("Configuration effective", expanded=False):
         st.code(json.dumps(config, ensure_ascii=False, indent=2), language="json")
+    st.caption(f"Workers documents demandés: {cfg.doc_workers if cfg.doc_workers is not None else 'Auto'}")
 
     session_key = f"ratbench_result_{cfg.language}_{cfg.level}_{cfg.limit}"
     cached_result = st.session_state.get(session_key)
@@ -328,6 +359,7 @@ def _run_ratbench_eval_ui(
                     config=config,
                     progress_cb=_progress_cb,
                     enable_risk_eval=bool(getattr(cfg, 'enable_risk_eval', False)),
+                    doc_workers=cfg.doc_workers,
                 )
             live.push("Évaluation RAT-Bench terminée avec succès.")
         except Exception as exc:
@@ -348,6 +380,18 @@ def _run_ratbench_eval_ui(
             mime="application/json",
         )
 
+        details = result.get("details", [])
+        effective_workers = (
+            ((details[0].get("effective_config") or {}).get("doc_workers"))
+            if details
+            else (cfg.doc_workers if cfg.doc_workers is not None else "Auto")
+        )
+        st.caption(
+            "Stratégie effective: "
+            f"documents={len(details)} | workers={effective_workers} | "
+            f"provider={config.get('llm_provider') or 'config.json'} | detection={cfg.detection_mode}"
+        )
+
         if cfg.save_run:
             if run_store.save_run is None:
                 st.warning("Run store indisponible ; sauvegarde impossible.")
@@ -364,6 +408,7 @@ def _run_ratbench_eval_ui(
                         },
                         "limit": None if cfg.run_full_dataset else cfg.limit,
                         "config": config,
+                        "doc_workers": effective_workers,
                         "aggregate_metrics": result.get("summary", {}),
                         "by_difficulty": result.get("by_difficulty", {}),
                         "by_scenario": result.get("by_scenario", {}),

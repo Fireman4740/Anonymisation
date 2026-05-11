@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
@@ -151,6 +152,102 @@ def _count_ratbench_profiles(eval_dir: str, language: str, level: Optional[int])
         return len(records)
     return sum(1 for rec in records if isinstance(rec, dict) and rec.get("difficulty") == level)
 
+
+@st.cache_data(ttl=60)
+def _load_pipegraph_config(config_path: str) -> Dict[str, Any]:
+    if not os.path.exists(config_path):
+        return {}
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _ollama_tags_url(base_url: str) -> str:
+    base = base_url.strip() if base_url else ""
+    if not base:
+        base = "http://localhost:11434"
+    base = base.rstrip("/")
+    if base.endswith("/v1"):
+        base = base[:-3]
+    return f"{base}/api/tags"
+
+
+@st.cache_data(ttl=15)
+def _fetch_ollama_models(base_url: str) -> List[str]:
+    url = _ollama_tags_url(base_url)
+    try:
+        with urllib.request.urlopen(url, timeout=2) as response:
+            payload = json.load(response)
+    except (OSError, json.JSONDecodeError):
+        return []
+    models: List[str] = []
+    if isinstance(payload, dict):
+        for item in payload.get("models", []) or []:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name") or item.get("model")
+            if name:
+                models.append(str(name))
+    return sorted(set(models))
+
+
+@st.cache_data(ttl=60)
+def _fetch_openrouter_models(base_url: str) -> List[str]:
+    if not base_url:
+        return []
+    url = f"{base_url.rstrip('/')}/models"
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            payload = json.load(response)
+    except (OSError, json.JSONDecodeError):
+        return []
+    data = payload.get("data") if isinstance(payload, dict) else None
+    if not isinstance(data, list):
+        return []
+    models: List[str] = []
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        model_id = item.get("id") or item.get("name")
+        if model_id:
+            models.append(str(model_id))
+    return sorted(set(models))
+
+
+def _merge_model_lists(primary: List[str], secondary: List[str]) -> List[str]:
+    seen = set()
+    combined: List[str] = []
+    for name in primary + secondary:
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        combined.append(name)
+    return combined
+
+
+def _get_llm_defaults(eval_dir: str) -> Tuple[str, str, str, str, str, str]:
+    config_path = os.path.abspath(os.path.join(eval_dir, "..", "pipegraph", "config.json"))
+    config = _load_pipegraph_config(config_path)
+    llm_cfg = config.get("llm", {}) if isinstance(config, dict) else {}
+    openrouter_cfg = config.get("openrouter", {}) if isinstance(config, dict) else {}
+    default_provider = str(llm_cfg.get("provider") or "")
+    default_model = str(llm_cfg.get("model") or "")
+    ollama_base_url = str(llm_cfg.get("base_url") or "http://localhost:11434/v1")
+    openrouter_base_url = str(openrouter_cfg.get("base_url") or "https://openrouter.ai/api/v1")
+    openrouter_model = str(openrouter_cfg.get("model") or "")
+    openrouter_fallback = str(openrouter_cfg.get("fallback_model") or "")
+    return (
+        default_provider,
+        default_model,
+        ollama_base_url,
+        openrouter_base_url,
+        openrouter_model,
+        openrouter_fallback,
+    )
+
 def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]:
     st.sidebar.subheader("Configuration du Run")
     
@@ -274,6 +371,92 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
     rupta_enabled = st.sidebar.checkbox("Activer RUPTA", value=True, disabled=not (llm_audit_enabled and llm_paraphrase_enabled))
     rupta_max_iterations = int(st.sidebar.number_input("Max itérations RUPTA", min_value=1, max_value=5, value=3, disabled=not rupta_enabled))
     rupta_p_threshold = int(st.sidebar.slider("Seuil privacy (p_threshold)", min_value=0, max_value=100, value=15, step=5, disabled=not rupta_enabled))
+    paraphrase_intensity = int(st.sidebar.slider(
+        "Intensité paraphrase", min_value=1, max_value=3, value=1, step=1,
+        disabled=not rupta_enabled,
+        help="Niveau d'agressivité de la paraphrase RUPTA (1=léger, 3=maximal)",
+    ))
+
+    st.sidebar.caption("⚙️ Paramètres avancés")
+    (
+        default_provider,
+        default_model,
+        ollama_base_url,
+        openrouter_base_url,
+        openrouter_model,
+        openrouter_fallback,
+    ) = _get_llm_defaults(eval_dir)
+
+    provider_default_label = f"config.json (defaut: {default_provider or 'auto'})"
+    provider_options = [provider_default_label, "ollama", "openrouter"]
+    provider_key = "llm_provider_choice"
+    raw_provider = st.session_state.get(provider_key)
+    if raw_provider is not None and raw_provider not in provider_options:
+        st.session_state.pop(provider_key, None)
+    provider_choice = st.sidebar.selectbox(
+        "LLM Provider",
+        options=provider_options,
+        index=0,
+        key=provider_key,
+        help="Selectionne le provider LLM. Le choix 'config.json' garde le provider par defaut.",
+    )
+    llm_provider = "" if provider_choice == provider_default_label else provider_choice
+
+    effective_provider = llm_provider or default_provider or "ollama"
+    if effective_provider == "ollama":
+        provider_models = _fetch_ollama_models(ollama_base_url)
+        fallback_models = [default_model]
+        provider_default_model = default_model
+    elif effective_provider == "openrouter":
+        provider_models = _fetch_openrouter_models(openrouter_base_url)
+        fallback_models = [openrouter_model, openrouter_fallback, default_model]
+        provider_default_model = openrouter_model or default_model
+    else:
+        provider_models = []
+        fallback_models = [default_model]
+        provider_default_model = default_model
+
+    provider_models = _merge_model_lists(provider_models, [m for m in fallback_models if m])
+    model_default_label = f"config.json (defaut: {provider_default_model or 'auto'})"
+    model_options = [model_default_label] + provider_models if provider_models else [model_default_label]
+    model_key = "llm_model_choice"
+    raw_model = st.session_state.get(model_key)
+    if raw_model is not None and raw_model not in model_options:
+        st.session_state.pop(model_key, None)
+    llm_model_choice = st.sidebar.selectbox(
+        "LLM Model",
+        options=model_options,
+        index=0,
+        key=model_key,
+        help="Modeles disponibles selon le provider choisi. Le choix 'config.json' garde le modele par defaut.",
+    )
+    llm_model = "" if llm_model_choice == model_default_label else llm_model_choice
+
+    if not provider_models:
+        st.sidebar.caption("Liste de modeles indisponible; utilisez config.json ou verifiez l'acces au provider.")
+    doc_workers_auto = st.sidebar.checkbox(
+        "Workers documents auto",
+        value=True,
+        help="Auto choisit une valeur conservatrice selon le provider LLM et l'usage GPU.",
+    )
+    doc_workers_value = int(
+        st.sidebar.number_input(
+            "Nombre de workers documents",
+            min_value=1,
+            max_value=64,
+            value=4,
+            step=1,
+            disabled=doc_workers_auto,
+            help="Nombre de documents évalués en parallèle lorsque le mode auto est désactivé.",
+        )
+    )
+    doc_workers = None if doc_workers_auto else doc_workers_value
+
+    detection_threshold = float(st.sidebar.slider(
+        "Seuil de détection", min_value=0.10, max_value=0.90,
+        value=0.35, step=0.05,
+        help="Seuil de confiance pour valider une entité détectée (GLiNER/NER)",
+    ))
 
     # Risk re-identification (RAT-Bench only, requires OpenRouter)
     enable_risk_eval = False
@@ -309,6 +492,11 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
             rupta_enabled=rupta_enabled and llm_audit_enabled and llm_paraphrase_enabled,
             rupta_max_iterations=rupta_max_iterations,
             rupta_p_threshold=rupta_p_threshold,
+            llm_model=llm_model,
+            llm_provider=llm_provider,
+            detection_threshold=detection_threshold,
+            paraphrase_intensity=paraphrase_intensity,
+            doc_workers=doc_workers,
             enable_risk_eval=enable_risk_eval,
             save_run=save_run,
             run_name=run_name,
@@ -335,6 +523,11 @@ def render_benchmark_controls(*, eval_dir: str) -> Optional[BenchmarkEvalConfig]
             rupta_enabled=rupta_enabled and llm_audit_enabled and llm_paraphrase_enabled,
             rupta_max_iterations=rupta_max_iterations,
             rupta_p_threshold=rupta_p_threshold,
+            llm_model=llm_model,
+            llm_provider=llm_provider,
+            detection_threshold=detection_threshold,
+            paraphrase_intensity=paraphrase_intensity,
+            doc_workers=doc_workers,
             save_run=save_run,
             run_name=run_name,
         )

@@ -18,7 +18,11 @@
       "Bash(conda run *)",
       "Bash(wsl -e bash -c \"cd /mnt/f/IA/Anonymisation && conda run -n ano python -c 'from eval.evaluate import _build_config; print\\(\\\\\"import OK\\\\\"\\)' 2>&1\")",
       "Bash(wsl -e bash -c \"source /root/miniconda3/etc/profile.d/conda.sh && conda activate ano && cd /mnt/f/IA/Anonymisation && python -c 'from eval.evaluate import _build_config; print\\(\\\\\"import OK\\\\\"\\)' 2>&1\")",
-      "Bash(wsl -e bash -c \"find /home -name 'conda.sh' 2>/dev/null | head -5; find /opt -name 'conda.sh' 2>/dev/null | head -5; which python3 2>/dev/null\")"
+      "Bash(wsl -e bash -c \"find /home -name 'conda.sh' 2>/dev/null | head -5; find /opt -name 'conda.sh' 2>/dev/null | head -5; which python3 2>/dev/null\")",
+      "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\\\\pipegraph\\\\src\\\\\" -Recurse -File -Name | head -30)"
     ]
   }
 }

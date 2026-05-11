@@ -6,7 +6,8 @@ import os
 import re
 import sys
 import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -35,6 +36,7 @@ logger = logging.getLogger("pipegraph_eval")
 Span = Tuple[int, int, str]
 ProgressCallback = Callable[[int, int, str], None]
 LLM_ENTITY_SOURCES = {"llm", "llm_review", "llm_verified"}
+LLM_FEATURE_KEYS = ("llm_detection", "llm_verification", "llm_audit", "llm_paraphrase")
 
 
 def _project_root_from_eval_dir() -> str:
@@ -483,6 +485,76 @@ def run_pipegraph_on_text(
     return pipeline.invoke(initial_state)
 
 
+def _load_pipegraph_config_safe() -> Dict[str, Any]:
+    try:
+        ensure_pipegraph_importable()
+        from src.nodes.llm.llm_client import load_full_config  # type: ignore
+
+        cfg = load_full_config()
+        return cfg if isinstance(cfg, dict) else {}
+    except Exception:
+        return {}
+
+
+def _resolve_llm_provider(runtime_config: Dict[str, Any]) -> str:
+    provider = str(runtime_config.get("llm_provider") or "").strip().lower()
+    if provider:
+        return provider
+    cfg = _load_pipegraph_config_safe()
+    return str((cfg.get("llm") or {}).get("provider") or "lmstudio").strip().lower()
+
+
+def _llm_enabled(runtime_config: Dict[str, Any]) -> bool:
+    if bool(runtime_config.get("disable_llm")):
+        return False
+    configured_flags = [runtime_config[key] for key in LLM_FEATURE_KEYS if key in runtime_config]
+    if configured_flags:
+        return any(bool(value) for value in configured_flags)
+    return True
+
+
+def _gliner_gpu_enabled(runtime_config: Dict[str, Any]) -> bool:
+    if runtime_config.get("enable_ai") is False:
+        return False
+
+    provider = str(runtime_config.get("ner_provider") or "gliner").lower()
+    if provider != "gliner":
+        return False
+
+    cfg = _load_pipegraph_config_safe()
+    detection_cfg = (((cfg.get("pipeline") or {}).get("nodes") or {}).get("detection") or {})
+    ai_cfg = (detection_cfg.get("ai_ner") or {}) if isinstance(detection_cfg, dict) else {}
+    gliner_cfg = (ai_cfg.get("gliner") or {}) if isinstance(ai_cfg, dict) else {}
+    ner_gpu_cfg = cfg.get("ner_gpu") or {}
+
+    return bool(gliner_cfg.get("use_gpu") or ner_gpu_cfg.get("enabled"))
+
+
+def resolve_doc_workers(
+    config: Optional[Dict[str, Any]],
+    requested_workers: Optional[int] = None,
+    *,
+    doc_count: Optional[int] = None,
+) -> int:
+    """Resolve document-level benchmark concurrency.
+
+    ``requested_workers=None`` means auto mode. Explicit worker counts are
+    honored and only capped to the number of documents.
+    """
+    doc_limit = int(doc_count) if doc_count is not None else None
+    if requested_workers is not None:
+        workers = max(1, int(requested_workers))
+        return min(workers, doc_limit) if doc_limit and doc_limit > 0 else workers
+
+    runtime_config = normalize_runtime_config(config)
+    provider = _resolve_llm_provider(runtime_config)
+    workers = 1
+    if provider == "openrouter" and _llm_enabled(runtime_config):
+        workers = 2 if _gliner_gpu_enabled(runtime_config) else 4
+
+    return min(workers, doc_limit) if doc_limit and doc_limit > 0 else workers
+
+
 def build_report(
     docs: Sequence[Tuple[str, str, List[Span]]],
     pipeline: Any,
@@ -520,27 +592,8 @@ def build_report(
     masking_mode = str(runtime_config.get("masking_mode") or "benchmark").lower()
     benchmark_allowed_labels = allowed_labels if allowed_labels is not None else active_profile.allowed_labels
 
-    if max_workers is None:
-        # Auto-detect: parallel only for OpenRouter
-        provider = str(runtime_config.get("llm_provider", "")).lower()
-        if not provider:
-            try:
-                ensure_pipegraph_importable()
-                from src.nodes.llm.llm_client import load_full_config  # type: ignore
-                _cfg = load_full_config()
-                provider = _cfg.get("llm", {}).get("provider", "lmstudio").lower()
-            except Exception:
-                provider = "lmstudio"
-        if provider == "openrouter":
-            try:
-                ensure_pipegraph_importable()
-                from src.nodes.llm.llm_client import load_full_config as _lcfg  # type: ignore
-                _or_cfg = _lcfg().get("openrouter", {})
-                max_workers = int(_or_cfg.get("max_workers", 8))
-            except Exception:
-                max_workers = 8
-        else:
-            max_workers = 1
+    max_workers = resolve_doc_workers(runtime_config, max_workers, doc_count=len(docs))
+    runtime_config["doc_workers"] = max_workers
 
     use_parallel = max_workers > 1 and len(docs) > 1
     if use_parallel:
@@ -658,6 +711,64 @@ def build_report(
             ],
         }
 
+    def _error_document_result(idx: int, error: str) -> Dict[str, Any]:
+        doc_id, text, gt_spans = docs[idx]
+        return {
+            "doc_id": doc_id,
+            "error": error,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f2": 0.0,
+            "pred_count": 0,
+            "truth_count": len(gt_spans),
+            "leaks_count": len(gt_spans),
+            "full_text": text,
+            "anonymized_text": text,
+            "pipeline_anonymized_text": text,
+            "benchmark_anonymized_text": text,
+            "text_snippet": text[:200],
+            "raw_ground_truth": gt_spans,
+            "ground_truth": gt_spans,
+            "predictions": [],
+            "raw_predictions": [],
+            "canonical_ground_truth": gt_spans,
+            "canonical_predictions": [],
+            "benchmark_ground_truth": gt_spans,
+            "benchmark_predictions": [],
+            "canonical_metrics": {},
+            "benchmark_metrics": {},
+            "eval_mode": eval_mode,
+            "masking_mode": masking_mode,
+            "masking_profile": runtime_config.get("masking_profile", active_profile.name),
+            "masking_counts": {},
+            "effective_config": runtime_config,
+            "runtime_diagnostics": {
+                "eval_profile": active_profile.name,
+                "dataset_key": runtime_config.get("dataset_key"),
+                "llm_provider": runtime_config.get("llm_provider"),
+                "llm_model": runtime_config.get("llm_model"),
+                "doc_workers": max_workers,
+            },
+            "profile_diagnostics": profile_diagnostics(active_profile),
+            "entity_counts": {
+                "raw_predictions": 0,
+                "canonical_predictions": 0,
+                "benchmark_predictions": 0,
+                "ground_truth": len(gt_spans),
+            },
+            "privacy_score": None,
+            "rupta_iterations": 0,
+            "llm_entities": 0,
+            "llm_feedback": {},
+            "leaks": [],
+            "tp_by_label": {},
+            "fp_by_label": {},
+            "fn_by_label": {},
+        }
+
     # --- Sequential path (LM Studio / single worker) ----------------------
     if not use_parallel:
         report: List[Dict[str, Any]] = []
@@ -679,68 +790,60 @@ def build_report(
     report = [None] * len(docs)  # type: ignore[list-item]
     completed = 0
     lock = threading.Lock()
+    doc_timeout_s = float(runtime_config.get("doc_timeout_seconds") or 300)
 
     def _worker(idx: int) -> Tuple[int, Dict[str, Any]]:
         doc_id, text, gt_spans = docs[idx]
         return idx, _process_doc(idx, doc_id, text, gt_spans)
 
-    with ThreadPoolExecutor(max_workers=min(max_workers, len(docs))) as pool:
-        futures = {pool.submit(_worker, i): i for i in range(len(docs))}
-        for future in as_completed(futures):
-            idx_done = futures[future]
+    def _record_progress(idx_done: int) -> None:
+        nonlocal completed
+        with lock:
+            completed += 1
+            current = completed
+        if progress_cb is not None:
             try:
-                idx_res, result = future.result(timeout=300)
-                report[idx_res] = result
-            except TimeoutError:
-                doc_id, text, gt_spans = docs[idx_done]
-                logger.warning(f"build_report: document {doc_id} timed out after 300s")
-                report[idx_done] = {
-                    "doc_id": doc_id,
-                    "error": "timeout (300s)",
-                    "tp": 0, "fp": 0, "fn": 0,
-                    "precision": 0.0, "recall": 0.0, "f2": 0.0,
-                    "pred_count": 0, "truth_count": len(gt_spans),
-                    "leaks_count": len(gt_spans),
-                    "full_text": text,
-                    "anonymized_text": text,
-                    "text_snippet": text[:200],
-                    "ground_truth": gt_spans,
-                    "predictions": [],
-                    "privacy_score": None,
-                    "rupta_iterations": 0,
-                    "llm_entities": 0,
-                    "llm_feedback": {},
-                    "leaks": [],
-                    "tp_by_label": {},
-                    "fp_by_label": {},
-                    "fn_by_label": {},
-                }
-            except Exception as exc:
-                doc_id, text, gt_spans = docs[idx_done]
-                logger.warning(f"build_report: document {doc_id} failed: {exc}")
-                report[idx_done] = {
-                    "doc_id": doc_id,
-                    "error": str(exc),
-                    "tp": 0, "fp": 0, "fn": 0,
-                    "precision": 0.0, "recall": 0.0, "f2": 0.0,
-                    "full_text": text,
-                    "anonymized_text": text,
-                    "text_snippet": text[:200],
-                    "ground_truth": gt_spans,
-                    "predictions": [],
-                    "privacy_score": None,
-                    "rupta_iterations": 0,
-                    "llm_entities": 0,
-                    "llm_feedback": {},
-                    "leaks": [],
-                }
-            with lock:
-                completed += 1
-                if progress_cb is not None:
-                    try:
-                        progress_cb(completed, len(docs), docs[idx_done][0])
-                    except Exception:
-                        pass
+                progress_cb(current, len(docs), docs[idx_done][0])
+            except Exception:
+                pass
+
+    pool = ThreadPoolExecutor(max_workers=min(max_workers, len(docs)))
+    try:
+        futures = {pool.submit(_worker, i): i for i in range(len(docs))}
+        started_at = {future: time.monotonic() for future in futures}
+        pending = set(futures)
+
+        while pending:
+            done, pending = wait(pending, timeout=1.0, return_when=FIRST_COMPLETED)
+
+            for future in done:
+                idx_done = futures[future]
+                try:
+                    idx_res, result = future.result()
+                    report[idx_res] = result
+                except Exception as exc:
+                    logger.warning(f"build_report: document {docs[idx_done][0]} failed: {exc}")
+                    report[idx_done] = _error_document_result(idx_done, str(exc))
+                _record_progress(idx_done)
+
+            now = time.monotonic()
+            timed_out = [
+                future
+                for future in pending
+                if now - started_at[future] >= doc_timeout_s
+            ]
+            for future in timed_out:
+                pending.remove(future)
+                idx_done = futures[future]
+                future.cancel()
+                doc_id = docs[idx_done][0]
+                logger.warning(f"build_report: document {doc_id} timed out after {doc_timeout_s:.0f}s")
+                report[idx_done] = _error_document_result(
+                    idx_done, f"timeout ({doc_timeout_s:.0f}s)"
+                )
+                _record_progress(idx_done)
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
 
     return [r for r in report if r is not None]  # type: ignore
 

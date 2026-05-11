@@ -15,6 +15,7 @@ def run_ratbench_eval(
     config: Dict[str, Any],
     progress_cb: Optional[Callable[[int, int, str], None]] = None,
     enable_risk_eval: bool = False,
+    doc_workers: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Lance l'évaluation RAT-Bench sur PipeGraph.
 
@@ -55,6 +56,7 @@ def run_ratbench_eval(
             create_initial_state,
             config=config,
             progress_cb=progress_cb,
+            max_workers=doc_workers,
         )
     except Exception as exc:
         raise AppError("Échec de l'évaluation RAT-Bench", details=str(exc)) from exc

@@ -17,11 +17,11 @@ Runtime bypass: state.config.disable_llm = True
 from __future__ import annotations
 
 import logging
-import re
 from typing import Any, Dict, List
 
 from src.state import PipelineState
 from src.nodes.llm.llm_client import LLMClient, load_full_config, estimate_max_prompt_chars
+from src.utils.text_utils import build_chunks
 
 logger = logging.getLogger("LLMAuditNode")
 
@@ -54,36 +54,6 @@ IMPORTANT: Output ONLY valid JSON."""
 
 # Prompt overhead (system + template without {text})
 _PROMPT_OVERHEAD_CHARS = 700
-
-
-# ---------------------------------------------------------------------------
-# Chunking (shared logic with detection node)
-# ---------------------------------------------------------------------------
-
-def _split_sentences(text: str) -> List[str]:
-    parts = re.split(r'(?<=[.!?])\s+(?=[A-ZÀ-ÖØ-Þ])|(?:\n\s*\n)', text)
-    return [p for p in parts if p and p.strip()]
-
-
-def _build_chunks(text: str, max_chars: int) -> List[str]:
-    """Group sentences into chunks that fit within max_chars."""
-    sentences = _split_sentences(text)
-    if not sentences:
-        return [text] if text.strip() else []
-
-    chunks: List[str] = []
-    current = ""
-    for sent in sentences:
-        if not current:
-            current = sent
-        elif len(current) + len(sent) + 1 <= max_chars:
-            current += " " + sent
-        else:
-            chunks.append(current)
-            current = sent
-    if current:
-        chunks.append(current)
-    return chunks
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +104,7 @@ class LLMAuditNode:
         client = self._client(runtime)
         max_prompt_chars = estimate_max_prompt_chars(client.model, reserved_output_tokens=2048)
         max_text_per_chunk = max(500, max_prompt_chars - _PROMPT_OVERHEAD_CHARS)
-        chunks = _build_chunks(text, max_text_per_chunk)
+        chunks = build_chunks(text, max_text_per_chunk)
 
         if not chunks:
             return {"privacy_score": 0, "llm_feedback": {}}
@@ -149,7 +119,7 @@ class LLMAuditNode:
             [
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": _USER_PROMPT.format(
-                    text=chunk[:max_text_per_chunk]
+                    text=chunk["text"][:max_text_per_chunk]
                 )},
             ]
             for chunk in chunks
