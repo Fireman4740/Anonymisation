@@ -79,6 +79,7 @@ site/
 .pytest_cache/
 .ruff_cache/
 .venv/
+.claude/
 
 # Evaluation outputs
 eval/evaluation/reports/
