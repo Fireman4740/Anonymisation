@@ -177,6 +177,40 @@ PROJECT_GOALS = {
 }
 EVENT_GOALS = {"incident_report", "urgent_incident"}
 SENSITIVE_LABELS = {"HEALTH", "ETHNICITY", "RELIGION", "DISABILITY", "FAMILY_STATUS", "SEXUAL_ORIENTATION", "LEGAL", "FINANCIAL"}
+SUPPORT_GREETING_TEMPLATES = [
+    "Bonjour {recipient},",
+    "Bonjour,",
+    "Hello {recipient},",
+]
+SUPPORT_CLOSING_TEMPLATES = [
+    "Merci pour votre aide.",
+    "Merci d'avance pour votre retour.",
+    "Je reste dispo si besoin.",
+    "Bonne journee.",
+]
+SUPPORT_SUBJECT_PREFIX = ["Objet", "Sujet", "Ticket"]
+SUPPORT_SUMMARY_TEMPLATES = [
+    "Resume rapide :",
+    "En bref :",
+    "Point rapide :",
+]
+SUPPORT_ATTEMPT_TEMPLATES = [
+    "J'ai deja relance le flux et relogge, mais ca revient.",
+    "On a tente une reinit de session, sans effet.",
+    "On a rejoue la synchro et le blocage reste la.",
+    "J'ai verifie les traces de base, sans signal clair.",
+]
+WHEN_TEMPLATES = [
+    "depuis ce matin",
+    "depuis hier",
+    "depuis le debut de semaine",
+    "depuis la derniere mise a jour",
+]
+EMAIL_GREETING_TEMPLATES = [
+    "Bonjour {recipient},",
+    "Bonjour,",
+    "Hello {recipient},",
+]
 
 
 def _signal_phrase(label: str, author: CharacterProfile, world: World) -> str:
@@ -238,10 +272,26 @@ def _signal_phrase(label: str, author: CharacterProfile, world: World) -> str:
     return label.lower()
 
 
-def _variant(options: Sequence[str], scenario: ScenarioSpec, scope: str) -> str:
+def _seed_value(scenario: ScenarioSpec, scope: str) -> int:
     seed = f"{scope}|{scenario.scenario_id}|{scenario.recipient_role}|{scenario.document_goal}|{scenario.urgency}|{scenario.noise_level}"
-    index = sum(ord(char) for char in seed) % len(options)
+    return sum(ord(char) for char in seed)
+
+
+def _variant(options: Sequence[str], scenario: ScenarioSpec, scope: str) -> str:
+    index = _seed_value(scenario, scope) % len(options)
     return options[index]
+
+
+def _pick_option(options: Sequence[str], scenario: ScenarioSpec, scope: str) -> str:
+    return options[_seed_value(scenario, scope) % len(options)]
+
+
+def _pick_list(options: Sequence[Sequence[str | MentionPart]], scenario: ScenarioSpec, scope: str) -> List[str | MentionPart]:
+    return list(options[_seed_value(scenario, scope) % len(options)])
+
+
+def _pick_bool(scenario: ScenarioSpec, scope: str, threshold: int, modulo: int = 100) -> bool:
+    return _seed_value(scenario, scope) % modulo < threshold
 
 
 def _uses_project_context(scenario: ScenarioSpec) -> bool:
@@ -310,6 +360,24 @@ class _DocumentBuilder:
             self._parts.append("\n")
         if len(self._parts) < 2 or not self._parts[-2].endswith("\n"):
             self._parts.append("\n")
+
+    def bullet(self, *parts: str | MentionPart) -> None:
+        if not parts:
+            return
+        self.add("- ")
+        self.add(*parts)
+        self._parts.append("\n")
+
+    def paragraph(self, *sentences: Sequence[str | MentionPart]) -> None:
+        first = True
+        for sentence in sentences:
+            if not sentence:
+                continue
+            if not first:
+                self.add(" ")
+            self.add(*sentence)
+            first = False
+        self._parts.append("\n")
 
     def draft(self, notes: Sequence[str] | None = None) -> GeneratedTextDraft:
         text = "".join(self._parts).strip()
@@ -442,6 +510,106 @@ def _support_opening_parts(
         ]
     template = _variant(SUPPORT_GOAL_TEXT.get(scenario.document_goal, ["je vous contacte a propos de"]), scenario, "support-opening")
     return [template, " ", _mention("PRODUCT_CONTEXT", product_value, world.products[0]), "."]
+
+
+def _support_greeting_line(scenario: ScenarioSpec, author: CharacterProfile) -> str:
+    if author.style_profile.formality == "high":
+        threshold = 85
+    else:
+        threshold = 65
+    if not _pick_bool(scenario, "support-greeting-enabled", threshold):
+        return ""
+    template = _pick_option(SUPPORT_GREETING_TEMPLATES, scenario, "support-greeting-line")
+    return template.format(recipient=_recipient_label(scenario.recipient_role))
+
+
+def _support_subject_parts(
+    scenario: ScenarioSpec,
+    signal_values: Dict[str, List[str]],
+    world: World,
+) -> List[str | MentionPart]:
+    prefix = _pick_option(SUPPORT_SUBJECT_PREFIX, scenario, "support-subject-prefix")
+    product_value = _canonical_value(signal_values, "PRODUCT_CONTEXT", world.products[0])
+    project_value = _canonical_value(signal_values, "PROJECT_NAME_STRONG", world.projects[0])
+    if _uses_project_context(scenario):
+        return [f"{prefix}: ", _mention("PROJECT_NAME_STRONG", project_value, _humanize_project(project_value))]
+    return [f"{prefix}: ", _mention("PRODUCT_CONTEXT", product_value, world.products[0])]
+
+
+def _support_summary_parts(
+    scenario: ScenarioSpec,
+    signal_values: Dict[str, List[str]],
+    world: World,
+) -> List[str | MentionPart]:
+    prefix = _pick_option(SUPPORT_SUMMARY_TEMPLATES, scenario, "support-summary-prefix")
+    product_value = _canonical_value(signal_values, "PRODUCT_CONTEXT", world.products[0])
+    return [prefix, " ", _mention("PRODUCT_CONTEXT", product_value, world.products[0]), "."]
+
+
+def _support_attempt_parts(scenario: ScenarioSpec) -> List[str]:
+    return [_pick_option(SUPPORT_ATTEMPT_TEMPLATES, scenario, "support-attempt")]
+
+
+def _support_when_phrase(scenario: ScenarioSpec) -> str:
+    return _pick_option(WHEN_TEMPLATES, scenario, "support-when")
+
+
+def _support_status_parts(scenario: ScenarioSpec) -> List[str]:
+    return [f"Le souci est visible {_support_when_phrase(scenario)}."]
+
+
+def _support_identity_parts(
+    scenario: ScenarioSpec,
+    signal_values: Dict[str, List[str]],
+    author: CharacterProfile,
+    world: World,
+) -> List[str | MentionPart]:
+    role = _canonical_value(signal_values, "ROLE", author.role)
+    team = _canonical_value(signal_values, "TEAM", author.team)
+    organization = _canonical_value(signal_values, "ORG_NAME_STRONG", world.organization_name)
+    templates: List[List[str | MentionPart]] = [
+        [
+            "Je suis ",
+            _mention("ROLE", role, author.role),
+            " dans l'equipe ",
+            _mention("TEAM", team, author.team),
+            " chez ",
+            _mention("ORG_NAME_STRONG", organization, world.organization_name),
+            ".",
+        ],
+        [
+            "Cote ",
+            _mention("TEAM", team, author.team),
+            ", je suis ",
+            _mention("ROLE", role, author.role),
+            " chez ",
+            _mention("ORG_NAME_STRONG", organization, world.organization_name),
+            ".",
+        ],
+        [
+            "Je travaille chez ",
+            _mention("ORG_NAME_STRONG", organization, world.organization_name),
+            " comme ",
+            _mention("ROLE", role, author.role),
+            " dans l'equipe ",
+            _mention("TEAM", team, author.team),
+            ".",
+        ],
+    ]
+    return _pick_list(templates, scenario, "support-identity-line")
+
+
+def _support_closing_line(scenario: ScenarioSpec, author: CharacterProfile) -> str:
+    if author.style_profile.formality == "high":
+        choices = SUPPORT_CLOSING_TEMPLATES[:2] + SUPPORT_CLOSING_TEMPLATES[3:]
+    else:
+        choices = SUPPORT_CLOSING_TEMPLATES
+    return _pick_option(choices, scenario, "support-closing")
+
+
+def _email_greeting_line(scenario: ScenarioSpec) -> str:
+    template = _pick_option(EMAIL_GREETING_TEMPLATES, scenario, "email-greeting-line")
+    return template.format(recipient=_recipient_label(scenario.recipient_role))
 
 
 def _email_opening_parts(
@@ -670,22 +838,43 @@ def _style_line(builder: _DocumentBuilder, signal_values: Dict[str, List[str]], 
         )
 
 
-def _contact_line(builder: _DocumentBuilder, signal_values: Dict[str, List[str]], author: CharacterProfile) -> None:
+def _contact_line(
+    builder: _DocumentBuilder,
+    signal_values: Dict[str, List[str]],
+    author: CharacterProfile,
+    scenario: ScenarioSpec,
+) -> None:
     if not all(label in signal_values for label in ("PERSON_NAME", "EMAIL", "PHONE", "USERNAME", "ACCOUNT_ID")):
         return
-    builder.line(
-        "Je suis ",
-        _mention("PERSON_NAME", author.full_name, author.full_name),
-        ". Vous pouvez me joindre sur ",
-        _mention("EMAIL", author.email, author.email),
-        " ou au ",
-        _mention("PHONE", author.phone, author.phone),
-        ". Mon login est ",
-        _mention("USERNAME", author.username, f"login {author.username}"),
-        " et le compte concerne est ",
-        _mention("ACCOUNT_ID", author.account_id, author.account_id),
-        ".",
-    )
+    variants: List[List[str | MentionPart]] = [
+        [
+            "Je suis ",
+            _mention("PERSON_NAME", author.full_name, author.full_name),
+            ". Vous pouvez me joindre sur ",
+            _mention("EMAIL", author.email, author.email),
+            " ou au ",
+            _mention("PHONE", author.phone, author.phone),
+            ". Mon login est ",
+            _mention("USERNAME", author.username, f"login {author.username}"),
+            " et le compte concerne est ",
+            _mention("ACCOUNT_ID", author.account_id, author.account_id),
+            ".",
+        ],
+        [
+            "Contact: ",
+            _mention("PERSON_NAME", author.full_name, author.full_name),
+            ", ",
+            _mention("EMAIL", author.email, author.email),
+            ", ",
+            _mention("PHONE", author.phone, author.phone),
+            ". Login ",
+            _mention("USERNAME", author.username, f"login {author.username}"),
+            ", compte ",
+            _mention("ACCOUNT_ID", author.account_id, author.account_id),
+            ".",
+        ],
+    ]
+    builder.line(*_pick_list(variants, scenario, "contact-line"))
 
 
 def _sensitive_line(builder: _DocumentBuilder, signal_values: Dict[str, List[str]], author: CharacterProfile) -> None:
@@ -766,31 +955,100 @@ def _support_draft(
 ) -> GeneratedTextDraft:
     builder = _DocumentBuilder()
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
-    recipient = _recipient_label(scenario.recipient_role)
-    if author.style_profile.formality == "high" or scenario.recipient_role not in {"service_desk", "identity_support", "data_ops"}:
-        builder.line(f"Bonjour {recipient},")
+    verbosity = author.style_profile.verbosity
+    verbosity_weight = {"short": 30, "medium": 60, "long": 80}.get(verbosity, 55)
+    layout = _pick_option(
+        ["compact", "paragraph", "bullets", "context_first", "threadlike"],
+        scenario,
+        "support-layout",
+    )
+    greeting = _support_greeting_line(scenario, author)
+    use_blank_lines = _pick_bool(scenario, "support-blank-lines", 35 if author.style_profile.formality == "high" else 20)
+    include_subject = _pick_bool(scenario, "support-subject", 25)
+    include_attempts = _pick_bool(scenario, "support-attempts", 35 if scenario.noise_level == "low" else 55)
+    include_experience = _pick_bool(scenario, "support-experience", verbosity_weight)
+    include_expertise = _pick_bool(scenario, "support-expertise", max(20, verbosity_weight - 10))
+    include_style = _pick_bool(scenario, "support-style", 35 if verbosity != "short" else 15)
+    include_status = _pick_bool(scenario, "support-status", 45)
+
+    opening = _support_opening_parts(scenario, signal_values, author, world)
+    detail = _goal_detail_line_parts(scenario, signal_values, author, world)
+    impact = _impact_line_parts(scenario, signal_values, author, world)
+    noise = _noise_line_parts(scenario, signal_values, world, author)
+    identity = _support_identity_parts(scenario, signal_values, author, world)
+    summary = _support_summary_parts(scenario, signal_values, world)
+    status = _support_status_parts(scenario) if include_status else []
+
+    if greeting:
+        builder.line(greeting)
+    if include_subject:
+        builder.line(*_support_subject_parts(scenario, signal_values, world))
+    if use_blank_lines:
+        builder.blank_line()
+
+    if layout == "compact":
+        builder.paragraph(opening, detail, identity, status or None, impact)
+        if noise:
+            builder.line(*noise)
+        if include_attempts:
+            builder.line(*_support_attempt_parts(scenario))
+    elif layout == "paragraph":
+        builder.paragraph(opening, identity, detail, impact, noise or None, status or None)
+        if include_attempts and not noise:
+            builder.line(*_support_attempt_parts(scenario))
+    elif layout == "bullets":
+        builder.line(*opening)
+        builder.line(_pick_option(["Points rapides :", "Concretement :", "Recap rapide :"], scenario, "support-bullet-intro"))
+        if detail:
+            builder.bullet(*detail)
+        else:
+            builder.bullet(*summary)
+        builder.bullet(*impact)
+        if status:
+            builder.bullet(*status)
+        if noise:
+            builder.bullet(*noise)
+        if include_attempts:
+            builder.bullet(*_support_attempt_parts(scenario))
+        builder.line(*identity)
+    elif layout == "context_first":
+        builder.line(*identity)
+        if include_experience:
+            _experience_line(builder, signal_values, author)
+        builder.line(*opening)
+        if detail:
+            builder.line(*detail)
+        builder.line(*impact)
+        if status:
+            builder.line(*status)
+        if noise:
+            builder.line(*noise)
     else:
-        builder.line("Bonjour,")
-    builder.blank_line()
-    builder.line(*_support_opening_parts(scenario, signal_values, author, world))
-    goal_detail = _goal_detail_line_parts(scenario, signal_values, author, world)
-    if goal_detail:
-        builder.line(*goal_detail)
-    _profile_line(builder, signal_values, author, world)
-    _experience_line(builder, signal_values, author)
-    builder.line(*_impact_line_parts(scenario, signal_values, author, world))
-    noise_parts = _noise_line_parts(scenario, signal_values, world, author)
-    if noise_parts:
-        builder.line(*noise_parts)
-    _expertise_line(builder, signal_values, author)
-    _style_line(builder, signal_values, connector)
+        builder.line(*opening)
+        if detail:
+            builder.line(*detail)
+        if use_blank_lines:
+            builder.blank_line()
+        builder.line("Rebonjour,")
+        builder.paragraph(identity, impact, status or None)
+        if noise:
+            builder.line(*noise)
+        if include_attempts:
+            builder.line(*_support_attempt_parts(scenario))
+
+    if include_expertise:
+        _expertise_line(builder, signal_values, author)
+    if include_style:
+        _style_line(builder, signal_values, connector)
     _sensitive_line(builder, signal_values, author)
-    _contact_line(builder, signal_values, author)
     builder.line(_support_request_line(scenario, scenario.recipient_role))
-    if "PERSON_NAME" in signal_values:
-        builder.line("Merci,", " ", _mention("PERSON_NAME", author.full_name, author.full_name))
+    if scenario.include_direct_identifiers:
+        _contact_line(builder, signal_values, author, scenario)
+    closing = _support_closing_line(scenario, author)
+    if "PERSON_NAME" in signal_values and _pick_bool(scenario, "support-sign-name", 55):
+        builder.line(closing, " ", _mention("PERSON_NAME", author.full_name, author.full_name))
     else:
-        builder.line("Merci pour votre aide.")
+        builder.line(closing)
     return builder.draft(notes=[f"recipient:{scenario.recipient_role}", f"unit:{scenario.unit_type}"])
 
 
@@ -802,23 +1060,39 @@ def _email_single_message_draft(
 ) -> GeneratedTextDraft:
     builder = _DocumentBuilder()
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
-    builder.line(f"Bonjour {_recipient_label(scenario.recipient_role)},")
-    builder.blank_line()
-    builder.line(*_email_opening_parts(scenario, signal_values, author, world))
+    layout = _pick_option(["standard", "context_first", "compact"], scenario, "email-layout")
+    use_blank_lines = _pick_bool(scenario, "email-blank-lines", 45)
+    builder.line(_email_greeting_line(scenario))
+    if use_blank_lines:
+        builder.blank_line()
+    opening = _email_opening_parts(scenario, signal_values, author, world)
     goal_detail = _goal_detail_line_parts(scenario, signal_values, author, world)
-    if goal_detail:
-        builder.line(*goal_detail)
-    _profile_line(builder, signal_values, author, world)
-    _experience_line(builder, signal_values, author)
-    _expertise_line(builder, signal_values, author)
+    impact = _impact_line_parts(scenario, signal_values, author, world)
     noise_parts = _noise_line_parts(scenario, signal_values, world, author)
-    if noise_parts:
-        builder.line(*noise_parts)
-    _sensitive_line(builder, signal_values, author)
-    builder.line(*_impact_line_parts(scenario, signal_values, author, world))
+
+    if layout == "context_first":
+        _profile_line(builder, signal_values, author, world)
+        _experience_line(builder, signal_values, author)
+        builder.line(*opening)
+    elif layout == "compact":
+        builder.paragraph(opening, goal_detail or None, impact)
+        _profile_line(builder, signal_values, author, world)
+    else:
+        builder.line(*opening)
+        if goal_detail:
+            builder.line(*goal_detail)
+        _profile_line(builder, signal_values, author, world)
+
+    if layout != "compact":
+        _experience_line(builder, signal_values, author)
+        _expertise_line(builder, signal_values, author)
+        if noise_parts:
+            builder.line(*noise_parts)
+        _sensitive_line(builder, signal_values, author)
+        builder.line(*impact)
     builder.line(_email_next_step_line(scenario, scenario.recipient_role, connector))
     if scenario.include_direct_identifiers:
-        _contact_line(builder, signal_values, author)
+        _contact_line(builder, signal_values, author, scenario)
     if scenario.include_signature:
         builder.blank_line()
         signature_value = _canonical_value(signal_values, "SIGNATURE_PATTERN", author.style_profile.signature_pattern)
@@ -841,17 +1115,21 @@ def _email_thread_short_draft(
 ) -> GeneratedTextDraft:
     builder = _DocumentBuilder()
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
-    builder.line(f"Bonjour {_recipient_label(scenario.recipient_role)},")
-    builder.blank_line()
+    use_blank_lines = _pick_bool(scenario, "email-thread-blank-lines", 60)
+    builder.line(_email_greeting_line(scenario))
+    if use_blank_lines:
+        builder.blank_line()
     builder.line(*_email_opening_parts(scenario, signal_values, author, world))
     goal_detail = _goal_detail_line_parts(scenario, signal_values, author, world)
     if goal_detail:
         builder.line(*goal_detail)
     _profile_line(builder, signal_values, author, world)
     builder.line(*_impact_line_parts(scenario, signal_values, author, world))
-    builder.blank_line()
-    builder.line("Rebonjour,")
-    builder.blank_line()
+    if use_blank_lines:
+        builder.blank_line()
+    builder.line(_pick_option(["Rebonjour,", "Rebonjour a tous,", "Petit ajout :"], scenario, "email-thread-followup"))
+    if use_blank_lines:
+        builder.blank_line()
     _experience_line(builder, signal_values, author)
     _expertise_line(builder, signal_values, author)
     _style_line(builder, signal_values, connector)
@@ -860,7 +1138,7 @@ def _email_thread_short_draft(
     if noise_parts:
         builder.line(*noise_parts)
     if scenario.include_direct_identifiers:
-        _contact_line(builder, signal_values, author)
+        _contact_line(builder, signal_values, author, scenario)
     builder.line(_email_next_step_line(scenario, scenario.recipient_role, connector))
     if scenario.include_signature:
         builder.blank_line()
