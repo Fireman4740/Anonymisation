@@ -23,7 +23,7 @@ def run_ratbench_eval(
         summary, by_difficulty, by_scenario, direct_id_detection_rates, details
     """
     try:
-        from eval.ratbench_loader import build_docs_from_ratbench, load_ratbench_profiles
+        from eval.core.loaders.ratbench import build_docs_from_ratbench, load_ratbench_profiles
         from eval.core.ratbench import (
             build_ratbench_report,
             build_ratbench_result,
@@ -86,7 +86,7 @@ def run_ratbench_eval(
     risk_result: Optional[Dict[str, Any]] = None
     if enable_risk_eval:
         try:
-            from eval.evaluate_ratbench_risk import evaluate_ratbench_risk_from_pipeline
+            from eval.cli.evaluate_ratbench_risk import evaluate_ratbench_risk_from_pipeline
 
             print("🛡️ Démarrage évaluation du risque de ré-identification...")
 

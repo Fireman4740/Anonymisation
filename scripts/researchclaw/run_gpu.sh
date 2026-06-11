@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONDA_ENV_BIN="/home/toor/miniconda3/envs/ano/bin"
 NODE_BIN="/home/toor/.nvm/versions/node/v24.13.1/bin"
 TOPIC="Improve the PipeGraph anonymization pipeline using arc_pipegraph.evaluate_candidate on local eval datasets"
@@ -9,9 +9,9 @@ TOPIC="Improve the PipeGraph anonymization pipeline using arc_pipegraph.evaluate
 usage() {
   cat <<'EOF'
 Usage:
-  ./run_researchclaw_gpu.sh [researchclaw run options]
-  ./run_researchclaw_gpu.sh --resume-last [researchclaw run options]
-  ./run_researchclaw_gpu.sh --resume-run artifacts/<run-id> [researchclaw run options]
+  scripts/researchclaw/run_gpu.sh [researchclaw run options]
+  scripts/researchclaw/run_gpu.sh --resume-last [researchclaw run options]
+  scripts/researchclaw/run_gpu.sh --resume-run artifacts/<run-id> [researchclaw run options]
 
 Wrapper options:
   --resume-last          Resume the newest artifacts/rc-*/ checkpoint on GPU.
@@ -20,8 +20,8 @@ Wrapper options:
   -h, --help             Show this help.
 
 Native resume equivalents:
-  ./run_researchclaw_gpu.sh --resume --output artifacts/<run-id>
-  ./run_researchclaw_gpu.sh --from-stage RESOURCE_PLANNING --output artifacts/<run-id>
+  scripts/researchclaw/run_gpu.sh --resume --output artifacts/<run-id>
+  scripts/researchclaw/run_gpu.sh --from-stage RESOURCE_PLANNING --output artifacts/<run-id>
 EOF
 }
 

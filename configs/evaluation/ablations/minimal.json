@@ -1,0 +1,14 @@
+{
+  "_doc": "Ablation minimale: baseline sans LLM vs pipeline complet.",
+  "ablations": [
+    {
+      "name": "no_llm",
+      "overrides": {},
+      "runner_overrides": {"no_llm": true, "skip_risk": true}
+    },
+    {
+      "name": "full_pipeline",
+      "overrides": {}
+    }
+  ]
+}

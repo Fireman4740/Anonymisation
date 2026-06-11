@@ -1,189 +1,67 @@
-# Évaluation du pipeline d'anonymisation
+# Evaluation PipeGraph
 
-Ce dossier regroupe l'évaluation **PipeGraph locale** : runner officiel, benchmarks, rapports et application Streamlit.
+Le package `eval/` contient l'evaluation locale de PipeGraph: registry de
+datasets, adapters, runner officiel, API Python, CLI et Streamlit.
 
-## Points d'entrée
+## Point D'Entree
 
-| Script | Usage |
+```bash
+python -m eval list-datasets
+python -m eval run --dataset tab --config configs/evaluation/no_llm.json
+python -m eval run --dataset all --config configs/evaluation/full_llm.json
+python -m eval ablation --dataset tab \
+  --config configs/evaluation/no_llm.json \
+  --ablation-config configs/evaluation/ablations/default.json
+python -m eval compare --runs runs/evaluation/A runs/evaluation/B --output runs/comparison/
+python -m eval report --run runs/evaluation/A --format markdown
+```
+
+`scripts/evaluate.py` est le seul wrapper script conserve. Les anciens scripts
+legacy redondants ont ete retires.
+
+## API Python
+
+```python
+from eval.api import EvaluationRunner, compare_runs, load_predictions
+
+runner = EvaluationRunner.from_config("configs/evaluation/no_llm.json")
+payload = runner.run(dataset="tab")
+summary = runner.run_ablation(
+    dataset="tab",
+    ablation_config="configs/evaluation/ablations/minimal.json",
+)
+```
+
+## Architecture
+
+| Chemin | Role |
 | --- | --- |
-| `python eval/evaluate.py` | **Point d'entrée unifié** — benchmark, ablation, dataset standalone |
-| `python -m eval.run_pipeline_evaluation` | Runner officiel ARC/ResearchClaw avec protocole complet |
-| `streamlit run eval/streamlit_app/app.py` | Interface graphique d'analyse |
+| `eval/api.py` | Facade Python: run, ablation, compare, acces aux artefacts |
+| `eval/cli/main.py` | CLI unifiee exposee par `python -m eval` |
+| `eval/registry.py` | Source de verite des datasets |
+| `eval/core/dataset_adapters/` | Logique specifique par dataset |
+| `eval/run_pipeline_evaluation.py` | Runner officiel dataset-aware |
+| `eval/core/` | Config, metrics, reporting, I/O, profils |
+| `eval/core/pipeline.py` | Execution document par document |
+| `eval/core/loaders/` | Loaders de datasets specialises |
+| `eval/streamlit_app/` | Interface d'analyse |
 
----
+## Datasets
 
-## `eval/evaluate.py` — script unifié
+Le registry expose `tab`, `dbbio`, `anonymization`, `ratbench`, `conll2003` et
+`personalreddit`. Ajouter un dataset se fait via un nouvel adapter et son
+enregistrement dans `eval/registry.py`.
 
-Trois sous-commandes : `benchmark`, `ablation`, `dataset`.
+## Artefacts
 
-### `benchmark` — évaluation multi-dataset
+Chaque run ecrit:
 
-```bash
-python eval/evaluate.py benchmark [options]
+```text
+run_config.json
+candidate_effective_config.json
+summary.json
+summary.md
+manifest.json
+datasets/<key>/documents.jsonl
+datasets/<key>/metrics.json
 ```
-
-| Argument | Valeurs | Défaut | Description |
-| --- | --- | --- | --- |
-| `--datasets` | `tab dbbio anonymization ratbench conll2003 personalreddit` | `tab dbbio anonymization` | Datasets à évaluer (un ou plusieurs) |
-| `--limit` | entier | aucun | Nombre max de documents par dataset |
-| `--split` | `test` `dev` `train` | `test` | Split du dataset |
-| `--levels` | `1` `2` `3` | `1 2 3` | Niveaux RAT-Bench |
-| `--language` | `english` `mandarin` `spanish` | `english` | Langue RAT-Bench |
-| `--skip-risk` | flag | — | Ignorer l'axe risque RAT-Bench |
-| `--strict` | flag | — | Afficher les métriques strict-match (exact offsets+label) en priorité |
-| `--save-runs` | flag | — | Sauvegarder les runs document-level |
-| `--doc-workers` | entier | `1` | Workers parallèles pour les documents — laisser à 1 sur GPU local, augmenter pour OpenRouter |
-| `--out` | chemin | `eval/evaluation/reports/` | Répertoire de sortie |
-| `--no-llm` | flag | — | Désactiver tous les modules LLM |
-| `--with-llm` | flag | — | Forcer LLM activé |
-| `--llm-provider` | chaîne | config | Provider LLM (`openrouter`, etc.) |
-| `--llm-model` | chaîne | config | Modèle LLM |
-| `--profile` | `auto` + profils | `auto` | Profil d'évaluation |
-| `--eval-mode` | `canonical` `benchmark` `both` | `both` | Mode de projection des labels |
-| `--masking-mode` | `production` `benchmark` | `benchmark` | Politique de masquage |
-
-Exemples :
-
-```bash
-# Rapide sans LLM
-python eval/evaluate.py benchmark --datasets tab dbbio --limit 50 --no-llm --skip-risk
-
-# Avec métriques strictes (standard CoNLL/PII-Bench)
-python eval/evaluate.py benchmark --datasets tab ratbench --limit 50 --strict
-
-# RAT-Bench niveau 1 anglais
-python eval/evaluate.py benchmark --datasets ratbench --levels 1 --language english --limit 50 --skip-risk
-
-# Tous les datasets
-python eval/evaluate.py benchmark \
-  --datasets tab dbbio anonymization ratbench conll2003 personalreddit \
-  --limit 100 --strict --skip-risk --save-runs
-```
-
-### `ablation` — grille d'ablation
-
-```bash
-python eval/evaluate.py ablation [options]
-```
-
-| Argument | Valeurs | Défaut | Description |
-| --- | --- | --- | --- |
-| `--dataset` | voir datasets | `tab` | Dataset cible |
-| `--suite` | `nodes` `ner_presets` `ner_ensemble` `ner_threshold` `ner_vote` `anon_strategy` `detection_mode` `full` `custom` `list` | `nodes` | Suite d'ablation |
-| `--custom-config` | chemin JSON | — | Config custom pour `--suite custom` |
-| `--limit` | entier | `50` | Documents par config |
-| `--split` | `test` `dev` `train` | `test` | Split |
-| `--language` | `english` `mandarin` `spanish` | `english` | Langue (RAT-Bench) |
-| `--level` | `1` `2` `3` | aucun | Niveau RAT-Bench |
-| `--parallel-configs` | entier | `1` | Configs évaluées en parallèle |
-| `--save-runs` | flag | — | Sauvegarder les runs |
-| `--out` | chemin | — | Répertoire de sortie |
-| LLM + profil | — | — | Mêmes que `benchmark` |
-
-Exemples :
-
-```bash
-# Lister les suites disponibles
-python eval/evaluate.py ablation --suite list
-
-# Ablation des nœuds sur TAB
-python eval/evaluate.py ablation --dataset tab --suite nodes --limit 20
-
-# Ablation NER sur RAT-Bench L1
-python eval/evaluate.py ablation --dataset ratbench --suite ner_presets --level 1 --limit 30
-
-# Suite complète en parallèle
-python eval/evaluate.py ablation --dataset tab --suite full --limit 50 --parallel-configs 4
-```
-
-### `dataset` — évaluation standalone d'un dataset
-
-```bash
-python eval/evaluate.py dataset --dataset <nom> [options]
-```
-
-| Argument | Valeurs | Défaut | Description |
-| --- | --- | --- | --- |
-| `--dataset` | voir datasets | **requis** | Dataset à évaluer |
-| `--split` | `test` `dev` `train` | `test` | Split |
-| `--language` | `english` `mandarin` `spanish` | `english` | Langue (RAT-Bench) |
-| `--level` | `1` `2` `3` | aucun | Niveau RAT-Bench |
-| `--limit` | entier | aucun | Nombre max de documents |
-| `--save-run` | flag | — | Sauvegarder le run |
-| `--strict` | flag | — | Métriques strict-match |
-| `--out` | chemin | — | Répertoire de sortie |
-| LLM + profil | — | — | Mêmes que `benchmark` |
-
-Exemples :
-
-```bash
-python eval/evaluate.py dataset --dataset tab --split test --limit 50
-python eval/evaluate.py dataset --dataset ratbench --level 1 --limit 30 --strict
-python eval/evaluate.py dataset --dataset personalreddit --limit 100 --save-run
-python eval/evaluate.py dataset --dataset conll2003 --split dev --limit 200 --no-llm
-```
-
----
-
-## `python -m eval.run_pipeline_evaluation` — runner officiel
-
-Runner officiel multi-datasets utilisé pour le protocole ARC/ResearchClaw. Produit un dossier complet sous `artifacts/eval-runs/<timestamp>/`.
-
-```bash
-# Rapide sans risque LLM
-python -m eval.run_pipeline_evaluation \
-  --datasets tab dbbio anonymization conll2003 \
-  --skip-risk --limit 50
-
-# Avec RAT-Bench niveau 1
-python -m eval.run_pipeline_evaluation \
-  --datasets tab dbbio ratbench conll2003 anonymization \
-  --ratbench-levels 1 --ratbench-languages english --limit 50
-
-# Smoke test sans LLM
-python -m eval.run_pipeline_evaluation \
-  --datasets anonymization --limit 2 --doc-workers 1 --skip-risk --no-llm
-
-# Candidat ARC/ResearchClaw
-python -m eval.run_pipeline_evaluation \
-  --candidate artifacts/improvement_tests/candidates/mon_candidat.json \
-  --datasets tab dbbio ratbench conll2003 anonymization \
-  --ratbench-levels 1 2 3 --ratbench-languages english \
-  --llm-provider openrouter \
-  --output artifacts/eval-runs/manual-run
-```
-
----
-
-## Organisation
-
-| Fichier / Dossier | Rôle |
-| --- | --- |
-| `eval/evaluate.py` | Script unifié (benchmark / ablation / dataset) |
-| `eval/core/` | Fonctions partagées : bootstrap, config, datasets, métriques, reporting |
-| `eval/pipegraph_eval_local.py` | Exécution document par document, métriques de spans (strict + partial) |
-| `eval/run_pipeline_evaluation.py` | Runner officiel ARC/ResearchClaw |
-| `eval/run_full_benchmark.py` | Wrapper de compatibilité → runner officiel |
-| `eval/run_ablation.py` | Suites d'ablation (importées par `evaluate.py`) |
-| `eval/run_store.py` | Sauvegarde et lecture des runs |
-| `eval/ratbench_loader.py` | Loader et métriques RAT-Bench |
-| `eval/conll2003_loader.py` | Loader CoNLL-2003 / CleanCoNLL |
-| `eval/streamlit_app/` | Interface Streamlit d'analyse et comparaison |
-| `eval/datasets/` | Datasets locaux, scripts de chargement et caches |
-
-## Sorties
-
-| Dossier | Contenu |
-| --- | --- |
-| `artifacts/eval-runs/<run-id>/` | Runs officiels ARC/ResearchClaw (runner officiel) |
-| `eval/evaluation/reports/` | Rapports JSON/Markdown (`evaluate.py benchmark`, historique) |
-| `eval/evaluation/runs/` | Runs document-level (`evaluate.py --save-runs`, Streamlit) |
-| `eval/datasets/*/cache/` | Datasets téléchargés et caches |
-
-## RAT-Bench et OpenRouter
-
-L'axe `ratbench_reid_risk` nécessite `OPENROUTER_API_KEY`. Sans clé :
-
-- le run continue avec `risk_degraded` par défaut ;
-- `--require-risk` fait échouer le dataset RAT-Bench (runner officiel) ;
-- `--skip-risk` désactive explicitement cet axe.

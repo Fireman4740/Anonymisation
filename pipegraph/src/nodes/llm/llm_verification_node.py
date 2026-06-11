@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Optional
 from src.state import PipelineState
 from src.utils.entity_utils import normalize_entity_profile, normalize_entity_type
 from src.nodes.llm.llm_client import LLMClient, load_full_config, estimate_max_prompt_chars
+from src.nodes.llm.provider import LLMProvider, get_llm_client
 from src.utils.text_utils import build_chunks
 
 logger = logging.getLogger("LLMVerificationNode")
@@ -229,10 +230,8 @@ class LLMVerificationNode:
     def __init__(self) -> None:
         self._default_client = LLMClient(role="verify")
 
-    def _client(self, runtime: Dict[str, Any]) -> LLMClient:
-        if runtime.get("llm_provider"):
-            return LLMClient.create(role="verify", state_config=runtime)
-        return self._default_client
+    def _client(self, runtime: Dict[str, Any]) -> "LLMProvider":
+        return get_llm_client(role="verify", runtime=runtime, default=self._default_client)
 
     def __call__(self, state: PipelineState) -> Dict[str, Any]:
         logger.info("--- Node: LLM Verification ---")

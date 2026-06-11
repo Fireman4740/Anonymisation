@@ -9,6 +9,7 @@ from src.state import PipelineState
 from src.utils.span_utils import merge_entity_lists
 from src.utils.entity_utils import normalize_entity_profile, normalize_entity_type
 from src.nodes.llm.llm_client import LLMClient, load_full_config
+from src.nodes.llm.provider import LLMProvider, get_llm_client
 
 logger = logging.getLogger("LLMReviewNode")
 
@@ -129,10 +130,8 @@ class LLMReviewNode:
         self.system_prompt = load_prompt("llm_review_system.txt")
         self.user_prompt_template = load_prompt("llm_review_user.txt")
 
-    def _client(self, runtime: Dict[str, Any]) -> LLMClient:
-        if runtime.get("llm_provider"):
-            return LLMClient.create(role="detect", state_config=runtime)
-        return self._default_client
+    def _client(self, runtime: Dict[str, Any]) -> "LLMProvider":
+        return get_llm_client(role="detect", runtime=runtime, default=self._default_client)
 
     def __call__(self, state: PipelineState) -> Dict[str, Any]:
         logger.info("--- Node: LLM Review (Additive) ---")

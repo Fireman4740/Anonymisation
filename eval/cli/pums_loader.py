@@ -6,7 +6,7 @@ columns, and maps PUMS numeric codes to the human-readable values used by
 RAT-Bench profiles.
 
 Setup:
-    Option A (recommended): Run `python eval/pums_loader.py` to download
+    Option A (recommended): Run `python -m eval.cli.pums_loader` to download
         automatically from the US Census Bureau FTP (~620 MB download,
         ~50 MB cached parquet).
     Option B (manual): Place the PUMS CSV files (psam_pusa.csv, psam_pusb.csv)
@@ -338,7 +338,7 @@ def process_pums_to_parquet(
     if not csv_files:
         raise FileNotFoundError(
             f"No PUMS CSV files found in {raw}. "
-            f"Run `python eval/pums_loader.py` to download, or place "
+            f"Run `python -m eval.cli.pums_loader` to download, or place "
             f"psam_pusa.csv and psam_pusb.csv in {raw}."
         )
 
@@ -430,7 +430,7 @@ def load_pums_population(cache_dir: Optional[str] = None) -> Optional[pd.DataFra
         "⚠️  PUMS population data NOT available. Risk calculation will use "
         "the RAT-Bench dataset profiles as a VERY SMALL proxy population "
         f"(~300 instead of ~3.2M). Results will be UNRELIABLE.\n"
-        f"Run `python eval/pums_loader.py` to download PUMS data."
+        f"Run `python -m eval.cli.pums_loader` to download PUMS data."
     )
     return None
 

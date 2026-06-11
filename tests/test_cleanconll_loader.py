@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from eval.conll2003_loader import (
+from eval.core.loaders.conll2003 import (
     _apply_normal_diff_patch,
     _merge_cleanconll_tokens_and_annotations,
     _parse_normal_diff_patch,

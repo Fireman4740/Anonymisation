@@ -57,7 +57,7 @@ pytest pipegraph/tests/
 Pour lancer AutoResearchClaw sur ce pipeline avec la RTX exposée par WSL, utiliser le lanceur GPU du dépôt :
 
 ```bash
-./run_researchclaw_gpu.sh
+scripts/researchclaw/run_gpu.sh
 ```
 
 Le script vérifie `nvidia-smi`, `torch.cuda.is_available()` et force GLiNER sur CUDA via `NER_FORCE_DEVICE=cuda`.
@@ -65,26 +65,26 @@ Le script vérifie `nvidia-smi`, `torch.cuda.is_available()` et force GLiNER sur
 Si le run s'arrête parce que Codex/ACP atteint une limite ou coupe une requête, ResearchClaw conserve un checkpoint dans le dossier `artifacts/rc-*/checkpoint.json`. Pour reprendre le dernier run au prochain stage non terminé :
 
 ```bash
-./run_researchclaw_gpu.sh --resume-last
+scripts/researchclaw/run_gpu.sh --resume-last
 ```
 
 Pour reprendre un run précis :
 
 ```bash
-./run_researchclaw_gpu.sh --resume-run artifacts/rc-20260506-155357-914635
+scripts/researchclaw/run_gpu.sh --resume-run artifacts/rc-20260506-155357-914635
 ```
 
 Si la session ACP Codex semble bloquée, fermer la session persistante avant la reprise :
 
 ```bash
-./run_researchclaw_gpu.sh --reset-acp-session --resume-last
+scripts/researchclaw/run_gpu.sh --reset-acp-session --resume-last
 ```
 
 La reprise native reste disponible :
 
 ```bash
-./run_researchclaw_gpu.sh --resume --output artifacts/<run-id>
-./run_researchclaw_gpu.sh --from-stage RESOURCE_PLANNING --output artifacts/<run-id>
+scripts/researchclaw/run_gpu.sh --resume --output artifacts/<run-id>
+scripts/researchclaw/run_gpu.sh --from-stage RESOURCE_PLANNING --output artifacts/<run-id>
 ```
 
 ## Configuration

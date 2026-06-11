@@ -2,22 +2,13 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
+from eval.core.metrics import fbeta, spans_overlap
 from eval.core.reporting import build_report_meta
-from eval.pipegraph_eval_local import build_report, calculate_overlap
-from eval.ratbench_loader import DIRECT_ID_LABEL_MAP, evaluate_text_leaks, get_ratbench_metadata
+from eval.core.pipeline import build_report
+from eval.core.loaders.ratbench import DIRECT_ID_LABEL_MAP, evaluate_text_leaks, get_ratbench_metadata
 
 Span = Tuple[int, int, str]
 DocumentReport = List[Dict[str, Any]]
-
-
-def _f2(precision: float, recall: float, beta: float = 2.0) -> float:
-    if precision <= 0.0 and recall <= 0.0:
-        return 0.0
-    b2 = beta * beta
-    denom = (b2 * precision) + recall
-    if denom <= 0.0:
-        return 0.0
-    return (1.0 + b2) * precision * recall / denom
 
 
 # R_succ threshold from RAT-Bench paper (arXiv 2602.12806, §4): R > 0.2 → re-identified
@@ -79,7 +70,7 @@ def aggregate_ratbench_metrics(report: DocumentReport) -> Dict[str, Any]:
         "macro_f2": round(sum(float(doc.get("f2", 0.0)) for doc in report) / n_documents, 4),
         "micro_precision": round(micro_precision, 4),
         "micro_recall": round(micro_recall, 4),
-        "micro_f2": round(_f2(micro_precision, micro_recall, beta=2.0), 4),
+        "micro_f2": round(fbeta(micro_precision, micro_recall, beta=2.0), 4),
         "total_predictions": sum(int(doc.get("pred_count", 0)) for doc in report),
         "total_ground_truth": sum(int(doc.get("truth_count", 0)) for doc in report),
         "total_leaks": sum(int(doc.get("leaks_count", 0)) for doc in report),
@@ -121,7 +112,7 @@ def direct_id_detection_rate(report: DocumentReport) -> Dict[str, Dict[str, floa
             label = DIRECT_ID_LABEL_MAP.get(identifier_type, "SENSITIVE")
             ground_truth = [span for span in document.get("ground_truth", []) if span[2] == label]
             detected = any(
-                calculate_overlap((truth[0], truth[1]), (prediction[0], prediction[1]))
+                spans_overlap(truth, prediction)
                 for truth in ground_truth
                 for prediction in predictions
             )

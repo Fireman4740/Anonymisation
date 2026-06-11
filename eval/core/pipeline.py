@@ -23,6 +23,7 @@ from eval.core.bootstrap import (
     project_root,
 )
 from eval.core.config import normalize_runtime_config
+from eval.core.metrics import fbeta, normalize_spans, spans_overlap
 from eval.core.profiles import (
     apply_profile_to_config,
     mask_text_with_profile,
@@ -54,32 +55,17 @@ def load_pipegraph() -> Tuple[Any, Any]:
 
 
 def calculate_overlap(span1: Tuple[int, int], span2: Tuple[int, int]) -> bool:
-    start1, end1 = span1
-    start2, end2 = span2
-    return max(0, min(end1, end2) - max(start1, start2)) > 0
+    left = (span1[0], span1[1], "")
+    right = (span2[0], span2[1], "")
+    return spans_overlap(left, right)
 
 
 def _f2(precision: float, recall: float, beta: float = 2.0) -> float:
-    if precision <= 0.0 and recall <= 0.0:
-        return 0.0
-    b2 = beta * beta
-    denom = (b2 * precision) + recall
-    if denom <= 0.0:
-        return 0.0
-    return (1.0 + b2) * precision * recall / denom
+    return fbeta(precision, recall, beta=beta)
 
 
 def _dedupe_spans(spans: Iterable[Span]) -> List[Span]:
-    seen: set[Tuple[int, int, str]] = set()
-    out: List[Span] = []
-    for s in spans:
-        key = (int(s[0]), int(s[1]), str(s[2]))
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append((key[0], key[1], key[2]))
-    out.sort(key=lambda x: (x[0], x[1], x[2]))
-    return out
+    return normalize_spans(spans)
 
 
 def compute_bleu(original: str, anonymized: str) -> float:

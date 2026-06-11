@@ -24,6 +24,8 @@ import os
 import re
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from eval.core.metrics import normalize_spans
+
 logger = logging.getLogger("RAT-Bench-Loader")
 
 Span = Tuple[int, int, str]
@@ -249,15 +251,7 @@ def _spans_for_value(text: str, value: str, label: str) -> List[Span]:
 
 def _dedupe_spans(spans: Iterable[Span]) -> List[Span]:
     """Remove duplicates and sort."""
-    seen: set[Tuple[int, int, str]] = set()
-    out: List[Span] = []
-    for s in spans:
-        key = (int(s[0]), int(s[1]), str(s[2]))
-        if key not in seen:
-            seen.add(key)
-            out.append(key)
-    out.sort(key=lambda x: (x[0], x[1], x[2]))
-    return out
+    return normalize_spans(spans)
 
 
 # ---------------------------------------------------------------------------
@@ -446,7 +440,7 @@ def load_ratbench_profiles(
 
 
 # ---------------------------------------------------------------------------
-# Build docs tuple compatible with pipegraph_eval_local.build_report
+# Build docs tuple compatible with eval.core.pipeline.build_report
 # ---------------------------------------------------------------------------
 
 def build_docs_from_ratbench(

@@ -1,0 +1,203 @@
+{
+  "_doc": "Grille d'ensembles NER multi-modeles. Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "solo_gliner_small-v2_1",
+      "_description": "Modèle individuel: urchade/gliner_small-v2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_small-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner_medium-v2_1",
+      "_description": "Modèle individuel: urchade/gliner_medium-v2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_medium-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner_large-v2_1",
+      "_description": "Modèle individuel: urchade/gliner_large-v2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_large-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner_multi-v2_1",
+      "_description": "Modèle individuel: urchade/gliner_multi-v2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_multi-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner_multi_pii-v1",
+      "_description": "Modèle individuel: urchade/gliner_multi_pii-v1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_multi_pii-v1"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner-multitask-v1_0",
+      "_description": "Modèle individuel: knowledgator/gliner-multitask-v1.0",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "knowledgator/gliner-multitask-v1.0"
+        ]
+      }
+    },
+    {
+      "name": "solo_gliner_medium_news-v2_1",
+      "_description": "Modèle individuel: EmergentMethods/gliner_medium_news-v2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "EmergentMethods/gliner_medium_news-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "solo_NuNER_Zero-span",
+      "_description": "Modèle individuel: numind/NuNER_Zero-span",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "numind/NuNER_Zero-span"
+        ]
+      }
+    },
+    {
+      "name": "pair_large_pii",
+      "_description": "Paire: gliner_large + gliner_multi_pii (preset 'best')",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best"
+      }
+    },
+    {
+      "name": "pair_large_multi",
+      "_description": "Paire: gliner_large + gliner_multi",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_large-v2.1",
+          "urchade/gliner_multi-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "pair_pii_multitask",
+      "_description": "Paire: gliner_multi_pii + gliner-multitask",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_multi_pii-v1",
+          "knowledgator/gliner-multitask-v1.0"
+        ]
+      }
+    },
+    {
+      "name": "trio_large_pii_multi",
+      "_description": "Trio: large + multi_pii + multi",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_large-v2.1",
+          "urchade/gliner_multi_pii-v1",
+          "urchade/gliner_multi-v2.1"
+        ]
+      }
+    },
+    {
+      "name": "trio_large_pii_multitask",
+      "_description": "Trio: large + multi_pii + multitask",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_models": [
+          "urchade/gliner_large-v2.1",
+          "urchade/gliner_multi_pii-v1",
+          "knowledgator/gliner-multitask-v1.0"
+        ]
+      }
+    },
+    {
+      "name": "ensemble_full",
+      "_description": "Ensemble complet (4 modèles — preset 'full')",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "full"
+      }
+    }
+  ]
+}

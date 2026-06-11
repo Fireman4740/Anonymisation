@@ -1,0 +1,11 @@
+{
+  "_doc": "Smoke test rapide: 3 documents, un seul dataset, sans LLM ni risque.",
+  "run_name": "fast_debug",
+  "output_root": "runs/evaluation",
+  "datasets": ["anonymization"],
+  "split": "test",
+  "limit": 3,
+  "doc_workers": 1,
+  "no_llm": true,
+  "skip_risk": true
+}

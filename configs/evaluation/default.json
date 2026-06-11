@@ -1,0 +1,14 @@
+{
+  "_doc": "Config d'evaluation par defaut: tous les datasets, 20 docs, LLM selon config.json pipeline.",
+  "run_name": "default",
+  "output_root": "runs/evaluation",
+  "datasets": ["tab", "dbbio", "ratbench", "conll2003", "anonymization"],
+  "split": "test",
+  "limit": 20,
+  "doc_workers": 1,
+  "profile": "auto",
+  "eval_mode": "both",
+  "masking_mode": "benchmark",
+  "ratbench_levels": [1],
+  "ratbench_languages": ["english"]
+}

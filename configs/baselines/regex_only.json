@@ -1,0 +1,14 @@
+{
+  "_doc": "Baseline: detection deterministe seule (regex + validateurs), aucun LLM.",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": false,
+  "enable_anonymization": true,
+  "detection_mode": "serial",
+  "disable_llm": true,
+  "llm_detection": false,
+  "llm_verification": false,
+  "llm_audit": false,
+  "llm_paraphrase": false,
+  "rupta_enabled": false
+}

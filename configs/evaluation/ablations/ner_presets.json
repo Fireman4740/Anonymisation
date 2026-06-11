@@ -1,0 +1,89 @@
+{
+  "_doc": "Grille de presets GLiNER (selection de modeles). Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "preset_fast",
+      "_description": "urchade/gliner_small-v2.1 uniquement (le plus rapide)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "fast"
+      }
+    },
+    {
+      "name": "preset_balanced",
+      "_description": "urchade/gliner_medium-v2.1 (équilibré)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "balanced"
+      }
+    },
+    {
+      "name": "preset_pii",
+      "_description": "urchade/gliner_multi_pii-v1 (spécialisé PII)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "pii"
+      }
+    },
+    {
+      "name": "preset_multitask",
+      "_description": "knowledgator/gliner-multitask-v1.0 (polyvalent)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "multitask"
+      }
+    },
+    {
+      "name": "preset_accuracy",
+      "_description": "gliner_large + gliner_multi (précision max sans ensemble PII)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "accuracy"
+      }
+    },
+    {
+      "name": "preset_best",
+      "_description": "gliner_large + gliner_multi_pii (prod recommandé)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best"
+      }
+    },
+    {
+      "name": "preset_full",
+      "_description": "4 modèles — ensemble complet (plus lent)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "full"
+      }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "_doc": "Ablation des noeuds du pipeline — contribution de chaque module (regex/NER/LLM detect/verify/RUPTA). Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "01_regex_only",
+      "_description": "Regex déterministe uniquement (pas de NER IA, pas de LLM)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": false,
+        "enable_anonymization": true,
+        "disable_llm": true
+      }
+    },
+    {
+      "name": "02_ner_only",
+      "_description": "NER IA uniquement (pas de regex, pas de LLM)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": false,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true
+      }
+    },
+    {
+      "name": "03_regex_plus_ner",
+      "_description": "Regex + NER IA (pas de LLM)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true
+      }
+    },
+    {
+      "name": "04_regex_plus_ner_plus_llm_detect",
+      "_description": "Regex + NER IA + LLM détection (pas d'audit RUPTA)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": false,
+        "llm_detection": true,
+        "llm_verification": false,
+        "llm_audit": false,
+        "llm_paraphrase": false,
+        "rupta_enabled": false
+      }
+    },
+    {
+      "name": "04b_regex_ner_llm_detect_verify",
+      "_description": "Regex + NER + LLM détection + LLM vérification",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": false,
+        "llm_detection": true,
+        "llm_verification": true,
+        "llm_audit": false,
+        "llm_paraphrase": false,
+        "rupta_enabled": false
+      }
+    },
+    {
+      "name": "04c_regex_ner_llm_verify_only",
+      "_description": "Regex + NER + LLM vérification (sans LLM détection)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": false,
+        "llm_detection": false,
+        "llm_verification": true,
+        "llm_audit": false,
+        "llm_paraphrase": false,
+        "rupta_enabled": false
+      }
+    },
+    {
+      "name": "05_full_pipeline",
+      "_description": "Pipeline complet (Regex + NER + LLM detect + verify + RUPTA)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": false,
+        "llm_detection": true,
+        "llm_verification": true,
+        "llm_audit": true,
+        "llm_paraphrase": true,
+        "rupta_enabled": true
+      }
+    }
+  ]
+}

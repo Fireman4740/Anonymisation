@@ -25,7 +25,7 @@ Chemins :
 
 Loader :
 
-- [`build_docs_from_tab`](../../eval/pipegraph_eval_local.py)
+- [`build_docs_from_tab`](../../eval/core/pipeline.py)
 
 Le loader lit chaque ligne JSONL, récupère `text`, puis construit la vérité terrain en cherchant chaque valeur de `meta.masked_entities` dans le texte. Les spans sont évalués avec le label générique `SENSITIVE`.
 
@@ -57,7 +57,7 @@ Chemins :
 
 Loader :
 
-- [`eval/ratbench_loader.py`](../../eval/ratbench_loader.py)
+- [`eval/core/loaders/ratbench.py`](../../eval/core/loaders/ratbench.py)
 
 Le loader télécharge `imperial-cpg/rat-bench` via `datasets.load_dataset`, puis bascule sur l'API Hugging Face rows si nécessaire. Les profils sont filtrables par :
 
@@ -109,7 +109,7 @@ Chemins :
 
 Loader :
 
-- [`build_docs_from_db_bio`](../../eval/pipegraph_eval_local.py)
+- [`build_docs_from_db_bio`](../../eval/core/pipeline.py)
 
 Le loader utilise le champ `people` ou, en fallback, `wiki_name` pour construire les spans `PERSON` dans `text`.
 
@@ -141,7 +141,7 @@ Chemins :
 
 Loader :
 
-- [`build_docs_from_personalreddit`](../../eval/pipegraph_eval_local.py)
+- [`build_docs_from_personalreddit`](../../eval/core/pipeline.py)
 
 Format JSONL :
 
@@ -164,7 +164,7 @@ Source :
 Statut dans ce dépôt :
 
 - Intégré comme dataset standard depuis le fix 2026-05.
-- Disponible via `--dataset personalreddit` dans `eval/evaluate.py`.
+- Disponible via `python -m eval run --dataset personalreddit`.
 - Profil par défaut : `personalreddit_pii`.
 
 Limites :
@@ -177,8 +177,7 @@ Limites :
 
 Chemins et caches :
 
-- script de référence local : [`eval/datasets/conll2003.py`](../../eval/datasets/conll2003.py)
-- loader actif : [`eval/conll2003_loader.py`](../../eval/conll2003_loader.py)
+- loader actif : [`eval/core/loaders/conll2003.py`](../../eval/core/loaders/conll2003.py)
 - caches générés sous `eval/datasets/conll2003_cache/` ou `eval/datasets/cleanconll_cache/`
 
 Loader :
@@ -225,7 +224,7 @@ Chemins :
 
 Loader :
 
-- [`build_docs_from_anonymization_dataset`](../../eval/pipegraph_eval_local.py)
+- [`build_docs_from_anonymization_dataset`](../../eval/core/pipeline.py)
 
 Format :
 

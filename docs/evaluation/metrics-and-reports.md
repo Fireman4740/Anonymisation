@@ -37,7 +37,7 @@ Chaque document produit par `build_report()` contient notamment :
 
 ## Évaluation span-level
 
-La fonction centrale est `evaluate_spans()` dans [`eval/pipegraph_eval_local.py`](../../eval/pipegraph_eval_local.py).
+La fonction centrale est `evaluate_spans()` dans [`eval/core/pipeline.py`](../../eval/core/pipeline.py).
 
 Le runner officiel ajoute des métriques de protocole dans [`eval/core/metrics.py`](../../eval/core/metrics.py) :
 
@@ -179,7 +179,7 @@ Algorithme (paper §4) :
 
 ## RAT-Bench : leak analysis
 
-RAT-Bench ajoute une analyse textuelle des fuites avec `evaluate_text_leaks()` dans [`eval/ratbench_loader.py`](../../eval/ratbench_loader.py).
+RAT-Bench ajoute une analyse textuelle des fuites avec `evaluate_text_leaks()` dans [`eval/core/loaders/ratbench.py`](../../eval/core/loaders/ratbench.py).
 
 Cette analyse vérifie si les valeurs d'attributs du profil apparaissent encore dans le texte anonymisé.
 

@@ -6,7 +6,7 @@ from eval.core.profiles import (
     project_label,
     resolve_eval_profile,
 )
-from eval.pipegraph_eval_local import build_report
+from eval.core.pipeline import build_report
 
 
 def test_canonical_label_normalization_common_aliases():

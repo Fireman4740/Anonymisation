@@ -1,0 +1,20 @@
+{
+  "_doc": "Evaluation complete avec modules LLM et risque RAT-Bench. Requiert OPENROUTER_API_KEY.",
+  "run_name": "full_llm",
+  "output_root": "runs/evaluation",
+  "datasets": ["tab", "dbbio", "ratbench", "conll2003", "anonymization"],
+  "split": "test",
+  "limit": 50,
+  "doc_workers": 2,
+  "no_llm": false,
+  "skip_risk": false,
+  "ratbench_levels": [1],
+  "ratbench_languages": ["english"],
+  "pipeline_overrides": {
+    "llm_detection": true,
+    "llm_verification": true,
+    "llm_audit": true,
+    "llm_paraphrase": true,
+    "rupta_enabled": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "_doc": "Evaluation 100% locale: regex + NER, aucun appel LLM, pas d'axe risque RAT-Bench.",
+  "run_name": "no_llm",
+  "output_root": "runs/evaluation",
+  "datasets": ["tab", "dbbio", "ratbench", "conll2003", "anonymization"],
+  "split": "test",
+  "limit": 50,
+  "doc_workers": 2,
+  "no_llm": true,
+  "skip_risk": true,
+  "ratbench_levels": [1],
+  "ratbench_languages": ["english"]
+}

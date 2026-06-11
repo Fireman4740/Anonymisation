@@ -18,7 +18,7 @@ def run_pipegraph_eval(
 ) -> List[Dict[str, Any]]:
     try:
         from eval.core.datasets import get_allowed_labels, load_local_dataset_docs, normalize_dataset_key
-        from eval.pipegraph_eval_local import build_report
+        from eval.core.pipeline import build_report
     except Exception as exc:
         raise AppError("Unable to import pipegraph eval modules", details=str(exc)) from exc
 

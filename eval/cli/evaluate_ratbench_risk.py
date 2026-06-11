@@ -194,7 +194,7 @@ def _load_population(
     logger_risk.warning(
         f"⚠️  Using {len(profiles)} dataset profiles as population proxy. "
         "Risk estimates will be UNRELIABLE. "
-        "Download PUMS data: python eval/pums_loader.py"
+        "Download PUMS data: python -m eval.cli.pums_loader"
     )
     pop_data = []
     for p in profiles:
@@ -497,7 +497,7 @@ def evaluate_ratbench_risk_from_pipeline(
 
     Returns a dict with ``metrics`` and ``detailed_results`` keys.
     """
-    from eval.pipegraph_eval_local import run_pipegraph_on_text
+    from eval.core.pipeline import run_pipegraph_on_text
 
     cfg = config or {
         "enable_detection": True,
@@ -553,7 +553,7 @@ def evaluate_ratbench_risk_from_pipeline(
 
 def evaluate_ratbench_risk() -> None:
     from eval.core.bootstrap import project_root
-    from eval.pipegraph_eval_local import load_pipegraph, run_pipegraph_on_text
+    from eval.core.pipeline import load_pipegraph, run_pipegraph_on_text
     
     print("Loading PipeGraph pipeline...")
     _create_pipeline, create_initial_state = load_pipegraph()
@@ -575,8 +575,8 @@ def evaluate_ratbench_risk() -> None:
         return text
 
     print("Loading RAT-Bench dataset from HuggingFace...")
-    # In order to work with the datasets library schema issue, we use the fallback download from ratbench_loader
-    from eval.ratbench_loader import load_ratbench_profiles
+    # In order to work with the datasets library schema issue, we use the fallback download from eval.core.loaders.ratbench
+    from eval.core.loaders.ratbench import load_ratbench_profiles
     profiles = load_ratbench_profiles(language="english")
     
     population_df, is_real_pums = _load_population(profiles)

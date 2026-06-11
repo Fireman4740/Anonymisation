@@ -45,6 +45,60 @@ pip install -r pipegraph/requirements.txt
 python pipegraph/main.py
 ```
 
+## 🐍 API Python
+
+```python
+from pipegraph import anonymize, anonymize_file
+
+# Mode minimal sans LLM (regex + NER uniquement, 100% local)
+result = anonymize("Je m'appelle Jean Dupont, jean.dupont@example.com", no_llm=True)
+print(result.anonymized_text)
+print(result.entities)        # offsets sur original_text, provenance incluse
+print(result.privacy_score)   # score d'audit LLM (None si no_llm)
+
+# Mode complet avec LLM (OPENROUTER_API_KEY requis dans .env)
+result = anonymize("...", {"anon_strategy": "mask", "scope_id": "doc-42"})
+
+# Fichier
+anonymize_file("data/input.txt", "outputs/anonymized.txt", no_llm=True)
+```
+
+## 💻 CLI
+
+```bash
+# Anonymiser un texte (sans LLM)
+python -m pipegraph anonymize --text "Jean Dupont habite à Paris" --no-llm
+
+# Anonymiser un fichier
+python -m pipegraph anonymize-file --input data/input.txt --output outputs/anonymized.txt
+
+# Sortie JSON complète (texte original masqué par défaut, --show-original pour l'inclure)
+python -m pipegraph anonymize --text "..." --json
+
+# Overrides de config runtime
+python -m pipegraph anonymize --text "..." --config-overrides '{"anon_strategy": "mask"}'
+
+# Baselines et ablations = fichiers de config, pas des forks de code
+python -m pipegraph anonymize --text "..." --config configs/baselines/regex_only.json
+python -m pipegraph anonymize --text "..." --config configs/ablations/no_paraphrase.json
+```
+
+Configs disponibles : voir [configs/README.md](configs/README.md)
+(`regex_only`, `ner_only`, `no_llm`, `full_llm` + 4 ablations).
+
+## 🧪 Mode mock LLM (tests offline)
+
+Tous les nœuds LLM passent par `src/nodes/llm/provider.py` (`get_llm_client`).
+Pour exécuter le pipeline complet sans aucun appel réseau :
+
+```bash
+PIPEGRAPH_LLM_MOCK=1 python -m pipegraph anonymize --text "..."
+# ou par config runtime : {"llm_mock": true}
+```
+
+Le mock renvoie des réponses no-op sûres par rôle (détection vide, audit
+score 0, vérification keep-all) et enregistre les prompts (`mock.calls`).
+
 ## 📊 Évaluation
 
 Installer les dépendances communes (si besoin) :
@@ -53,37 +107,26 @@ Installer les dépendances communes (si besoin) :
 pip install -r requirements.txt
 ```
 
-Deux points d'entrée :
+Point d'entrée recommandé : **CLI unifiée**
+
+```bash
+python -m eval list-datasets
+python -m eval run --dataset tab --config configs/evaluation/no_llm.json
+python -m eval run --dataset all --config configs/evaluation/full_llm.json
+python -m eval ablation --dataset tab --ablation-config configs/evaluation/ablations/default.json
+python -m eval compare --runs runs/evaluation/A runs/evaluation/B --output runs/comparison/
+python -m eval report --run runs/evaluation/A
+```
+
+Autres points d'entrée :
 
 | Script | Usage |
 | --- | --- |
-| `python eval/evaluate.py` | Script unifié — benchmark, ablation, dataset standalone |
-| `python -m eval.run_pipeline_evaluation` | Runner officiel ARC/ResearchClaw |
+| `python scripts/evaluate.py` | Wrapper leger vers la CLI unifiee |
+| `python -m eval.run_pipeline_evaluation` | Moteur officiel dataset-aware (appele par la CLI unifiee) |
 
-### `eval/evaluate.py` — commandes rapides
-
-```bash
-# Benchmark multi-dataset sans LLM
-python eval/evaluate.py benchmark \
-  --datasets tab dbbio anonymization \
-  --limit 50 --no-llm --skip-risk
-
-# Benchmark avec métriques strictes (standard CoNLL/PII-Bench)
-python eval/evaluate.py benchmark \
-  --datasets tab ratbench --limit 50 --strict
-
-# RAT-Bench niveau 1 uniquement
-python eval/evaluate.py benchmark \
-  --datasets ratbench --levels 1 --limit 50 --skip-risk
-
-# Ablation des nœuds sur TAB
-python eval/evaluate.py ablation \
-  --dataset tab --suite nodes --limit 20
-
-# Évaluation standalone d'un dataset
-python eval/evaluate.py dataset \
-  --dataset personalreddit --limit 100 --save-run
-```
+Les datasets sont declares dans `eval.registry`; leur logique specifique est
+rangee par dataset dans `eval/core/dataset_adapters/`.
 
 ### Runner officiel
 
@@ -130,8 +173,8 @@ Anonymisation/
 ├── pipegraph/           # Pipeline LangGraph
 ├── eval/                # Benchmarks + Streamlit
 ├── Atlas_anno/          # Génération / préannotation
+├── scripts/             # Wrappers CLI et scripts opérationnels
 ├── tests/               # Tests liés aux datasets / éval
-├── run_ablation_full.sh # Ablations PipeGraph
 ├── requirements.txt     # Dépendances communes
 └── README.md
 ```

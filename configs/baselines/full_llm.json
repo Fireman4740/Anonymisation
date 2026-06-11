@@ -1,0 +1,13 @@
+{
+  "_doc": "Pipeline complet: regex + NER + review/verification/audit/paraphrase LLM + boucle RUPTA. Requiert OPENROUTER_API_KEY ou Ollama.",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": true,
+  "enable_anonymization": true,
+  "detection_mode": "parallel",
+  "llm_detection": true,
+  "llm_verification": true,
+  "llm_audit": true,
+  "llm_paraphrase": true,
+  "rupta_enabled": true
+}
