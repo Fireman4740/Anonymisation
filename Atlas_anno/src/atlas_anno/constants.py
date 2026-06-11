@@ -16,6 +16,7 @@ PROMPT_PREANNOTATION = "preannotation"
 PROMPT_HARDNESS = "hardness_oracle"
 PROMPT_LLM_TEXT = "llm_text_generator"
 PROMPT_LLM_TEXT_NATURALIZER = "llm_text_naturalizer"
+PROMPT_REALISM_JUDGE = "realism_judge"
 PROMPT_ANONYMIZER = "anonymizer"
 PROMPT_ATTACKER = "attacker"
 

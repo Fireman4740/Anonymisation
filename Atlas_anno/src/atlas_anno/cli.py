@@ -16,6 +16,8 @@ from atlas_anno.evaluation.aggregate import (
     run_eval_utility_command,
 )
 from atlas_anno.evaluation.calibration import run_calibrate_difficulty_command
+from atlas_anno.evaluation.diversity import run_eval_diversity_command
+from atlas_anno.evaluation.realism_judge import run_judge_realism_command
 from atlas_anno.export.parquet_export import run_export_parquet_command
 from atlas_anno.generation.pipeline import (
     run_generate_dataset_command,
@@ -77,6 +79,11 @@ def _build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("build-attack-pairs")
     subparsers.add_parser("calibrate-difficulty")
+    subparsers.add_parser("eval-diversity")
+
+    judge_realism = subparsers.add_parser("judge-realism")
+    judge_realism.add_argument("--mode", default="primary-fallback", choices=["primary-fallback", "disabled"])
+    judge_realism.add_argument("--sample-rate", type=float, default=None)
 
     spans = subparsers.add_parser("eval-spans")
     spans.add_argument("--strategy", default="masking")
@@ -142,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
         "attack-llm": lambda: run_llm_attack_command(args.strategy),
         "build-attack-pairs": run_build_attack_pairs_command,
         "calibrate-difficulty": run_calibrate_difficulty_command,
+        "eval-diversity": run_eval_diversity_command,
+        "judge-realism": lambda: run_judge_realism_command(args.mode, args.sample_rate),
         "eval-spans": lambda: run_eval_spans_command(args.strategy),
         "eval-privacy": lambda: run_eval_privacy_command(args.strategy),
         "eval-reid": lambda: run_eval_reid_command(args.strategy),

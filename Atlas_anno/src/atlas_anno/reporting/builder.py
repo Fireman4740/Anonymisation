@@ -35,6 +35,10 @@ def build_consolidated_report(strategy: str) -> Dict[str, object]:
     reid = load_report(strategy, "reid")
     utility = load_report(strategy, "utility")
     calibration = load_report("raw", "calibration")
+    diversity = load_report("raw", "diversity")
+    realism = load_report("raw", "realism")
+    div_summary = diversity.get("summary", {}) if diversity else {}
+    realism_summary = realism.get("summary", {}) if realism else {}
     summary = {
         "strategy": strategy,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -43,6 +47,12 @@ def build_consolidated_report(strategy: str) -> Dict[str, object]:
         "reid_top1": reid.get("summary", {}).get("top1"),
         "span_f1": spans.get("summary", {}).get("f1"),
         "calibration_passed": calibration.get("passed") if calibration else None,
+        "distinct_2": div_summary.get("distinct_2"),
+        "self_bleu": div_summary.get("self_bleu"),
+        "duplicate_rate": div_summary.get("duplicate_rate"),
+        "diversity_passed": div_summary.get("passed"),
+        "realism_avg_overall": realism_summary.get("avg_overall"),
+        "realism_mode": realism_summary.get("mode"),
     }
     return {
         "meta": {"strategy": strategy, "generated_at": summary["created_at"]},
@@ -53,6 +63,8 @@ def build_consolidated_report(strategy: str) -> Dict[str, object]:
             "reid": reid,
             "utility": utility,
             "calibration": calibration,
+            "diversity": diversity,
+            "realism": realism,
         },
     }
 
@@ -67,6 +79,8 @@ def build_markdown(strategy: str, report: Dict[str, object]) -> str:
         _summary_block("Re-identification", sections.get("reid", {})),
         _summary_block("Utility", sections.get("utility", {})),
         _summary_block("Calibration", {"summary": _calibration_summary(sections.get("calibration", {}))} if sections.get("calibration") else {}),
+        _summary_block("Diversity", sections.get("diversity", {})),
+        _summary_block("Realism", sections.get("realism", {})),
     ]
     return "\n".join(blocks)
 

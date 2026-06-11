@@ -56,9 +56,35 @@ generation:
   # Stage 4 : mode de génération du texte (llm-first | deterministic | hybrid).
   text_mode: llm-first
   text_repair_retries: 2
+  # Naturalisation anti-collapse : simple (un texte) ou verbalized (K variantes
+  # avec probabilités, sélection déterministe de la première valide).
+  naturalization:
+    mode: simple
+    variants: 5
+    temperature: 0.7
 calibration:
   min_gap: 0.05
   min_easy_top1: 0.85
+diversity:
+  enforce: false   # report-only par défaut ; passer à true une fois la naturalisation LLM validée
+  self_bleu_max: 0.90
+  distinct_2_min: 0.15
+  max_duplicate_rate: 0.02
+  min_cell_coverage: 0.60
+  self_bleu_sample: 200
+  minhash:
+    num_hashes: 64
+    shingle_size: 3
+    jaccard_threshold: 0.80
+realism:
+  enforce: false
+  max_register_mismatch_rate: 0.10
+  human_sample_rate: 0.05
+  sample_seed: 53
+  judge:
+    enabled: true
+    sample_rate: 1.0
+    models: [reasoning]
 llm:
   models:
     reasoning: aion-labs/aion-2.0

@@ -182,7 +182,13 @@ def _validate_draft(document: DocumentRecord, author: CharacterProfile, draft: G
     return issues
 
 
-def _prompt_payload(document: DocumentRecord, author: CharacterProfile, world: World, diagnostics: Sequence[str] | None = None) -> str:
+def _prompt_payload(
+    document: DocumentRecord,
+    author: CharacterProfile,
+    world: World,
+    diagnostics: Sequence[str] | None = None,
+    naturalization: Dict[str, Any] | None = None,
+) -> str:
     overrides = build_surface_overrides(document.scenario, author, world)
     planned = []
     for mention in _planned_grounding(document):
@@ -196,6 +202,16 @@ def _prompt_payload(document: DocumentRecord, author: CharacterProfile, world: W
                 "must_appear_verbatim": True,
             }
         )
+    # Persona réduite aux attributs couverts par le plan + directives de style
+    # compactes (conditionnement-comme-données) : prompt minimal anti-collapse,
+    # et moins de valeurs sensibles exposées au modèle.
+    planned_labels = {mention.label for mention in _planned_grounding(document)}
+    signal_labels = set(document.metadata.get("signal_values", {}))
+    forbidden_labels = sorted(
+        label
+        for label in _author_attribute_values(author)
+        if label not in planned_labels | signal_labels
+    )
     payload = {
         "document": {
             "doc_id": document.doc_id,
@@ -207,31 +223,21 @@ def _prompt_payload(document: DocumentRecord, author: CharacterProfile, world: W
             "urgency": document.scenario.urgency,
             "noise_level": document.scenario.noise_level,
         },
-        "persona": {
-            "person_id": author.person_id,
-            "full_name": author.full_name,
-            "role": author.role,
-            "team": author.team,
-            "department": author.department,
-            "location": author.location,
-            "age_range": author.age_range,
-            "nationality": author.nationality,
-            "seniority": author.seniority,
-            "tenure_years": author.tenure_years,
-            "degrees": author.degrees,
-            "certifications": author.certifications,
-            "rare_traits": author.rare_traits,
-            "events": author.events,
-            "sensitive_attributes": author.sensitive_attributes,
-            "style_profile": serialize(author.style_profile),
-            "contextual_cues": serialize(author.contextual_cues),
+        "persona": build_persona_block(author, document),
+        "style_directives": build_style_directives(author, document.scenario),
+        "world": {
+            "organization_name": world.organization_name,
+            "products": world.products,
+            "projects": world.projects,
+            "incidents": world.incidents,
+            "calendar_events": world.calendar_events,
         },
-        "world": serialize(world),
         "signal_values": document.metadata.get("signal_values", {}),
         "mention_plan": serialize(document.scenario.mention_plan),
         "surface_overrides": {label: serialize(override) for label, override in overrides.items()},
         "planned_grounding": planned,
-        "forbidden_unplanned_attributes": _author_attribute_values(author),
+        "forbidden_unplanned_attribute_labels": forbidden_labels,
+        "naturalization": naturalization or {"mode": "simple"},
         "repair_diagnostics": list(diagnostics or []),
     }
     return json.dumps(payload, ensure_ascii=False, indent=2)
@@ -254,15 +260,24 @@ def generate_llm_texts(
     runtime_options: Dict[str, Any] | None = None,
 ) -> tuple[List[DocumentRecord], Dict[str, LLMRunMeta], Dict[str, Any]]:
     runtime_options = runtime_options or {}
-    prompt_spec = load_prompt_spec(PROMPT_LLM_TEXT)
+    prompt_spec = load_prompt_spec(PROMPT_LLM_TEXT_NATURALIZER)
     if llm_mode != "primary-fallback":
         return (
             [_error_document(document, ["llm mode disabled"]) for document in documents],
-            {document.doc_id: _default_meta("llm_text_generation", client.settings.atlas_model_creative, prompt_spec.version, "llm mode disabled") for document in documents},
+            {document.doc_id: _default_meta("llm_text_naturalization", client.settings.atlas_model_creative, prompt_spec.version, "llm mode disabled") for document in documents},
             {"total_items": len(documents), "processed_items": 0, "resumed_items": 0, "cache_hits": 0, "fallback_items": 0, "error_items": len(documents), "llm_used_items": 0, "retry_total": 0, "attempt_total": 0, "avg_latency_ms": 0.0, "p95_latency_ms": 0, "elapsed_seconds": 0.0, "peak_concurrency": 0, "repair_retries": 0},
         )
 
     max_repairs = int(_runtime_value(runtime_options, "text_repair_retries", 2))
+    naturalization_config = dict(load_config().defaults["generation"].get("naturalization", {}) or {})
+    nat_mode = str(naturalization_config.get("mode", "simple"))
+    nat_variants = max(1, int(naturalization_config.get("variants", 5)))
+    nat_temperature = float(naturalization_config.get("temperature", 0.7))
+    naturalization_block = (
+        {"mode": "verbalized", "variants": nat_variants}
+        if nat_mode == "verbalized"
+        else {"mode": "simple"}
+    )
 
     def _worker(document: DocumentRecord) -> tuple[DocumentRecord, LLMRunMeta]:
         author = characters_by_id[document.author_id]
@@ -278,13 +293,13 @@ def generate_llm_texts(
         repairs_used = 0
         for repair_index in range(max_repairs + 1):
             value, meta = client.complete_json(
-                step_name="llm_text_generation",
+                step_name="llm_text_naturalization",
                 prompt_spec=prompt_spec,
-                user_prompt=_prompt_payload(document, author, world, diagnostics),
+                user_prompt=_prompt_payload(document, author, world, diagnostics, naturalization_block),
                 model=client.settings.atlas_model_creative,
-                validator=lambda payload: _llm_draft_from_payload(payload, document, author),
+                validator=lambda payload: _drafts_from_payload(payload, document, author),
                 fallback_value=serialize(fallback),
-                temperature=0.7,
+                temperature=nat_temperature,
                 allow_fallback=False,
             )
             if combined_meta is None:
@@ -305,19 +320,32 @@ def generate_llm_texts(
             if value is None:
                 break
             try:
-                draft = value if isinstance(value, GeneratedTextDraft) else _llm_draft_from_payload(value, document, author)
+                if isinstance(value, list):
+                    drafts = list(value)
+                elif isinstance(value, GeneratedTextDraft):
+                    drafts = [value]
+                else:
+                    drafts = _drafts_from_payload(value, document, author)
             except (ValueError, TypeError, KeyError) as exc:
                 combined_meta.validation_errors.append(f"draft parse error: {exc}")
                 break
-            issues = _validate_draft(document, author, draft)
-            if not issues:
-                accepted = draft
+            # Verbalized Sampling : on essaie les variantes dans un ordre
+            # déterministe (seedé par doc_id) jusqu'à la première valide.
+            first_issues: List[str] = []
+            for variant_index in variant_order(document.doc_id, len(drafts)):
+                issues = _validate_draft(document, author, drafts[variant_index])
+                if not issues:
+                    accepted = drafts[variant_index]
+                    break
+                if not first_issues:
+                    first_issues = issues
+            if accepted is not None:
                 break
-            diagnostics = issues
+            diagnostics = first_issues
             repairs_used = repair_index + 1
 
         if combined_meta is None:
-            combined_meta = _default_meta("llm_text_generation", client.settings.atlas_model_creative, prompt_spec.version, "no generation attempt")
+            combined_meta = _default_meta("llm_text_naturalization", client.settings.atlas_model_creative, prompt_spec.version, "no generation attempt")
             combined_meta.error = True
 
         if accepted is None:
@@ -338,7 +366,7 @@ def generate_llm_texts(
 
     documents_out, run_map, stage_stats = run_parallel_stage(
         items=documents,
-        stage_name="llm_text_generation",
+        stage_name="llm_text_naturalization",
         label="llm-texts",
         batch_name=str(_runtime_value(runtime_options, "batch_name", "pilot_100")),
         prompt_version=prompt_spec.version,

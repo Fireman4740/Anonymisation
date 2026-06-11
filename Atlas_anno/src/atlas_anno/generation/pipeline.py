@@ -16,6 +16,9 @@ from atlas_anno.generation.llm_generation import (
 )
 from atlas_anno.attacks.pairs import build_attack_pairs
 from atlas_anno.evaluation.calibration import run_difficulty_calibration
+from atlas_anno.evaluation.diversity import evaluate_diversity
+from atlas_anno.evaluation.register_conformance import apply_register_conformance
+from atlas_anno.evaluation.realism_judge import apply_human_realism_sample
 from atlas_anno.generation.auditor import audit_document
 from atlas_anno.generation.character_builder import build_characters
 from atlas_anno.generation.llm_text_generator import generate_llm_texts
@@ -34,6 +37,7 @@ from atlas_anno.storage import (
     save_batch_manifest,
     save_characters,
     save_documents,
+    save_report,
     save_scenarios,
     save_worlds,
     worlds_path,
@@ -220,6 +224,38 @@ def run_generate_dataset_command(
         raise RuntimeError("Dataset generation audit failed:\n" + "\n".join(issues[:20]))
     calibration = run_difficulty_calibration(documents_rows, characters_by_id, attack_pairs)
 
+    # Stage 6b : conformité de registre + échantillon humain réalisme
+    realism_config = dict(config.defaults.get("realism", {}) or {})
+    register_conformance_stats = apply_register_conformance(documents_rows)
+    n_realism_sampled = apply_human_realism_sample(documents_rows, realism_config)
+    log(
+        f"Register conformance: checked={register_conformance_stats['checked']} "
+        f"failed={register_conformance_stats['failed']} "
+        f"rate={register_conformance_stats['rate']}"
+    )
+    log(f"Realism human sample: {n_realism_sampled} documents marqués pour revue")
+    enforce_realism = bool(realism_config.get("enforce", False))
+    if enforce_realism and register_conformance_stats["rate"] > float(realism_config.get("max_register_mismatch_rate", 0.10)):
+        raise RuntimeError(
+            f"Register mismatch rate {register_conformance_stats['rate']:.3f} "
+            f"> {realism_config.get('max_register_mismatch_rate', 0.10)} (realism.enforce=true)"
+        )
+
+    # Stage 6c : batterie de diversité (report-only par défaut)
+    diversity_config = dict(config.defaults.get("diversity", {}) or {})
+    diversity_report = evaluate_diversity(documents_rows, diversity_config)
+    save_report("raw", "diversity", diversity_report)
+    log(
+        "Diversity: distinct2={distinct_2} selfBLEU={self_bleu} dup={duplicate_rate} "
+        "coverage={cell_coverage} passed={passed}".format(**diversity_report["summary"])
+    )
+    if diversity_config.get("enforce") and not diversity_report["summary"]["passed"]:
+        raise RuntimeError(
+            "Diversity gate failed: " + "; ".join(diversity_report["summary"]["failures"])
+        )
+    # Documents re-sauvegardés avec metadata enrichie (register_conformance, realism_sample)
+    save_documents(documents_rows, annotated=False)
+
     save_batch_manifest(
         batch_name,
         {
@@ -247,6 +283,15 @@ def run_generate_dataset_command(
                 "mention_difficulty": dict(mention_difficulty),
                 "attack_pairs_total": len(attack_pairs),
                 "calibration": calibration,
+                "register_conformance": register_conformance_stats,
+                "realism_sampled": n_realism_sampled,
+                "diversity": {
+                    "distinct_2": diversity_report["summary"]["distinct_2"],
+                    "self_bleu": diversity_report["summary"]["self_bleu"],
+                    "duplicate_rate": diversity_report["summary"]["duplicate_rate"],
+                    "cell_coverage": diversity_report["summary"]["cell_coverage"],
+                    "passed": diversity_report["summary"]["passed"],
+                },
                 "llm_generated_documents": sum(1 for document in documents_rows if document.metadata.get("text_generation_mode") == "llm"),
                 "repair_retries": sum(int(document.metadata.get("text_repair_retries", 0)) for document in documents_rows),
                 "llm_used_documents": sum(1 for document in documents_rows if document.metadata.get("llm_audit", {}).get("llm_used")),
