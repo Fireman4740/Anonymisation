@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from collections import Counter
+from functools import lru_cache
 from typing import Dict, List, Sequence, Tuple
 
 from atlas_anno.surface_grounding import find_occurrences
+from atlas_anno.generation.surface_forms import SurfaceOverride, build_surface_overrides
 
 from atlas_anno.schemas import (
     AnnotationBundle,
@@ -147,10 +150,16 @@ JARGON_TEXT = {
 }
 
 AGE_TEXT = {
+    "20-24": "j'ai entre 20 et 24 ans",
     "25-29": "j'ai entre 25 et 29 ans",
     "30-34": "j'ai entre 30 et 34 ans",
     "35-39": "j'ai entre 35 et 39 ans",
+    "40-44": "j'ai entre 40 et 44 ans",
     "40-49": "j'ai entre 40 et 49 ans",
+    "45-49": "j'ai entre 45 et 49 ans",
+    "50-54": "j'ai entre 50 et 54 ans",
+    "55-59": "j'ai entre 55 et 59 ans",
+    "60-64": "j'ai entre 60 et 64 ans",
 }
 
 SENSITIVE_TEXT = {
@@ -211,6 +220,52 @@ EMAIL_GREETING_TEMPLATES = [
     "Bonjour,",
     "Hello {recipient},",
 ]
+
+
+@lru_cache(maxsize=1)
+def _register_markers() -> Dict[str, Dict[str, List[str]]]:
+    from atlas_anno.generation.style_sampler import load_style_factors
+
+    return load_style_factors().get("register_markers", {})
+
+
+def _register_templates(register: str, key: str, fallback: Sequence[str]) -> List[str]:
+    """Templates de salutation/clôture keyés par registre ; fallback = templates v1."""
+    markers = _register_markers().get(register or "courant", {})
+    templates = markers.get(key)
+    return list(templates) if templates else list(fallback)
+
+
+# Remplacements ordonnés (les plus longs d'abord) pour le tutoiement des
+# templates contrôlés — pas un conjugueur générique.
+_TUTOIEMENT_REPLACEMENTS = [
+    ("Pouvez-vous", "Peux-tu"),
+    ("pouvez-vous", "peux-tu"),
+    ("dites-moi", "dis-moi"),
+    ("Dites-moi", "Dis-moi"),
+    ("vous me confirmez", "tu me confirmes"),
+    ("vous recommandez", "tu recommandes"),
+    ("vous preferez", "tu preferes"),
+    ("vous reprenez", "tu reprends"),
+    ("vous voyez", "tu vois"),
+    ("vous voulez", "tu veux"),
+    ("vous avez", "tu as"),
+    ("de votre cote", "de ton cote"),
+    ("votre retour", "ton retour"),
+    ("votre aide", "ton aide"),
+    ("vous laisser", "te laisser"),
+    ("Je vous", "Je te"),
+    ("je vous", "je te"),
+    ("si vous", "si tu"),
+]
+
+
+def _apply_address_form(text: str, scenario: ScenarioSpec) -> str:
+    if scenario.address_form != "tu":
+        return text
+    for formal, informal in _TUTOIEMENT_REPLACEMENTS:
+        text = text.replace(formal, informal)
+    return text
 
 
 def _signal_phrase(label: str, author: CharacterProfile, world: World) -> str:
@@ -324,10 +379,16 @@ def build_signal_values(scenario: ScenarioSpec, author: CharacterProfile, world:
 
 
 class _DocumentBuilder:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        mode_by_label: Dict[str, str] | None = None,
+        overrides: Dict[str, SurfaceOverride] | None = None,
+    ) -> None:
         self._parts: List[str] = []
         self._grounding: List[GroundedMention] = []
         self._occurrence_by_snippet: Dict[str, int] = {}
+        self._mode_by_label = mode_by_label or {}
+        self._overrides = overrides or {}
 
     def add(self, *parts: str | MentionPart) -> None:
         for part in parts:
@@ -335,6 +396,16 @@ class _DocumentBuilder:
                 continue
             if isinstance(part, tuple):
                 label, canonical_value, snippet = part
+                difficulty_mode = self._mode_by_label.get(label, "explicit_easy")
+                cue_type = ""
+                if difficulty_mode != "explicit_easy":
+                    override = self._overrides.get(label)
+                    if override is not None:
+                        snippet = override.snippet
+                        cue_type = override.cue_type
+                    else:
+                        # Pas de forme alternative disponible : la mention reste easy.
+                        difficulty_mode = "explicit_easy"
                 self._parts.append(snippet)
                 occurrence = self._occurrence_by_snippet.get(snippet, 0) + 1
                 self._occurrence_by_snippet[snippet] = occurrence
@@ -344,6 +415,8 @@ class _DocumentBuilder:
                         canonical_value=canonical_value,
                         snippet=snippet,
                         occurrence_hint=occurrence,
+                        difficulty_mode=difficulty_mode,
+                        cue_type=cue_type,
                     )
                 )
             else:
@@ -386,6 +459,12 @@ class _DocumentBuilder:
 
 def _mention(label: str, canonical_value: str, snippet: str) -> MentionPart:
     return (label, canonical_value, snippet)
+
+
+def _make_builder(scenario: ScenarioSpec, author: CharacterProfile, world: World) -> _DocumentBuilder:
+    mode_by_label = {entry.label: entry.difficulty_mode for entry in scenario.mention_plan}
+    overrides = build_surface_overrides(scenario, author, world)
+    return _DocumentBuilder(mode_by_label=mode_by_label, overrides=overrides)
 
 
 def _canonical_value(signal_values: Dict[str, List[str]], label: str, default: str = "") -> str:
@@ -519,7 +598,8 @@ def _support_greeting_line(scenario: ScenarioSpec, author: CharacterProfile) -> 
         threshold = 65
     if not _pick_bool(scenario, "support-greeting-enabled", threshold):
         return ""
-    template = _pick_option(SUPPORT_GREETING_TEMPLATES, scenario, "support-greeting-line")
+    templates = _register_templates(scenario.register, "support_greetings", SUPPORT_GREETING_TEMPLATES)
+    template = _pick_option(templates, scenario, "support-greeting-line")
     return template.format(recipient=_recipient_label(scenario.recipient_role))
 
 
@@ -600,15 +680,19 @@ def _support_identity_parts(
 
 
 def _support_closing_line(scenario: ScenarioSpec, author: CharacterProfile) -> str:
-    if author.style_profile.formality == "high":
+    register_choices = _register_templates(scenario.register, "support_closings", [])
+    if register_choices:
+        choices = register_choices
+    elif author.style_profile.formality == "high":
         choices = SUPPORT_CLOSING_TEMPLATES[:2] + SUPPORT_CLOSING_TEMPLATES[3:]
     else:
         choices = SUPPORT_CLOSING_TEMPLATES
-    return _pick_option(choices, scenario, "support-closing")
+    return _apply_address_form(_pick_option(choices, scenario, "support-closing"), scenario)
 
 
 def _email_greeting_line(scenario: ScenarioSpec) -> str:
-    template = _pick_option(EMAIL_GREETING_TEMPLATES, scenario, "email-greeting-line")
+    templates = _register_templates(scenario.register, "email_greetings", EMAIL_GREETING_TEMPLATES)
+    template = _pick_option(templates, scenario, "email-greeting-line")
     return template.format(recipient=_recipient_label(scenario.recipient_role))
 
 
@@ -705,32 +789,37 @@ def _noise_line_parts(
 
 def _support_request_line(scenario: ScenarioSpec, recipient_role: str) -> str:
     if scenario.document_goal == "permission_review":
-        return "Pouvez-vous me dire quelle validation manque encore et qui doit reprendre la main ?"
-    if scenario.document_goal == "billing_mismatch":
-        return "Pouvez-vous verifier la piste facturation et me dire quelle reference reprendre ?"
-    if scenario.document_goal == "sync_delay":
-        return "Pouvez-vous confirmer ou la synchro prend du retard et quel contournement reste viable ?"
-    if recipient_role in {"customer_support", "billing_support", "partner_support"}:
+        line = "Pouvez-vous me dire quelle validation manque encore et qui doit reprendre la main ?"
+    elif scenario.document_goal == "billing_mismatch":
+        line = "Pouvez-vous verifier la piste facturation et me dire quelle reference reprendre ?"
+    elif scenario.document_goal == "sync_delay":
+        line = "Pouvez-vous confirmer ou la synchro prend du retard et quel contournement reste viable ?"
+    elif recipient_role in {"customer_support", "billing_support", "partner_support"}:
         if scenario.urgency == "high":
-            return "Pouvez-vous me dire rapidement si vous voyez le blocage de votre cote et quelle action lancer en priorite ?"
-        return "Pouvez-vous me confirmer la marche a suivre ou la verif la plus utile de votre cote ?"
-    if scenario.urgency == "high":
-        return "Pouvez-vous verifier les traces prioritaires ou me dire quel contournement vous recommandez ?"
-    return "Pouvez-vous verifier le dossier et me dire ce qu'il vous manque pour avancer ?"
+            line = "Pouvez-vous me dire rapidement si vous voyez le blocage de votre cote et quelle action lancer en priorite ?"
+        else:
+            line = "Pouvez-vous me confirmer la marche a suivre ou la verif la plus utile de votre cote ?"
+    elif scenario.urgency == "high":
+        line = "Pouvez-vous verifier les traces prioritaires ou me dire quel contournement vous recommandez ?"
+    else:
+        line = "Pouvez-vous verifier le dossier et me dire ce qu'il vous manque pour avancer ?"
+    return _apply_address_form(line, scenario)
 
 
 def _email_next_step_line(scenario: ScenarioSpec, recipient_role: str, connector: str) -> str:
     if scenario.document_goal == "delivery_risk":
-        return f"{connector}, dites-moi s'il faut securiser le perimetre maintenant ou deplacer la prochaine jalon."
-    if scenario.document_goal == "handover":
-        return f"{connector}, je peux vous laisser un recap plus detaille si vous reprenez le sujet aujourd'hui."
-    if scenario.document_goal == "vendor_followup":
-        return f"{connector}, je peux preparer la relance fournisseur si vous me confirmez le bon angle."
-    if recipient_role in {"client_success", "vendor_contact"}:
-        return f"{connector}, dites-moi si vous preferez un point rapide aujourd'hui ou une reponse par retour de mail."
-    if scenario.urgency == "high":
-        return f"{connector}, je prends tout de suite le prochain point si vous avez besoin d'un complement."
-    return f"{connector}, je peux completer le contexte si vous voulez que je creuse un point en plus."
+        line = f"{connector}, dites-moi s'il faut securiser le perimetre maintenant ou deplacer la prochaine jalon."
+    elif scenario.document_goal == "handover":
+        line = f"{connector}, je peux vous laisser un recap plus detaille si vous reprenez le sujet aujourd'hui."
+    elif scenario.document_goal == "vendor_followup":
+        line = f"{connector}, je peux preparer la relance fournisseur si vous me confirmez le bon angle."
+    elif recipient_role in {"client_success", "vendor_contact"}:
+        line = f"{connector}, dites-moi si vous preferez un point rapide aujourd'hui ou une reponse par retour de mail."
+    elif scenario.urgency == "high":
+        line = f"{connector}, je prends tout de suite le prochain point si vous avez besoin d'un complement."
+    else:
+        line = f"{connector}, je peux completer le contexte si vous voulez que je creuse un point en plus."
+    return _apply_address_form(line, scenario)
 
 
 def _signature_snippet(author: CharacterProfile, include_direct_identifiers: bool) -> Tuple[str, List[str | MentionPart]]:
@@ -923,9 +1012,13 @@ def _complete_grounding(
     draft: GeneratedTextDraft,
     signal_values: Dict[str, List[str]],
     author: CharacterProfile,
+    scenario: ScenarioSpec | None = None,
+    world: World | None = None,
 ) -> GeneratedTextDraft:
     grounding = list(draft.grounding)
     seen = {(mention.label, mention.snippet, mention.occurrence_hint) for mention in grounding}
+    mode_by_label = {entry.label: entry.difficulty_mode for entry in scenario.mention_plan} if scenario else {}
+    overrides = build_surface_overrides(scenario, author, world) if scenario and world else {}
     for label, values in signal_values.items():
         for canonical_value in values:
             for snippet in dict.fromkeys(_surface_snippets_for_label(label, canonical_value, author)):
@@ -935,12 +1028,20 @@ def _complete_grounding(
                     key = (label, snippet, occurrence_hint)
                     if key in seen:
                         continue
+                    difficulty_mode = "explicit_easy"
+                    cue_type = ""
+                    override = overrides.get(label)
+                    if override is not None and snippet == override.snippet:
+                        difficulty_mode = mode_by_label.get(label, "explicit_easy")
+                        cue_type = override.cue_type
                     grounding.append(
                         GroundedMention(
                             label=label,
                             canonical_value=canonical_value,
                             snippet=snippet,
                             occurrence_hint=occurrence_hint,
+                            difficulty_mode=difficulty_mode,
+                            cue_type=cue_type,
                         )
                     )
                     seen.add(key)
@@ -953,10 +1054,8 @@ def _support_draft(
     world: World,
     signal_values: Dict[str, List[str]],
 ) -> GeneratedTextDraft:
-    builder = _DocumentBuilder()
+    builder = _make_builder(scenario, author, world)
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
-    verbosity = author.style_profile.verbosity
-    verbosity_weight = {"short": 30, "medium": 60, "long": 80}.get(verbosity, 55)
     layout = _pick_option(
         ["compact", "paragraph", "bullets", "context_first", "threadlike"],
         scenario,
@@ -966,9 +1065,6 @@ def _support_draft(
     use_blank_lines = _pick_bool(scenario, "support-blank-lines", 35 if author.style_profile.formality == "high" else 20)
     include_subject = _pick_bool(scenario, "support-subject", 25)
     include_attempts = _pick_bool(scenario, "support-attempts", 35 if scenario.noise_level == "low" else 55)
-    include_experience = _pick_bool(scenario, "support-experience", verbosity_weight)
-    include_expertise = _pick_bool(scenario, "support-expertise", max(20, verbosity_weight - 10))
-    include_style = _pick_bool(scenario, "support-style", 35 if verbosity != "short" else 15)
     include_status = _pick_bool(scenario, "support-status", 45)
 
     opening = _support_opening_parts(scenario, signal_values, author, world)
@@ -1013,8 +1109,7 @@ def _support_draft(
         builder.line(*identity)
     elif layout == "context_first":
         builder.line(*identity)
-        if include_experience:
-            _experience_line(builder, signal_values, author)
+        _experience_line(builder, signal_values, author)
         builder.line(*opening)
         if detail:
             builder.line(*detail)
@@ -1036,10 +1131,12 @@ def _support_draft(
         if include_attempts:
             builder.line(*_support_attempt_parts(scenario))
 
-    if include_expertise:
-        _expertise_line(builder, signal_values, author)
-    if include_style:
-        _style_line(builder, signal_values, connector)
+    # Les lignes ci-dessous s'auto-gatent sur signal_values (labels requis) :
+    # elles doivent toujours être tentées, sinon l'audit missing_surface_label échoue.
+    if layout != "context_first":
+        _experience_line(builder, signal_values, author)
+    _expertise_line(builder, signal_values, author)
+    _style_line(builder, signal_values, connector)
     _sensitive_line(builder, signal_values, author)
     builder.line(_support_request_line(scenario, scenario.recipient_role))
     if scenario.include_direct_identifiers:
@@ -1058,7 +1155,7 @@ def _email_single_message_draft(
     world: World,
     signal_values: Dict[str, List[str]],
 ) -> GeneratedTextDraft:
-    builder = _DocumentBuilder()
+    builder = _make_builder(scenario, author, world)
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
     layout = _pick_option(["standard", "context_first", "compact"], scenario, "email-layout")
     use_blank_lines = _pick_bool(scenario, "email-blank-lines", 45)
@@ -1083,12 +1180,15 @@ def _email_single_message_draft(
             builder.line(*goal_detail)
         _profile_line(builder, signal_values, author, world)
 
-    if layout != "compact":
+    # Lignes auto-gatées sur signal_values : toujours tentées pour garantir la
+    # couverture des labels requis, quel que soit le layout.
+    if layout != "context_first":
         _experience_line(builder, signal_values, author)
-        _expertise_line(builder, signal_values, author)
-        if noise_parts:
-            builder.line(*noise_parts)
-        _sensitive_line(builder, signal_values, author)
+    _expertise_line(builder, signal_values, author)
+    if layout != "compact" and noise_parts:
+        builder.line(*noise_parts)
+    _sensitive_line(builder, signal_values, author)
+    if layout != "compact":
         builder.line(*impact)
     builder.line(_email_next_step_line(scenario, scenario.recipient_role, connector))
     if scenario.include_direct_identifiers:
@@ -1113,7 +1213,7 @@ def _email_thread_short_draft(
     world: World,
     signal_values: Dict[str, List[str]],
 ) -> GeneratedTextDraft:
-    builder = _DocumentBuilder()
+    builder = _make_builder(scenario, author, world)
     connector = author.style_profile.favorite_connectors[0] if author.style_profile.favorite_connectors else "a ce stade"
     use_blank_lines = _pick_bool(scenario, "email-thread-blank-lines", 60)
     builder.line(_email_greeting_line(scenario))
@@ -1180,7 +1280,13 @@ def build_documents(
         author = character_by_id[scenario.author_id]
         world = world_by_org[author.organization_id]
         signal_values = build_signal_values(scenario, author, world)
-        draft = _complete_grounding(compose_document_draft(scenario, author, world, signal_values), signal_values, author)
+        draft = _complete_grounding(
+            compose_document_draft(scenario, author, world, signal_values),
+            signal_values,
+            author,
+            scenario,
+            world,
+        )
         documents.append(
             DocumentRecord(
                 doc_id=f"doc_{index + 1:06d}",
@@ -1197,10 +1303,15 @@ def build_documents(
                 annotations=AnnotationBundle(),
                 metadata={
                     "difficulty": scenario.difficulty,
+                    "register": scenario.register,
+                    "address_form": scenario.address_form,
                     "signal_values": signal_values,
                     "surface_grounding": [mention.__dict__ for mention in draft.grounding],
                     "text_notes": list(draft.notes),
                     "world_name": world.organization_name,
+                    "mention_difficulty": dict(
+                        Counter(mention.difficulty_mode for mention in draft.grounding)
+                    ),
                 },
             )
         )

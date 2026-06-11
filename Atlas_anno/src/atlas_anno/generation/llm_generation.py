@@ -24,7 +24,7 @@ from atlas_anno.records import (
     world_from_dict,
 )
 from atlas_anno.runtime import run_parallel_stage
-from atlas_anno.schemas import CharacterDraft, CharacterProfile, DocumentRecord, GeneratedTextDraft, LLMRunMeta, ScenarioDraft, ScenarioSpec, World, WorldDraft
+from atlas_anno.schemas import CharacterDraft, CharacterProfile, DocumentRecord, GeneratedTextDraft, LLMRunMeta, ScenarioDraft, ScenarioSpec, StyleProfile, World, WorldDraft
 
 
 def _aggregate_llm_runs(runs: Dict[str, LLMRunMeta]) -> Dict[str, object]:
@@ -57,6 +57,23 @@ def _world_draft_from_world(world: World) -> WorldDraft:
         products=list(world.products),
         incidents=list(world.incidents),
         calendar_events=list(world.calendar_events),
+    )
+
+
+def _merge_style_profile(draft_style: StyleProfile, seed_style: StyleProfile) -> StyleProfile:
+    """Reprend les champs libres du draft LLM mais gèle les facteurs de diversité."""
+    return StyleProfile(
+        formality=draft_style.formality,
+        signature_pattern=draft_style.signature_pattern,
+        verbosity=draft_style.verbosity,
+        emoji_usage=draft_style.emoji_usage,
+        favorite_connectors=draft_style.favorite_connectors,
+        jargon_pattern=draft_style.jargon_pattern,
+        register=seed_style.register,
+        address_form=seed_style.address_form,
+        expertise_level=seed_style.expertise_level,
+        francophone_variety=seed_style.francophone_variety,
+        typo_propensity=seed_style.typo_propensity,
     )
 
 
@@ -152,7 +169,11 @@ def refine_worlds(
             validator=world_draft_from_dict,
             fallback_value=serialize(fallback),
             temperature=0.0,
+            allow_fallback=False,
         )
+        if meta.error or value is None:
+            # Aucun fallback déterministe : on conserve le seed, meta.error=True
+            return world, meta
         draft = value if isinstance(value, WorldDraft) else world_draft_from_dict(value)
         return (
             World(
@@ -166,6 +187,7 @@ def refine_worlds(
                 products=draft.products,
                 incidents=draft.incidents,
                 calendar_events=draft.calendar_events,
+                email_domain=world.email_domain,
             ),
             meta,
         )
@@ -216,12 +238,17 @@ def refine_characters(
             validator=character_draft_from_dict,
             fallback_value=serialize(fallback),
             temperature=0.0,
+            allow_fallback=False,
         )
+        if meta.error or value is None:
+            return character, meta
         draft = value if isinstance(value, CharacterDraft) else character_draft_from_dict(value)
         return (
             CharacterProfile(
                 person_id=character.person_id,
-                full_name=draft.full_name,
+                # full_name est un identifiant direct : gelé pour rester cohérent
+                # avec username/email dérivés du même nom.
+                full_name=character.full_name,
                 email=character.email,
                 phone=character.phone,
                 username=character.username,
@@ -244,7 +271,16 @@ def refine_characters(
                 rare_traits=draft.rare_traits,
                 events=draft.events,
                 sensitive_attributes=draft.sensitive_attributes,
-                style_profile=draft.style_profile,
+                # Les facteurs de diversité (registre, tu/vous, expertise,
+                # variété, coquilles) sont des contrats d'échantillonnage :
+                # gelés face au raffinement LLM, comme full_name.
+                style_profile=_merge_style_profile(draft.style_profile, character.style_profile),
+                region=character.region,
+                birth_year=character.birth_year,
+                nir_like=character.nir_like,
+                address=character.address,
+                occupation_code=character.occupation_code,
+                contextual_cues=character.contextual_cues,
             ),
             meta,
         )
@@ -298,7 +334,10 @@ def refine_scenarios(
             validator=scenario_draft_from_dict,
             fallback_value=serialize(fallback),
             temperature=0.0,
+            allow_fallback=False,
         )
+        if meta.error or value is None:
+            return scenario, meta
         draft = value if isinstance(value, ScenarioDraft) else scenario_draft_from_dict(value)
         return (
             ScenarioSpec(
@@ -318,6 +357,12 @@ def refine_scenarios(
                 urgency=draft.urgency,
                 noise_level=draft.noise_level,
                 split=draft.split,
+                # Le plan de mentions et les facteurs de style effectifs ne sont
+                # pas éditables par le LLM : ils portent les contrats de
+                # difficulté et de registre du document.
+                mention_plan=scenario.mention_plan,
+                register=scenario.register,
+                address_form=scenario.address_form,
             ),
             meta,
         )
@@ -383,11 +428,17 @@ def refine_document_texts(
             validator=generated_text_draft_from_dict,
             fallback_value=serialize(fallback),
             temperature=0.2,
+            allow_fallback=False,
         )
+        if meta.error or value is None:
+            document.metadata["text_generation_mode"] = "error"
+            document.metadata["generation_error"] = meta.validation_errors
+            return document, meta
         draft = value if isinstance(value, GeneratedTextDraft) else generated_text_draft_from_dict(value)
         document.text = draft.text
         document.metadata["surface_grounding"] = [serialize(mention) for mention in draft.grounding]
         document.metadata["text_notes"] = list(draft.notes)
+        document.metadata["text_generation_mode"] = "llm"
         return document, meta
 
     return run_parallel_stage(

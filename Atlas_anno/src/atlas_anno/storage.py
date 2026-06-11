@@ -8,13 +8,14 @@ from atlas_anno.config import load_config
 from atlas_anno.io import append_jsonl, project_file, read_json, read_jsonl, write_json, write_json_atomic, write_jsonl, write_text
 from atlas_anno.records import (
     anonymization_results_from_rows,
+    attack_pairs_from_rows,
     attack_results_from_rows,
     characters_from_rows,
     documents_from_rows,
     scenarios_from_rows,
     worlds_from_rows,
 )
-from atlas_anno.schemas import AnonymizationResult, AttackResult, CharacterProfile, DocumentRecord, ScenarioSpec, World
+from atlas_anno.schemas import AnonymizationResult, AttackPair, AttackResult, CharacterProfile, DocumentRecord, ScenarioSpec, World
 
 _append_lock = threading.Lock()
 
@@ -58,6 +59,15 @@ def attacks_path(strategy: str, attacker_type: str) -> Path:
     config = load_config()
     directory = project_file(str(config.defaults["paths"]["attacks_dir"]))
     return directory / f"{strategy}_{attacker_type}.jsonl"
+
+
+def attack_pairs_path() -> Path:
+    config = load_config()
+    configured = config.defaults["paths"].get("attack_pairs")
+    if configured:
+        return project_file(str(configured))
+    directory = project_file(str(config.defaults["paths"]["attacks_dir"]))
+    return directory / "pairs.jsonl"
 
 
 def report_json_path(strategy: str, name: str) -> Path:
@@ -120,6 +130,11 @@ def label_config_path(batch: str) -> Path:
 
 def label_studio_export_path(batch: str) -> Path:
     return review_dir(batch) / "label_studio_export.json"
+
+
+def label_studio_project_id_path(batch: str) -> Path:
+    """Cache file storing the Label Studio project ID for a given batch."""
+    return review_dir(batch) / ".label_studio_project_id"
 
 
 def batch_manifest_path(batch: str) -> Path:
@@ -189,6 +204,17 @@ def load_attack_results(strategy: str, attacker_type: str) -> List[AttackResult]
     if not path.exists():
         return []
     return attack_results_from_rows(read_jsonl(path))
+
+
+def save_attack_pairs(pairs: List[AttackPair]) -> Path:
+    return write_jsonl(attack_pairs_path(), pairs)
+
+
+def load_attack_pairs() -> List[AttackPair]:
+    path = attack_pairs_path()
+    if not path.exists():
+        return []
+    return attack_pairs_from_rows(read_jsonl(path))
 
 
 def save_report(strategy: str, name: str, payload: Dict[str, Any]) -> Path:

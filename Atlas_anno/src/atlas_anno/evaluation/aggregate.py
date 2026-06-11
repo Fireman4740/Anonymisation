@@ -21,6 +21,13 @@ def _load_attack_map(strategy: str):
     return {attack.doc_id: attack for attack in attacks}
 
 
+def _load_attack_rows(strategy: str):
+    attacks = load_attack_results(strategy, "llm")
+    if not attacks:
+        attacks = load_attack_results(strategy, "structured")
+    return attacks
+
+
 def run_eval_spans_command(strategy: str) -> None:
     documents = load_documents(annotated=True)
     report = evaluate_span_metrics(documents)
@@ -38,7 +45,7 @@ def run_eval_privacy_command(strategy: str) -> None:
 
 def run_eval_reid_command(strategy: str) -> None:
     documents = load_documents(annotated=True)
-    attacks = _load_attack_map(strategy)
+    attacks = _load_attack_rows(strategy)
     report = evaluate_reidentification(documents, attacks)
     save_report(strategy, "reid", report)
 

@@ -39,7 +39,7 @@ class ParallelGenerationTest(unittest.TestCase):
         active = {"current": 0, "peak": 0}
         lock = threading.Lock()
 
-        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature):
+        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature, allow_fallback=True):
             with lock:
                 active["current"] += 1
                 active["peak"] = max(active["peak"], active["current"])
@@ -112,7 +112,7 @@ class ParallelGenerationTest(unittest.TestCase):
 
         call_count = 0
 
-        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature):
+        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature, allow_fallback=True):
             nonlocal call_count
             call_count += 1
             validated = validator(fallback_value)

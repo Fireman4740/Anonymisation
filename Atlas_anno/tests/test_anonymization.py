@@ -21,7 +21,7 @@ class AnonymizationTest(unittest.TestCase):
         documents = build_documents(worlds, characters, scenarios, candidate_pools)
         document = documents[0]
         gold = build_gold_annotations(document)
-        document.annotations = build_predicted_annotations(document, gold)
+        document.annotations = build_predicted_annotations(document, gold, mode="disabled")
         results = anonymize_documents([document], "masking")
         self.assertNotIn(characters[0].email, results[0].anonymized_text)
         self.assertGreaterEqual(results[0].estimated_privacy_gain, 0.0)
@@ -34,13 +34,13 @@ class AnonymizationTest(unittest.TestCase):
         documents = build_documents(worlds, characters, scenarios, candidate_pools)
         document = documents[0]
         gold = build_gold_annotations(document)
-        predicted = build_predicted_annotations(document, gold, mode="hybrid-llm")
+        predicted = build_predicted_annotations(document, gold, mode="disabled")
         document.annotations.spans = predicted.spans
         document.metadata["predicted_annotations"] = {
             "spans": [{"start": span.start, "end": span.end, "label": span.label, "text": span.text, "confidence": span.confidence, "source": span.source} for span in predicted.spans]
         }
 
-        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature):
+        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature, allow_fallback=True):
             payload = validator(
                 {
                     "anonymized_text": "Texte réécrit",

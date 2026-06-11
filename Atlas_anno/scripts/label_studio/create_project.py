@@ -21,10 +21,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Create or update a Label Studio project for an Atlas batch")
     parser.add_argument("--batch", default="pilot_100")
     parser.add_argument("--title", default="Atlas pilot_100 review")
-    parser.add_argument("--project-id", default=None)
+    parser.add_argument("--project-id", default=None, help="Existing project ID to update (default: read from .env)")
+    parser.add_argument("--token", default=None, help="LABEL_STUDIO_TOKEN override (default: read from .env / env var)")
+    parser.add_argument("--url", default=None, help="LABEL_STUDIO_URL override (default: read from .env / env var)")
     args = parser.parse_args()
 
-    payload = create_project_from_batch(args.batch, args.title, project_id=args.project_id)
+    payload = create_project_from_batch(
+        args.batch,
+        args.title,
+        project_id=args.project_id,
+        token=args.token,
+        url=args.url,
+    )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0
 

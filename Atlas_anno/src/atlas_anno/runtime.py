@@ -151,6 +151,7 @@ def run_parallel_stage(
     processed_items = 0
     cache_hits = 0
     fallback_items = 0
+    error_items = 0
     llm_used_items = 0
     retry_total = 0
     attempt_total = 0
@@ -209,6 +210,7 @@ def run_parallel_stage(
                 processed_items += 1
                 cache_hits += int(meta.cache_hit)
                 fallback_items += int(meta.fallback_used)
+                error_items += int(getattr(meta, "error", False))
                 llm_used_items += int(meta.llm_used)
                 retry_total += meta.retry_count
                 attempt_total += meta.attempt_count
@@ -263,6 +265,7 @@ def run_parallel_stage(
         "resumed_items": resumed_items,
         "cache_hits": cache_hits,
         "fallback_items": fallback_items,
+        "error_items": error_items,
         "llm_used_items": llm_used_items,
         "retry_total": retry_total,
         "attempt_total": attempt_total,
@@ -274,7 +277,7 @@ def run_parallel_stage(
     log(
         f"{label} summary elapsed={elapsed_seconds:.1f}s "
         f"processed={processed_items} resumed={resumed_items} "
-        f"cache={cache_hits} fallback={fallback_items} "
+        f"cache={cache_hits} fallback={fallback_items} error={error_items} "
         f"avg={stage_stats['avg_latency_ms']}ms p95={stage_stats['p95_latency_ms']}ms "
         f"peak_workers={stage_stats['peak_concurrency']}"
     )

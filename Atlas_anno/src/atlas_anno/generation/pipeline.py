@@ -14,13 +14,17 @@ from atlas_anno.generation.llm_generation import (
     refine_scenarios,
     refine_worlds,
 )
+from atlas_anno.attacks.pairs import build_attack_pairs
+from atlas_anno.evaluation.calibration import run_difficulty_calibration
 from atlas_anno.generation.auditor import audit_document
 from atlas_anno.generation.character_builder import build_characters
+from atlas_anno.generation.llm_text_generator import generate_llm_texts
 from atlas_anno.generation.scenario_planner import build_candidate_pools, build_scenarios
 from atlas_anno.generation.text_generator import build_documents
 from atlas_anno.generation.world_builder import build_worlds
 from atlas_anno.llm import OpenRouterClient
 from atlas_anno.runtime import build_runtime_options
+from atlas_anno.schemas import LLMRunMeta, SCHEMA_VERSION
 from atlas_anno.settings import load_settings
 from atlas_anno.storage import (
     load_characters,
@@ -36,6 +40,8 @@ from atlas_anno.storage import (
     characters_path,
     scenarios_path,
     raw_docs_path,
+    attack_pairs_path,
+    save_attack_pairs,
 )
 
 
@@ -92,6 +98,35 @@ def load_documents_for_validation():
     return load_documents(annotated=False)
 
 
+def _deterministic_text_runs(documents: list) -> tuple[Dict[str, LLMRunMeta], Dict[str, Any]]:
+    runs = {
+        document.doc_id: LLMRunMeta(
+            step_name="deterministic_text_generation",
+            model="deterministic",
+            prompt_version="deterministic",
+            llm_used=False,
+            fallback_used=False,
+            retry_count=0,
+        )
+        for document in documents
+    }
+    return runs, {
+        "total_items": len(documents),
+        "processed_items": len(documents),
+        "resumed_items": 0,
+        "cache_hits": 0,
+        "fallback_items": 0,
+        "llm_used_items": 0,
+        "retry_total": 0,
+        "attempt_total": 0,
+        "avg_latency_ms": 0.0,
+        "p95_latency_ms": 0,
+        "elapsed_seconds": 0.0,
+        "peak_concurrency": 0,
+        "repair_retries": 0,
+    }
+
+
 def run_generate_dataset_command(
     documents: int,
     llm_mode: str,
@@ -124,7 +159,8 @@ def run_generate_dataset_command(
     save_worlds(worlds)
 
     log("Stage 2/5: characters")
-    characters = build_characters(worlds, per_world=int(pilot["characters_per_world"]))
+    sampling_stats: Dict[str, Any] = {}
+    characters = build_characters(worlds, per_world=int(pilot["characters_per_world"]), stats=sampling_stats)
     characters = characters[: int(pilot["characters_total"])]
     characters, character_runs, character_stats = refine_characters(characters, client, llm_mode, runtime_options)
     save_characters(characters)
@@ -137,33 +173,52 @@ def run_generate_dataset_command(
         documents=documents,
         domain_schedule=domain_schedule,
         difficulty_schedule=difficulty_schedule,
+        mention_mode_mix=config.defaults["generation"].get("mention_mode_mix"),
     )
     characters_by_id = {character.person_id: character for character in characters}
     scenarios, scenario_runs, scenario_stats = refine_scenarios(scenarios, characters_by_id, client, llm_mode, runtime_options)
     save_scenarios(scenarios)
 
-    log("Stage 4/5: texts")
+    log("Stage 4/6: texts")
     candidate_pools = {character.person_id: build_candidate_pools(character, characters) for character in characters}
     documents_rows = build_documents(worlds, characters, scenarios, candidate_pools)
     worlds_by_id = {world.world_id: world for world in worlds}
-    documents_rows, text_runs, text_stats = refine_document_texts(documents_rows, characters_by_id, worlds_by_id, client, llm_mode, runtime_options)
+    configured_text_mode = str(config.defaults["generation"].get("text_mode", "llm-first"))
+    text_mode = "deterministic" if llm_mode == "disabled" else configured_text_mode
+    runtime_options["text_repair_retries"] = int(config.defaults["generation"].get("text_repair_retries", 2))
+    if text_mode == "hybrid":
+        documents_rows, text_runs, text_stats = refine_document_texts(documents_rows, characters_by_id, worlds_by_id, client, llm_mode, runtime_options)
+    elif text_mode == "llm-first":
+        documents_rows, text_runs, text_stats = generate_llm_texts(documents_rows, characters_by_id, worlds_by_id, client, llm_mode, runtime_options)
+    else:
+        text_runs, text_stats = _deterministic_text_runs(documents_rows)
     aggregate_document_metadata(documents_rows, world_runs, character_runs, scenario_runs, text_runs)
     for document in documents_rows:
         document.metadata["batch_name"] = batch_name
+        document.metadata["schema_version"] = SCHEMA_VERSION
     save_documents(documents_rows, annotated=False)
 
-    log("Stage 5/5: audit and manifest")
+    log("Stage 5/6: attack pairs")
+    attack_pairs = build_attack_pairs(documents_rows, characters_by_id)
+    save_attack_pairs(attack_pairs)
+
+    log("Stage 6/6: audit, calibration and manifest")
     issues = []
     split_counts = Counter()
     difficulty_counts = Counter()
     domain_counts = Counter()
+    mention_difficulty = Counter()
+    register_counts = Counter()
     for document in documents_rows:
         split_counts[document.split] += 1
         difficulty_counts[document.metadata.get("difficulty", "unknown")] += 1
         domain_counts[document.domain] += 1
+        register_counts[document.metadata.get("register") or "unknown"] += 1
+        mention_difficulty.update(document.metadata.get("mention_difficulty", {}))
         issues.extend(audit_document(document, characters_by_id[document.author_id]))
     if issues:
         raise RuntimeError("Dataset generation audit failed:\n" + "\n".join(issues[:20]))
+    calibration = run_difficulty_calibration(documents_rows, characters_by_id, attack_pairs)
 
     save_batch_manifest(
         batch_name,
@@ -173,16 +228,27 @@ def run_generate_dataset_command(
             "characters_total": len(characters),
             "documents_total": len(documents_rows),
             "llm_mode": llm_mode,
+            "schema_version": SCHEMA_VERSION,
             "artifacts": {
                 "worlds": str(worlds_path()),
                 "characters": str(characters_path()),
                 "scenarios": str(scenarios_path()),
                 "raw_docs": str(raw_docs_path()),
+                "attack_pairs": str(attack_pairs_path()),
             },
             "stats": {
+                "schema_version": SCHEMA_VERSION,
+                "text_mode": text_mode,
+                "sampling": sampling_stats,
                 "splits": dict(split_counts),
                 "difficulties": dict(difficulty_counts),
                 "domains": dict(domain_counts),
+                "registers": dict(register_counts),
+                "mention_difficulty": dict(mention_difficulty),
+                "attack_pairs_total": len(attack_pairs),
+                "calibration": calibration,
+                "llm_generated_documents": sum(1 for document in documents_rows if document.metadata.get("text_generation_mode") == "llm"),
+                "repair_retries": sum(int(document.metadata.get("text_repair_retries", 0)) for document in documents_rows),
                 "llm_used_documents": sum(1 for document in documents_rows if document.metadata.get("llm_audit", {}).get("llm_used")),
                 "fallback_documents": sum(1 for document in documents_rows if document.metadata.get("llm_audit", {}).get("fallback_used")),
                 "stage_stats": {

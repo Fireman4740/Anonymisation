@@ -3,6 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
+# Version du schéma de données sérialisé (JSONL/parquet). Incrémentée quand des
+# champs sont ajoutés ; les loaders de records.py restent tolérants aux versions
+# antérieures (champs manquants → défauts) et postérieures (champs inconnus ignorés).
+SCHEMA_VERSION = "3"
+
 
 def _require(value: Any, name: str) -> None:
     if value is None or value == "":
@@ -22,6 +27,12 @@ class StyleProfile:
     emoji_usage: str
     favorite_connectors: List[str] = field(default_factory=list)
     jargon_pattern: str = ""
+    # Facteurs de diversité v3 (plan factoriel explicite) — défauts pour compat v1/v2.
+    register: str = "courant"  # familier | courant | soutenu
+    address_form: str = "vous"  # tu | vous
+    expertise_level: str = "intermediate"  # novice | intermediate | expert
+    francophone_variety: str = "metropole"  # metropole | belgique | suisse | quebec | maghreb
+    typo_propensity: str = "none"  # none | low | medium
 
     def __post_init__(self) -> None:
         _require(self.formality, "formality")
@@ -51,6 +62,7 @@ class LLMRunMeta:
     latency_ms: int = 0
     estimated_cost: float = 0.0
     raw_response_excerpt: str = ""
+    error: bool = False
 
 
 @dataclass
@@ -65,6 +77,7 @@ class World:
     products: List[str]
     incidents: List[str]
     calendar_events: List[str]
+    email_domain: str = ""
 
     def __post_init__(self) -> None:
         _require(self.world_id, "world_id")
@@ -80,6 +93,23 @@ class WorldDraft:
     products: List[str]
     incidents: List[str]
     calendar_events: List[str]
+
+
+@dataclass
+class ContextualCue:
+    """Indice implicite porté par un personnage : la phrase `cue_text` fuite
+    l'attribut `reveals_label`/`reveals_value` sans le nommer explicitement.
+    C'est le support des mentions de difficulté « implicit »."""
+
+    cue_type: str
+    cue_text: str
+    reveals_label: str
+    reveals_value: str
+
+    def __post_init__(self) -> None:
+        _require(self.cue_type, "cue_type")
+        _require(self.cue_text, "cue_text")
+        _require(self.reveals_label, "reveals_label")
 
 
 @dataclass
@@ -109,6 +139,13 @@ class CharacterProfile:
     events: List[str]
     sensitive_attributes: List[str]
     style_profile: StyleProfile
+    # Champs v2 (échantillonnage réaliste) — défauts pour compat JSONL v1.
+    region: str = ""
+    birth_year: int = 0
+    nir_like: str = ""
+    address: str = ""
+    occupation_code: str = ""
+    contextual_cues: List[ContextualCue] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         _require(self.person_id, "person_id")
@@ -144,6 +181,23 @@ class CandidatePools:
     insider: List[str] = field(default_factory=list)
 
 
+# Modes de difficulté par mention (style RAT-Bench).
+DIFFICULTY_MODES = ("explicit_easy", "explicit_hard", "implicit")
+
+
+@dataclass
+class MentionPlanEntry:
+    """Mode de difficulté planifié pour un label dans un document donné."""
+
+    label: str
+    difficulty_mode: str = "explicit_easy"
+
+    def __post_init__(self) -> None:
+        _require(self.label, "label")
+        if self.difficulty_mode not in DIFFICULTY_MODES:
+            raise ValueError(f"difficulty_mode invalide: {self.difficulty_mode}")
+
+
 @dataclass
 class ScenarioSpec:
     scenario_id: str
@@ -162,6 +216,10 @@ class ScenarioSpec:
     urgency: str = "medium"
     noise_level: str = "medium"
     split: str = "train"
+    mention_plan: List[MentionPlanEntry] = field(default_factory=list)
+    # Valeurs effectives par document après règles de cohérence (v3).
+    register: str = ""
+    address_form: str = ""
 
     def __post_init__(self) -> None:
         _require(self.scenario_id, "scenario_id")
@@ -190,6 +248,11 @@ class GroundedMention:
     canonical_value: str
     snippet: str
     occurrence_hint: int = 1
+    # v2 : difficulté par mention (RAT-Bench) + hardness/certainty (SynthPAI).
+    difficulty_mode: str = "explicit_easy"
+    hardness: int = 1
+    certainty: float = 1.0
+    cue_type: str = ""
 
     def __post_init__(self) -> None:
         _require(self.label, "label")
@@ -304,6 +367,35 @@ class AttackResult:
 
 
 @dataclass
+class AuxiliaryKnowledge:
+    level: str
+    known_attributes: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.level not in {"none", "partial", "strong"}:
+            raise ValueError(f"auxiliary knowledge level invalide: {self.level}")
+
+
+@dataclass
+class AttackPair:
+    pair_id: str
+    doc_id: str
+    target_person_id: str
+    target_attributes: Dict[str, Any]
+    aux_knowledge: AuxiliaryKnowledge
+    candidate_pool: List[str]
+    difficulty: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        _require(self.pair_id, "pair_id")
+        _require(self.doc_id, "doc_id")
+        _require(self.target_person_id, "target_person_id")
+        if self.target_person_id not in self.candidate_pool:
+            raise ValueError("target_person_id must be in candidate_pool")
+
+
+@dataclass
 class EvaluationReport:
     meta: Dict[str, Any]
     summary: Dict[str, Any]
@@ -331,6 +423,7 @@ class DatasetBatchManifest:
     characters_total: int
     documents_total: int
     llm_mode: str
+    schema_version: str = SCHEMA_VERSION
     artifacts: Dict[str, str] = field(default_factory=dict)
     stats: Dict[str, Any] = field(default_factory=dict)
 

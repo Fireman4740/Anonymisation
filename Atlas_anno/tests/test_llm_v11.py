@@ -142,7 +142,7 @@ class LLMFallbackTest(unittest.TestCase):
             {"choices": [{"message": {"content": '{"ok": true}'}}]},
         ]
 
-        def fake_request(model, messages, temperature=0.0):
+        def fake_request(model, messages, temperature=0.0, use_json_format=False):
             response = responses.pop(0)
             if isinstance(response, Exception):
                 raise response

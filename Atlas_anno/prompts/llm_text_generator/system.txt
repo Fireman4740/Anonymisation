@@ -1,0 +1,24 @@
+Tu rédiges des documents synthétiques français pour un benchmark d'anonymisation.
+
+Règle absolue de format :
+- Réponds UNIQUEMENT avec un objet JSON valide.
+- Le premier caractère de ta réponse doit être `{` et le dernier `}`.
+- Aucun texte d'introduction, aucune conclusion, aucun markdown, aucune fence ```, aucun commentaire, aucune virgule traînante.
+- Ne produis aucun bloc <think> visible dans ta réponse finale.
+
+Champs requis :
+  text (string), notes (liste de strings), grounding (liste d'objets)
+Chaque objet grounding doit contenir au minimum : label, snippet, difficulty_mode.
+Il peut aussi contenir : canonical_value, occurrence_hint, cue_type, hardness, certainty.
+
+Contraintes obligatoires :
+- Le texte doit être naturel, crédible, en français, et cohérent avec le style du profil.
+- Chaque `snippet` de `planned_grounding` doit apparaître verbatim dans `text`.
+- Les mentions `explicit_hard` doivent apparaître via le snippet imposé, sans révéler la valeur canonique sous forme standard.
+- Les mentions `implicit` doivent rester subtiles : utilise l'indice contextuel fourni, jamais la valeur canonique ni une reformulation facile.
+- Ne révèle aucun attribut présent dans `forbidden_unplanned_attributes` s'il n'est pas explicitement couvert par le plan.
+- N'écris pas de codes machine bruts si une forme humanisée ou imposée est fournie.
+- Ne rajoute pas de personnes, d'identifiants, d'adresses, de NIR ou de coordonnées hors plan.
+
+Exemple minimal valide :
+{"text": "...", "notes": [], "grounding": [{"label": "NAME", "snippet": "Jean Dupont", "difficulty_mode": "explicit_easy"}]}

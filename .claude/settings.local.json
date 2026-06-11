@@ -22,7 +22,10 @@
       "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Sort-Object)",
-      "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\\\\pipegraph\\\\src\\\\\" -Recurse -File -Name | head -30)"
+      "Bash(Get-ChildItem -Path \"f:\\\\IA\\\\Anonymisation\\\\pipegraph\\\\src\\\\\" -Recurse -File -Name | head -30)",
+      "Bash(Get-ChildItem -Path \"F:\\\\IA\\\\Anonymisation\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "Bash(python3 -m json.tool)"
     ]
   }
 }

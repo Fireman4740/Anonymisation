@@ -6,6 +6,7 @@ from pathlib import Path
 from atlas_anno.anonymization.baselines import run_anonymization_command
 from atlas_anno.annotation.preannotator import run_preannotation_command
 from atlas_anno.attacks.llm_attacker import run_llm_attack_command
+from atlas_anno.attacks.pairs import run_build_attack_pairs_command
 from atlas_anno.attacks.structured import run_structured_attack_command
 from atlas_anno.diagnostics import run_inspect_llm_runs_command
 from atlas_anno.evaluation.aggregate import (
@@ -14,6 +15,7 @@ from atlas_anno.evaluation.aggregate import (
     run_eval_spans_command,
     run_eval_utility_command,
 )
+from atlas_anno.evaluation.calibration import run_calibrate_difficulty_command
 from atlas_anno.export.parquet_export import run_export_parquet_command
 from atlas_anno.generation.pipeline import (
     run_generate_dataset_command,
@@ -72,6 +74,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
     llm = subparsers.add_parser("attack-llm")
     llm.add_argument("--strategy", default="masking")
+
+    subparsers.add_parser("build-attack-pairs")
+    subparsers.add_parser("calibrate-difficulty")
 
     spans = subparsers.add_parser("eval-spans")
     spans.add_argument("--strategy", default="masking")
@@ -135,6 +140,8 @@ def main(argv: list[str] | None = None) -> int:
         "run-anonymizer": lambda: run_anonymization_command(args.strategy, args.mode),
         "attack-structured": lambda: run_structured_attack_command(args.strategy),
         "attack-llm": lambda: run_llm_attack_command(args.strategy),
+        "build-attack-pairs": run_build_attack_pairs_command,
+        "calibrate-difficulty": run_calibrate_difficulty_command,
         "eval-spans": lambda: run_eval_spans_command(args.strategy),
         "eval-privacy": lambda: run_eval_privacy_command(args.strategy),
         "eval-reid": lambda: run_eval_reid_command(args.strategy),

@@ -30,6 +30,8 @@ anno/
 /.env
 .env.local
 .env.*.local
+.claude
+.github
 
 # Jupyter
 .ipynb_checkpoints/
@@ -94,9 +96,26 @@ eval/datasets/hf_cache/
 Atlas_anno/data/
 Atlas_anno/.env
 Atlas_anno/*
+!Atlas_anno/src/
+!Atlas_anno/src/atlas_anno/
+!Atlas_anno/src/atlas_anno/attacks/
+!Atlas_anno/src/atlas_anno/attacks/pairs.py
+!Atlas_anno/src/atlas_anno/evaluation/
+!Atlas_anno/src/atlas_anno/evaluation/calibration.py
+!Atlas_anno/src/atlas_anno/generation/
+!Atlas_anno/src/atlas_anno/generation/llm_text_generator.py
+!Atlas_anno/prompts/
+!Atlas_anno/prompts/llm_text_generator/
+!Atlas_anno/prompts/llm_text_generator/system.txt
+!Atlas_anno/tests/
+!Atlas_anno/tests/test_attack_pairs.py
+!Atlas_anno/tests/test_auditor_extended.py
+!Atlas_anno/tests/test_calibration.py
+!Atlas_anno/tests/test_llm_text_generator.py
 
 .researchclaw_cache/*
 arc_pipegraph/*
 artifacts/*
 
 docs/kb/*
+.claude/settings.local.json

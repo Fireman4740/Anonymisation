@@ -19,11 +19,22 @@ def _summary_block(name: str, payload: Dict[str, object]) -> str:
     return "\n".join(lines)
 
 
+def _calibration_summary(payload: Dict[str, object]) -> Dict[str, object]:
+    if not payload:
+        return {}
+    return {
+        "passed": payload.get("passed"),
+        "by_difficulty": payload.get("by_difficulty"),
+        "by_mode": payload.get("by_mode"),
+    }
+
+
 def build_consolidated_report(strategy: str) -> Dict[str, object]:
     spans = load_report(strategy, "spans")
     privacy = load_report(strategy, "privacy")
     reid = load_report(strategy, "reid")
     utility = load_report(strategy, "utility")
+    calibration = load_report("raw", "calibration")
     summary = {
         "strategy": strategy,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -31,6 +42,7 @@ def build_consolidated_report(strategy: str) -> Dict[str, object]:
         "utility_score": utility.get("summary", {}).get("utility_score"),
         "reid_top1": reid.get("summary", {}).get("top1"),
         "span_f1": spans.get("summary", {}).get("f1"),
+        "calibration_passed": calibration.get("passed") if calibration else None,
     }
     return {
         "meta": {"strategy": strategy, "generated_at": summary["created_at"]},
@@ -40,6 +52,7 @@ def build_consolidated_report(strategy: str) -> Dict[str, object]:
             "privacy": privacy,
             "reid": reid,
             "utility": utility,
+            "calibration": calibration,
         },
     }
 
@@ -53,6 +66,7 @@ def build_markdown(strategy: str, report: Dict[str, object]) -> str:
         _summary_block("Privacy", sections.get("privacy", {})),
         _summary_block("Re-identification", sections.get("reid", {})),
         _summary_block("Utility", sections.get("utility", {})),
+        _summary_block("Calibration", {"summary": _calibration_summary(sections.get("calibration", {}))} if sections.get("calibration") else {}),
     ]
     return "\n".join(blocks)
 

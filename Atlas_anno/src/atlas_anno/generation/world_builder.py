@@ -89,23 +89,30 @@ EVENTS = [
 ]
 
 
+def _email_domain_for(organization_name: str) -> str:
+    slug = "".join(char for char in organization_name.lower() if char.isalnum())
+    return f"{slug}.fr"
+
+
 def build_worlds(count: int, seed: int = 13, language: str = "fr") -> List[World]:
     rng = random.Random(seed)
     worlds: List[World] = []
     for index in range(count):
         organization_id = f"org_{index + 1:02d}"
+        organization_name = COMPANIES[index % len(COMPANIES)]
         worlds.append(
             World(
                 world_id=f"world_{index + 1:02d}",
                 language=language,
                 organization_id=organization_id,
-                organization_name=COMPANIES[index % len(COMPANIES)],
+                organization_name=organization_name,
                 departments=rng.sample(DEPARTMENTS, k=min(4, len(DEPARTMENTS))),
                 teams=rng.sample(TEAMS, k=min(4, len(TEAMS))),
                 projects=rng.sample(PROJECTS, k=min(4, len(PROJECTS))),
                 products=rng.sample(PRODUCTS, k=min(3, len(PRODUCTS))),
                 incidents=rng.sample(INCIDENTS, k=min(3, len(INCIDENTS))),
                 calendar_events=rng.sample(EVENTS, k=min(3, len(EVENTS))),
+                email_domain=_email_domain_for(organization_name),
             )
         )
     return worlds

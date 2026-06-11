@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import random
 import threading
 import time
@@ -27,17 +28,82 @@ class RetryableLLMError(LLMError):
     pass
 
 
-def _extract_json_block(text: str) -> Any:
-    text = text.strip()
-    if not text:
+_THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL | re.IGNORECASE)
+_FENCE_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
+
+
+def _strip_think_blocks(text: str) -> str:
+    """Retire les blocs <think>…</think> produits par certains modèles de raisonnement."""
+    return _THINK_RE.sub("", text).strip()
+
+
+def _extract_fence_block(text: str) -> str | None:
+    """Extrait le contenu du premier bloc ``` ou ```json si présent."""
+    match = _FENCE_RE.search(text)
+    return match.group(1).strip() if match else None
+
+
+def _parse_json_payload(text: str) -> Any:
+    """Parse JSON de façon robuste :
+    1. Retire les blocs <think>…</think>.
+    2. Extrait les fences ```json … ```.
+    3. Tente json.loads direct.
+    4. Extrait le premier bloc {…} / […] et re-tente.
+    5. Utilise json_repair comme dernier recours.
+    Lève LLMError si aucune tentative ne réussit.
+    """
+    if not text or not text.strip():
         raise LLMError("empty llm response")
-    if text.startswith("{") or text.startswith("["):
-        return json.loads(text)
-    start = min([pos for pos in [text.find("{"), text.find("[")] if pos != -1], default=-1)
-    end = max(text.rfind("}"), text.rfind("]"))
-    if start == -1 or end == -1 or end <= start:
-        raise LLMError("response does not contain JSON")
-    return json.loads(text[start : end + 1])
+
+    # Étape 1 : retirer les blocs de raisonnement
+    cleaned = _strip_think_blocks(text)
+
+    # Étape 2 : extraire la fence si présente
+    fenced = _extract_fence_block(cleaned)
+    candidate = fenced if fenced else cleaned
+
+    # Étape 3 : parse direct
+    candidate = candidate.strip()
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        pass
+
+    # Étape 4 : slice sur le premier { ou [
+    start = -1
+    for ch in ("{["):
+        pos = candidate.find(ch)
+        if pos != -1 and (start == -1 or pos < start):
+            start = pos
+    end = max(candidate.rfind("}"), candidate.rfind("]"))
+    if start != -1 and end != -1 and end > start:
+        sliced = candidate[start : end + 1]
+        try:
+            return json.loads(sliced)
+        except json.JSONDecodeError:
+            pass
+    else:
+        sliced = candidate
+
+    # Étape 5 : json_repair — uniquement si le texte contient au moins une structure JSON
+    if "{" in candidate or "[" in candidate:
+        try:
+            import json_repair  # type: ignore[import]
+            target = sliced if sliced else candidate
+            repaired = json_repair.loads(target)
+            # json_repair peut renvoyer None, une chaîne vide ou le texte brut sur échec
+            if repaired is not None and repaired != "" and repaired != target:
+                return repaired
+        except ImportError:
+            pass
+        except Exception:
+            pass
+
+    raise LLMError(f"response does not contain parsable JSON: {candidate[:200]!r}")
+
+
+# Alias conservé pour les callers internes existants
+_extract_json_block = _parse_json_payload
 
 
 def _extract_message_text(payload: Dict[str, Any]) -> str:
@@ -155,17 +221,28 @@ class OpenRouterClient:
         finally:
             semaphore.release()
 
-    def _perform_http_request(self, model: str, messages: List[Dict[str, str]], temperature: float = 0.0) -> Dict[str, Any]:
+    def _json_response_format_enabled(self) -> bool:
+        return bool(self._runtime_value("json_response_format", True))
+
+    def _perform_http_request(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.0,
+        use_json_format: bool = False,
+    ) -> Dict[str, Any]:
         if not self.enabled():
             raise LLMError("OPENROUTER_API_KEY is not configured")
 
-        payload = json.dumps(
-            {
-                "model": model,
-                "temperature": temperature,
-                "messages": messages,
-            }
-        ).encode("utf-8")
+        body: Dict[str, Any] = {
+            "model": model,
+            "temperature": temperature,
+            "messages": messages,
+        }
+        if use_json_format:
+            body["response_format"] = {"type": "json_object"}
+
+        payload = json.dumps(body).encode("utf-8")
         request = urllib.request.Request(
             self.settings.openrouter_base_url,
             data=payload,
@@ -182,6 +259,12 @@ class OpenRouterClient:
             message = exc.read().decode("utf-8", errors="replace")
             if exc.code in {408, 429, 500, 502, 503, 504}:
                 raise RetryableLLMError(f"openrouter http error {exc.code}: {message}") from exc
+            # 400/422 avec response_format peuvent indiquer que le modèle ne supporte
+            # pas le paramètre → relancer sans response_format (dégradation gracieuse).
+            if use_json_format and exc.code in {400, 422}:
+                raise RetryableLLMError(
+                    f"openrouter http error {exc.code} (response_format may be unsupported): {message}"
+                ) from exc
             raise LLMError(f"openrouter http error {exc.code}: {message}") from exc
         except urllib.error.URLError as exc:
             raise RetryableLLMError(f"openrouter network error: {exc}") from exc
@@ -196,21 +279,34 @@ class OpenRouterClient:
         jitter = random.uniform(0.0, max(0.1, base * 0.25))
         time.sleep(min(self._backoff_max_seconds(), base + jitter))
 
-    def _request_with_retries(self, model: str, messages: List[Dict[str, str]], temperature: float = 0.0) -> _RequestOutcome:
+    def _request_with_retries(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.0,
+        use_json_format: bool = False,
+    ) -> _RequestOutcome:
         total_attempts = 0
         total_queue_wait_ms = 0
         last_error: LLMError | None = None
         max_retries = self._max_retries()
+        # Dégradation gracieuse : désactiver response_format après un premier échec 400/422.
+        _use_json_fmt = use_json_format
 
         for attempt in range(max_retries + 1):
             with self._acquire_model_slot(model) as queue_wait_ms:
                 total_queue_wait_ms += queue_wait_ms
                 total_attempts += 1
                 try:
-                    payload = self._perform_http_request(model, messages, temperature=temperature)
+                    payload = self._perform_http_request(
+                        model, messages, temperature=temperature, use_json_format=_use_json_fmt
+                    )
                     return _RequestOutcome(payload=payload, attempt_count=total_attempts, queue_wait_ms=total_queue_wait_ms)
                 except RetryableLLMError as exc:
                     last_error = exc
+                    # Si l'erreur vient de response_format non supporté, désactiver pour les retries suivants.
+                    if _use_json_fmt and "response_format may be unsupported" in str(exc):
+                        _use_json_fmt = False
                     if attempt >= max_retries:
                         break
             self._sleep_backoff(attempt)
@@ -311,11 +407,13 @@ class OpenRouterClient:
         prompt = f"{instruction}\n\nTexte:\n{text}"
         return self.generate_text(prompt, model=self.settings.atlas_model_creative, temperature=0.1)
 
-    def score_candidates(self, text: str, candidates: List[Dict[str, Any]]) -> Any:
+    def score_candidates(self, text: str, candidates: List[Dict[str, Any]], aux_knowledge: Dict[str, Any] | None = None) -> Any:
         prompt = (
             "Classe les candidats suivants pour une attaque de re-identification closed-world.\n"
             "Retourne strictement un JSON avec les champs top_k et rationale.\n\n"
-            f"Texte:\n{text}\n\nCandidats:\n{json.dumps(candidates, ensure_ascii=False, indent=2)}"
+            f"Texte:\n{text}\n\n"
+            f"Connaissance auxiliaire:\n{json.dumps(aux_knowledge or {}, ensure_ascii=False, indent=2)}\n\n"
+            f"Candidats:\n{json.dumps(candidates, ensure_ascii=False, indent=2)}"
         )
         return self.generate_json(prompt, model=self.settings.atlas_model_reasoning)
 
@@ -416,7 +514,15 @@ class OpenRouterClient:
         validator: Callable[[Any], Any],
         fallback_value: Any,
         temperature: float = 0.0,
+        allow_fallback: bool = True,
     ) -> tuple[Any, LLMRunMeta]:
+        """Génère une réponse JSON validée par *validator*.
+
+        Si *allow_fallback* est False et que toutes les tentatives échouent,
+        le champ ``error`` de LLMRunMeta est mis à True et *fallback_value*
+        n'est PAS utilisée comme résultat (None est renvoyé).
+        Le caller doit impérativement vérifier ``meta.error`` dans ce cas.
+        """
         selected_model = model or self.settings.atlas_model_reasoning
         cached = self._load_cached_value(
             step_name=step_name,
@@ -433,48 +539,75 @@ class OpenRouterClient:
         validation_errors: List[str] = []
         used_llm = False
         fallback_used = False
-        result = fallback_value
+        generation_error = False
+        result: Any = fallback_value
         raw_excerpt = ""
         attempt_count = 0
         queue_wait_ms = 0
-        repair_suffix = ""
+        repair_messages: List[Dict[str, str]] = [
+            {"role": "system", "content": prompt_spec.system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        use_json_fmt = self._json_response_format_enabled()
 
         if not self.enabled():
             fallback_used = True
+            generation_error = not allow_fallback
             validation_errors.append("OPENROUTER_API_KEY missing")
         else:
             for repair_index in range(self._repair_retries() + 1):
                 outcome = self._request_with_retries(
                     selected_model,
-                    [
-                        {"role": "system", "content": prompt_spec.system_prompt},
-                        {"role": "user", "content": user_prompt + repair_suffix},
-                    ],
+                    repair_messages,
                     temperature=temperature,
+                    use_json_format=use_json_fmt,
                 )
                 attempt_count += outcome.attempt_count
                 queue_wait_ms += outcome.queue_wait_ms
+                # Désactiver response_format pour les passes de réparation suivantes
+                # si le modèle a signalé qu'il n'est pas supporté.
+                if outcome.error and "response_format may be unsupported" in str(outcome.error):
+                    use_json_fmt = False
                 if outcome.error is not None or outcome.payload is None:
-                    fallback_used = True
                     validation_errors.append(str(outcome.error))
                     break
                 try:
                     raw_excerpt = json.dumps(outcome.payload, ensure_ascii=False)[:400]
                     content = _extract_message_text(outcome.payload)
-                    parsed = _extract_json_block(content)
+                    parsed = _parse_json_payload(content)
                     result = validator(parsed)
                     used_llm = True
                     fallback_used = False
+                    generation_error = False
                     break
                 except (LLMError, KeyError, IndexError, TypeError, ValueError, json.JSONDecodeError) as exc:
-                    validation_errors.append(str(exc))
-                    fallback_used = True
+                    err_msg = str(exc)
+                    validation_errors.append(f"repair#{repair_index}: {err_msg}")
                     if repair_index >= self._repair_retries():
                         break
-                    repair_suffix = (
-                        "\n\nLa reponse precedente etait invalide. "
-                        "Retourne uniquement un JSON strict conforme au schema demande."
+                    # Construire un message de réparation contextuel pour le prochain tour.
+                    repair_hint = (
+                        f"\n\nTA RÉPONSE PRÉCÉDENTE ÉTAIT INVALIDE ({err_msg[:200]}).\n"
+                        "Corrige-la et retourne UNIQUEMENT un objet JSON valide.\n"
+                        "Premier caractère : `{`  \u2014  dernier caractère : `}`.\n"
+                        "Aucun markdown, aucune fence ```, aucun commentaire, aucune virgule traînante."
                     )
+                    repair_messages = [
+                        {"role": "system", "content": prompt_spec.system_prompt},
+                        {"role": "user", "content": user_prompt + repair_hint},
+                    ]
+
+            else:
+                # La boucle s'est terminée normalement sans break (ne devrait pas arriver)
+                pass
+
+            if not used_llm:
+                if allow_fallback:
+                    fallback_used = True
+                else:
+                    fallback_used = False
+                    generation_error = True
+                    result = None
 
         latency_ms = int((time.perf_counter() - started) * 1000)
         meta = LLMRunMeta(
@@ -483,25 +616,31 @@ class OpenRouterClient:
             prompt_version=prompt_spec.version,
             llm_used=used_llm,
             fallback_used=fallback_used,
+            error=generation_error,
             retry_count=max(0, attempt_count - 1),
             attempt_count=attempt_count,
             queue_wait_ms=queue_wait_ms,
             cache_hit=False,
             validation_errors=validation_errors,
             latency_ms=latency_ms,
-            estimated_cost=_estimate_cost(user_prompt, json.dumps(serialize(result), ensure_ascii=False), selected_model),
+            estimated_cost=_estimate_cost(
+                user_prompt,
+                json.dumps(serialize(result) if result is not None else {}, ensure_ascii=False),
+                selected_model,
+            ),
             raw_response_excerpt=raw_excerpt,
         )
         self._append_run(prompt_spec, meta)
-        self._save_cached_value(
-            step_name=step_name,
-            prompt_spec=prompt_spec,
-            model=selected_model,
-            user_prompt=user_prompt,
-            temperature=temperature,
-            result=result,
-            meta=meta,
-        )
+        if used_llm and not generation_error:
+            self._save_cached_value(
+                step_name=step_name,
+                prompt_spec=prompt_spec,
+                model=selected_model,
+                user_prompt=user_prompt,
+                temperature=temperature,
+                result=result,
+                meta=meta,
+            )
         return result, meta
 
 

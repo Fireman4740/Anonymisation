@@ -34,6 +34,31 @@ generation:
     medium: 0.35
     hard: 0.10
   sensitive_document_rate: 0.15
+  # Mix de modes de difficulté par mention (RAT-Bench), par difficulté document.
+  mention_mode_mix:
+    easy:
+      explicit_easy: 0.80
+      explicit_hard: 0.15
+      implicit: 0.05
+    medium:
+      explicit_easy: 0.45
+      explicit_hard: 0.35
+      implicit: 0.20
+    hard:
+      explicit_easy: 0.10
+      explicit_hard: 0.45
+      implicit: 0.45
+  # Taille des pools de candidats des paires d'attaque, par difficulté.
+  attack_pools:
+    easy: 30
+    medium: 15
+    hard: 8
+  # Stage 4 : mode de génération du texte (llm-first | deterministic | hybrid).
+  text_mode: llm-first
+  text_repair_retries: 2
+calibration:
+  min_gap: 0.05
+  min_easy_top1: 0.85
 llm:
   models:
     reasoning: aion-labs/aion-2.0
@@ -50,8 +75,9 @@ llm:
     backoff_max_seconds: 30
     cache_enabled: true
     resume_enabled: true
+    json_response_format: true
   max_retries: 2
-  repair_retries: 1
+  repair_retries: 5
   pricing_usd_per_1k_tokens:
     reasoning_input: 0.0
     reasoning_output: 0.0
@@ -76,6 +102,7 @@ paths:
   reports_dir: data/reports
   anonymized_dir: data/anonymized
   attacks_dir: data/attacks
+  attack_pairs: data/attacks/pairs.jsonl
   review_dir: data/review
   parquet_dir: data/parquet
   logs_dir: data/logs

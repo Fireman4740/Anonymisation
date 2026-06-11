@@ -19,6 +19,15 @@ from atlas_anno.reporting.builder import run_build_report_command
 from atlas_anno.storage import load_documents, load_report, report_html_path, report_markdown_path
 
 
+def _stable_document_payload(document):
+    payload = serialize(document)
+    metadata = dict(payload.get("metadata", {}))
+    metadata.pop("llm_runs", None)
+    metadata.pop("llm_audit", None)
+    payload["metadata"] = metadata
+    return payload
+
+
 class IntegrationTest(unittest.TestCase):
     def test_end_to_end_mini_run(self) -> None:
         run_generate_dataset_command(100, "disabled", resume_enabled=False, cache_enabled=False)
@@ -43,7 +52,7 @@ class IntegrationTest(unittest.TestCase):
     def test_generate_dataset_with_mocked_llm(self) -> None:
         from atlas_anno.schemas import LLMRunMeta
 
-        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature):
+        def fake_complete_json(self, *, step_name, prompt_spec, user_prompt, model, validator, fallback_value, temperature, allow_fallback=True):
             validated = validator(fallback_value)
             return validated, LLMRunMeta(
                 step_name=step_name,
@@ -66,7 +75,7 @@ class IntegrationTest(unittest.TestCase):
                 resume_enabled=False,
                 cache_enabled=False,
             )
-            sequential_documents = [serialize(document) for document in load_documents(annotated=False)]
+            sequential_documents = [_stable_document_payload(document) for document in load_documents(annotated=False)]
             run_generate_dataset_command(
                 100,
                 "primary-fallback",
@@ -77,7 +86,7 @@ class IntegrationTest(unittest.TestCase):
             )
 
         documents = load_documents(annotated=False)
-        parallel_documents = [serialize(document) for document in documents]
+        parallel_documents = [_stable_document_payload(document) for document in documents]
         self.assertEqual(len(documents), 100)
         self.assertEqual(sequential_documents, parallel_documents)
         self.assertTrue(all("llm_audit" in document.metadata for document in documents))

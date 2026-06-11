@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -11,7 +12,7 @@ from typing import Any, Dict
 from atlas_anno.paths import project_root
 from atlas_anno.review.label_studio import export_label_studio_review_pack, import_label_studio_review_pack
 from atlas_anno.settings import parse_dotenv
-from atlas_anno.storage import label_config_path, label_studio_tasks_path
+from atlas_anno.storage import label_config_path, label_studio_export_path, label_studio_project_id_path, label_studio_tasks_path
 
 
 @dataclass(frozen=True)
@@ -22,14 +23,27 @@ class LabelStudioSettings:
     project_id: str
 
 
-def load_label_studio_settings(env_path: str | None = None) -> LabelStudioSettings:
+def load_label_studio_settings(
+    env_path: str | None = None,
+    *,
+    token_override: str | None = None,
+    url_override: str | None = None,
+) -> LabelStudioSettings:
+    """Load Label Studio settings: .env file values, then os.environ overrides, then explicit overrides.
+
+    Priority (highest to lowest): token_override/url_override > os.environ > .env file.
+    """
     env_file = Path(env_path) if env_path else project_root() / ".env"
     env_values = parse_dotenv(env_file)
+
+    def get(name: str, default: str = "") -> str:
+        return os.environ.get(name, env_values.get(name, default))
+
     return LabelStudioSettings(
-        url=str(env_values.get("LABEL_STUDIO_URL") or "http://127.0.0.1:8080").rstrip("/"),
-        api_token=str(env_values.get("LABEL_STUDIO_API_TOKEN") or ""),
-        personal_access_token=str(env_values.get("LABEL_STUDIO_TOKEN") or ""),
-        project_id=str(env_values.get("LABEL_STUDIO_PROJECT_ID") or ""),
+        url=(url_override or get("LABEL_STUDIO_URL", "http://127.0.0.1:8080")).rstrip("/"),
+        api_token=get("LABEL_STUDIO_API_TOKEN"),
+        personal_access_token=token_override or get("LABEL_STUDIO_TOKEN"),
+        project_id=get("LABEL_STUDIO_PROJECT_ID"),
     )
 
 
@@ -88,12 +102,28 @@ class LabelStudioAPI:
             headers["Authorization"] = f"Token {self.settings.api_token}"
         return headers
 
-    def create_or_update_project(self, *, title: str, label_config: str, project_id: str | None = None) -> Dict[str, Any]:
-        target_project = project_id or self.settings.project_id
+    def create_or_update_project(self, *, title: str, label_config: str, project_id: str | None = None, force_create: bool = False) -> Dict[str, Any]:
+        """Create or update a project.
+        
+        Args:
+            title: Project title
+            label_config: Label configuration XML
+            project_id: Project ID to update (None or empty uses settings.project_id, if available)
+            force_create: If True, always create new project (POST) instead of updating
+        """
+        target_project = project_id or self.settings.project_id if not force_create else None
         payload = {"title": title, "label_config": label_config}
-        if target_project:
+        if target_project and not force_create:
             return self._request("PATCH", f"/api/projects/{target_project}", payload)
         return self._request("POST", "/api/projects", payload)
+
+    def list_projects(self) -> list[Dict[str, Any]]:
+        result = self._request("GET", "/api/projects")
+        if isinstance(result, dict) and "results" in result:
+            return result["results"]
+        if isinstance(result, list):
+            return result
+        return []
 
     def import_tasks(self, *, project_id: str, tasks: list[dict[str, Any]]) -> Any:
         return self._request("POST", f"/api/projects/{project_id}/import", tasks)
@@ -103,25 +133,90 @@ class LabelStudioAPI:
         return self._request("GET", f"/api/projects/{project_id}/export?{query}")
 
 
-def create_project_from_batch(batch: str, title: str, env_path: str | None = None, project_id: str | None = None) -> Dict[str, Any]:
-    settings = load_label_studio_settings(env_path)
+def _resolve_or_create_project_id(batch: str, title: str, api: LabelStudioAPI) -> str:
+    """Return the Label Studio project ID for *batch*, creating it if needed.
+
+    Resolution order:
+    1. Cache file ``data/review/{batch}/.label_studio_project_id``
+    2. API search — first project whose title contains *batch*
+    3. Auto-create using the batch label config and *title*
+    """
+    cache = label_studio_project_id_path(batch)
+    if cache.exists():
+        cached = cache.read_text(encoding="utf-8").strip()
+        if cached:
+            return cached
+
+    for project in api.list_projects():
+        if batch in str(project.get("title", "")):
+            pid = str(project["id"])
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(pid, encoding="utf-8")
+            return pid
+
     label_config = label_config_path(batch).read_text(encoding="utf-8")
-    return LabelStudioAPI(settings).create_or_update_project(title=title, label_config=label_config, project_id=project_id)
+    result = api.create_or_update_project(title=title, label_config=label_config)
+    pid = str(result["id"])
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(pid, encoding="utf-8")
+    return pid
 
 
-def import_batch_tasks(batch: str, project_id: str, env_path: str | None = None) -> Any:
-    settings = load_label_studio_settings(env_path)
+def create_project_from_batch(
+    batch: str,
+    title: str,
+    env_path: str | None = None,
+    project_id: str | None = None,
+    *,
+    token: str | None = None,
+    url: str | None = None,
+    force_create: bool = False,
+) -> Dict[str, Any]:
+    settings = load_label_studio_settings(env_path, token_override=token, url_override=url)
+    label_config = label_config_path(batch).read_text(encoding="utf-8")
+    api = LabelStudioAPI(settings)
+    result = api.create_or_update_project(title=title, label_config=label_config, project_id=project_id, force_create=force_create)
+    pid = str(result["id"])
+    cache = label_studio_project_id_path(batch)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(pid, encoding="utf-8")
+    return result
+
+
+def import_batch_tasks(
+    batch: str,
+    project_id: str | None = None,
+    env_path: str | None = None,
+    *,
+    token: str | None = None,
+    url: str | None = None,
+) -> Any:
+    settings = load_label_studio_settings(env_path, token_override=token, url_override=url)
+    api = LabelStudioAPI(settings)
+    if not project_id:
+        project_id = _resolve_or_create_project_id(batch, f"Atlas {batch}", api)
     tasks = json.loads(label_studio_tasks_path(batch).read_text(encoding="utf-8"))
-    return LabelStudioAPI(settings).import_tasks(project_id=project_id, tasks=tasks)
+    return api.import_tasks(project_id=project_id, tasks=tasks)
 
 
-def export_batch_annotations(batch: str, project_id: str, output_path: str, env_path: str | None = None) -> str:
-    settings = load_label_studio_settings(env_path)
-    payload = LabelStudioAPI(settings).export_annotations(project_id=project_id)
-    path = Path(output_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return str(path)
+def export_batch_annotations(
+    batch: str,
+    project_id: str | None = None,
+    output_path: str | None = None,
+    env_path: str | None = None,
+    *,
+    token: str | None = None,
+    url: str | None = None,
+) -> str:
+    settings = load_label_studio_settings(env_path, token_override=token, url_override=url)
+    api = LabelStudioAPI(settings)
+    if not project_id:
+        project_id = _resolve_or_create_project_id(batch, f"Atlas {batch}", api)
+    payload = api.export_annotations(project_id=project_id)
+    out = Path(output_path) if output_path else label_studio_export_path(batch)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return str(out)
 
 
 def sync_batch_reviews(batch: str, input_path: str) -> Dict[str, object]:
