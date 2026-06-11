@@ -1,0 +1,13 @@
+{
+  "_doc": "Ablation: full_llm sans le reviewer LLM (detection des fuites manquees).",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": true,
+  "enable_anonymization": true,
+  "detection_mode": "parallel",
+  "llm_detection": false,
+  "llm_verification": true,
+  "llm_audit": true,
+  "llm_paraphrase": true,
+  "rupta_enabled": true
+}

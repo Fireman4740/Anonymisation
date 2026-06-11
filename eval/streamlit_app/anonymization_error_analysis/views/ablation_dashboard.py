@@ -3,6 +3,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import pandas as pd
@@ -21,6 +22,21 @@ def _load_ablation_file(path: str) -> Dict[str, Any]:
 
 def _ablation_rows(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
+    if isinstance(payload.get("variants"), list):
+        for item in payload.get("variants", []) or []:
+            metric = item.get("primary_metric")
+            rows.append(
+                {
+                    "config": item.get("name", ""),
+                    "description": "",
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f2": float(metric or 0.0),
+                    "leaks": 0,
+                    "elapsed_s": float(item.get("wall_time_s", 0.0) or 0.0),
+                }
+            )
+        return rows
     for item in payload.get("results", []) or []:
         rows.append(
             {
@@ -37,24 +53,29 @@ def _ablation_rows(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _run_ablation_from_ui(cfg: AblationConfig) -> int:
-    from eval import run_ablation
+    from eval.api import EvaluationRunner
 
-    args: List[str] = [
-        "--suite",
-        cfg.suite,
-        "--dataset",
-        cfg.dataset_kind,
-        "--limit",
-        str(cfg.limit),
-    ]
-
-    if cfg.dataset_kind == "ratbench":
-        args.extend(["--language", "english", "--level", "1"])
-
-    if cfg.save_run:
-        args.append("--save-runs")
-
-    return int(run_ablation.main(args))
+    suite = "default" if cfg.suite == "full" else cfg.suite
+    ablation_config = os.path.join("configs", "evaluation", "ablations", f"{suite}.json")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    output_dir = os.path.join(
+        "eval",
+        "evaluation",
+        "reports",
+        f"ablation_{cfg.suite}_{cfg.dataset_kind.lower()}_{stamp}",
+    )
+    runner = EvaluationRunner(
+        {
+            "run_name": "streamlit_ablation",
+            "limit": cfg.limit,
+            "skip_risk": True,
+            "save_runs": cfg.save_run,
+            "ratbench_levels": [1],
+            "ratbench_languages": ["english"],
+        }
+    )
+    runner.run_ablation(dataset=cfg.dataset_kind, ablation_config=ablation_config, output=output_dir)
+    return 0
 
 
 def render_ablation_dashboard(*, cfg: AblationConfig, reports_dir: str) -> None:
@@ -74,7 +95,10 @@ def render_ablation_dashboard(*, cfg: AblationConfig, reports_dir: str) -> None:
                 else:
                     st.error(f"Ablation échouée (code {code}).")
 
-    files = sorted(glob.glob(os.path.join(reports_dir, "ablation_*.json")))
+    files = sorted(
+        glob.glob(os.path.join(reports_dir, "ablation_*.json"))
+        + glob.glob(os.path.join(reports_dir, "ablation_*", "ablation_summary.json"))
+    )
     if not files:
         st.info("Aucun rapport d'ablation trouvé dans eval/evaluation/reports.")
         return
@@ -92,9 +116,11 @@ def render_ablation_dashboard(*, cfg: AblationConfig, reports_dir: str) -> None:
         st.error(f"Impossible de charger le rapport: {exc}")
         return
 
-    suite = payload.get("suite", "?")
+    suite = payload.get("suite") or payload.get("config_name") or "?"
     dataset = payload.get("dataset", "?")
-    n_configs = payload.get("n_configs", 0)
+    if isinstance(dataset, list):
+        dataset = ", ".join(dataset)
+    n_configs = payload.get("n_configs", len(payload.get("variants", []) or []))
 
     c1, c2, c3 = st.columns(3)
     c1.metric("Suite", str(suite))

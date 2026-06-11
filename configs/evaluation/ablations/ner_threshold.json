@@ -1,0 +1,122 @@
+{
+  "_doc": "Balayage du seuil de confiance GLiNER (0.10-0.60). Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "threshold_0_1",
+      "_description": "Seuil de confiance GLiNER: 0.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.1
+      }
+    },
+    {
+      "name": "threshold_0_15",
+      "_description": "Seuil de confiance GLiNER: 0.15",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.15
+      }
+    },
+    {
+      "name": "threshold_0_2",
+      "_description": "Seuil de confiance GLiNER: 0.2",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.2
+      }
+    },
+    {
+      "name": "threshold_0_25",
+      "_description": "Seuil de confiance GLiNER: 0.25",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.25
+      }
+    },
+    {
+      "name": "threshold_0_3",
+      "_description": "Seuil de confiance GLiNER: 0.3",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.3
+      }
+    },
+    {
+      "name": "threshold_0_35",
+      "_description": "Seuil de confiance GLiNER: 0.35",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.35
+      }
+    },
+    {
+      "name": "threshold_0_4",
+      "_description": "Seuil de confiance GLiNER: 0.4",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.4
+      }
+    },
+    {
+      "name": "threshold_0_5",
+      "_description": "Seuil de confiance GLiNER: 0.5",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.5
+      }
+    },
+    {
+      "name": "threshold_0_6",
+      "_description": "Seuil de confiance GLiNER: 0.6",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "gliner_threshold": 0.6
+      }
+    }
+  ]
+}

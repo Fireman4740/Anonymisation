@@ -28,9 +28,9 @@ Le dépôt contient trois volets complémentaires :
 | [`pipegraph/main.py`](../pipegraph/main.py) | Démonstration locale du pipeline. |
 | [`pipegraph/src/graph.py`](../pipegraph/src/graph.py) | Construction du graphe LangGraph. |
 | [`pipegraph/config.json`](../pipegraph/config.json) | Configuration non secrète PipeGraph. |
-| [`eval/run_pipeline_evaluation.py`](../eval/run_pipeline_evaluation.py) | Runner officiel multi-datasets et multi-axes. |
-| [`eval/run_full_benchmark.py`](../eval/run_full_benchmark.py) | Wrapper de compatibilité vers le runner officiel. |
-| [`eval/run_ablation.py`](../eval/run_ablation.py) | Suites d'ablation. |
+| [`eval/cli/main.py`](../eval/cli/main.py) | CLI unifiée d'évaluation (`python -m eval`). |
+| [`eval/api.py`](../eval/api.py) | API Python d'évaluation (runner, ablations, compare). |
+| [`eval/run_pipeline_evaluation.py`](../eval/run_pipeline_evaluation.py) | Moteur officiel multi-datasets et multi-axes. |
 | [`eval/streamlit_app/app.py`](../eval/streamlit_app/app.py) | Interface Streamlit de visualisation. |
 | [`eval/datasets/`](../eval/datasets/) | Datasets locaux et caches de téléchargement. |
 

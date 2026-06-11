@@ -3,14 +3,14 @@ from __future__ import annotations
 import os
 from typing import Any, FrozenSet, List, Optional, Set, Tuple
 
-from eval.pipegraph_eval_local import (
+from eval.core.pipeline import (
     build_docs_from_anonymization_dataset,
     build_docs_from_db_bio,
     build_docs_from_personalreddit,
     build_docs_from_tab,
 )
-from eval.ratbench_loader import build_docs_from_ratbench
-from eval.conll2003_loader import build_docs_from_conll2003, get_conll2003_dataset_name
+from eval.core.loaders.ratbench import build_docs_from_ratbench
+from eval.core.loaders.conll2003 import build_docs_from_conll2003, get_conll2003_dataset_name
 from eval.core.profiles import resolve_eval_profile
 
 Span = Tuple[int, int, str]

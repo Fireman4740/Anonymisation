@@ -64,14 +64,10 @@ Documentation = "https://github.com/yourusername/anonymisation/docs"
 Repository = "https://github.com/yourusername/anonymisation"
 Issues = "https://github.com/yourusername/anonymisation/issues"
 
-[project.scripts]
-anonymize = "api.app:main"
-
+# NOTE: the repo is not an installable distribution yet — pipegraph, eval and
+# Atlas_anno are run from the repo root. CLI entry point: python -m pipegraph
 [tool.setuptools]
-packages = ["src", "api", "tests"]
-
-[tool.setuptools.package-data]
-src = ["**/*.json", "**/*.txt"]
+packages = []
 
 [tool.black]
 line-length = 100
@@ -114,6 +110,8 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -127,5 +125,5 @@ ignore = [
     "B008",  # do not perform function calls in argument defaults
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # unused imports in __init__.py

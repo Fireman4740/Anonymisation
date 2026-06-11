@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
 
-from eval.evaluate import build_eval_config
+from eval.api import build_eval_config
 
 from .components.feedback import show_empty_state, show_error
 from .components.sidebar import render_sidebar_ui

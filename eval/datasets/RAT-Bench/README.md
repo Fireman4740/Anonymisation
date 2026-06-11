@@ -56,4 +56,4 @@ python -m eval.run_pipeline_evaluation \
   --limit 100
 ```
 
-`eval/cli/ratbench.py` reste disponible comme wrapper de compatibilité.
+Évaluation RAT-Bench via la CLI unifiée : `python -m eval run --dataset ratbench --config configs/evaluation/no_llm.json`.

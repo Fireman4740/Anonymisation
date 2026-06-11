@@ -1,0 +1,14 @@
+{
+  "_doc": "Mode minimal: regex + NER, 100% local, aucun appel LLM.",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": true,
+  "enable_anonymization": true,
+  "detection_mode": "parallel",
+  "disable_llm": true,
+  "llm_detection": false,
+  "llm_verification": false,
+  "llm_audit": false,
+  "llm_paraphrase": false,
+  "rupta_enabled": false
+}

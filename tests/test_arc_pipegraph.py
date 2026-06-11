@@ -3,6 +3,12 @@ from __future__ import annotations
 import argparse
 import json
 
+import pytest
+
+# arc_pipegraph (AutoResearchClaw harness) is gitignored and only present on
+# the harness machine — skip cleanly elsewhere instead of breaking collection.
+pytest.importorskip("arc_pipegraph")
+
 from arc_pipegraph.objective import compute_primary_metric, score_dataset
 from arc_pipegraph.pipeline_adapter import (
     candidate_from_payload,

@@ -1,0 +1,40 @@
+{
+  "_doc": "Ablation par defaut: baselines detection + retrait module LLM par module. 'overrides' = cles state.config pipeline, 'runner_overrides' = options du runner d'evaluation.",
+  "ablations": [
+    {
+      "name": "regex_only",
+      "overrides": {"enable_deterministic": true, "enable_ai": false},
+      "runner_overrides": {"no_llm": true, "skip_risk": true}
+    },
+    {
+      "name": "ner_only",
+      "overrides": {"enable_deterministic": false, "enable_ai": true},
+      "runner_overrides": {"no_llm": true, "skip_risk": true}
+    },
+    {
+      "name": "no_llm",
+      "overrides": {},
+      "runner_overrides": {"no_llm": true, "skip_risk": true}
+    },
+    {
+      "name": "no_review",
+      "overrides": {"llm_detection": false}
+    },
+    {
+      "name": "no_verification",
+      "overrides": {"llm_verification": false}
+    },
+    {
+      "name": "no_audit",
+      "overrides": {"llm_audit": false, "llm_paraphrase": false, "rupta_enabled": false}
+    },
+    {
+      "name": "no_paraphrase",
+      "overrides": {"llm_paraphrase": false, "rupta_enabled": false}
+    },
+    {
+      "name": "full_pipeline",
+      "overrides": {}
+    }
+  ]
+}

@@ -3,8 +3,8 @@
 ## Etat actuel
 
 - PipeGraph est le pipeline local principal d'anonymisation.
-- L'evaluation officielle passe par `python -m eval.run_pipeline_evaluation`.
-- Les anciens scripts `eval/run_full_benchmark.py`, `eval/cli/tab.py` et `eval/cli/ratbench.py` sont des wrappers de compatibilite.
+- L'evaluation passe par la CLI unifiee `python -m eval` (moteur: `eval/run_pipeline_evaluation.py`, API: `eval/api.py`).
+- Anciens wrappers `eval/run_full_benchmark.py`, `eval/cli/tab.py`, `eval/cli/ratbench.py` et `eval/datasets/conll2003.py` supprimes (aucune reference code).
 - Les sorties officielles sont ecrites dans `artifacts/eval-runs/<run-id>/`.
 - Les axes exposes sont `span_detection`, `anonymization_leakage`, `ratbench_reid_risk`, `utility_preservation` et `runtime`.
 

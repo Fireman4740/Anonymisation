@@ -10,6 +10,9 @@ from .ai_ner.detector import AINerDetector
 from src.utils.span_utils import merge_entity_lists
 from src.utils.entity_utils import normalize_entity_profile, normalize_entity_type
 import concurrent.futures
+import logging
+
+logger = logging.getLogger("DetectionNode")
 
 _SHORT_ACRONYM_RE = re.compile(r"^[A-Z](?:[A-Z0-9]|[.$&/'-])+$")
 
@@ -34,11 +37,11 @@ class DetectionNode:
             if os.path.exists(config_path):
                 with open(config_path, "r", encoding="utf-8") as f:
                     self.global_config = json.load(f) or {}
-                print(f"✅ Configuration chargée depuis {config_path}")
+                logger.info(f"Configuration chargée depuis {config_path}")
             else:
-                print(f"⚠️ Fichier de config introuvable: {config_path}")
+                logger.warning(f"Fichier de config introuvable: {config_path}")
         except Exception as e:
-            print(f"❌ Erreur chargement config: {e}")
+            logger.error(f"Erreur chargement config: {e}")
 
         # Initialisation du détecteur déterministe
         try:
@@ -58,12 +61,12 @@ class DetectionNode:
             if isinstance(patterns_path, str) and not os.path.isabs(patterns_path):
                 patterns_path = os.path.abspath(os.path.join(self._pipegraph_root, patterns_path))
 
-            print(f"ℹ️ Patterns config (deterministic): {patterns_path} (exists={os.path.exists(str(patterns_path))})")
+            logger.info(f"Patterns config (deterministic): {patterns_path} (exists={os.path.exists(str(patterns_path))})")
 
             self.det_detector = DeterministicDetector(config_path=str(patterns_path))
-            print("✅ DeterministicDetector chargé.")
+            logger.info("DeterministicDetector chargé.")
         except Exception as e:
-            print(f"❌ Erreur DeterministicDetector: {e}")
+            logger.error(f"Erreur DeterministicDetector: {e}")
             self.det_detector = None
 
         # Initialisation du détecteur IA (NER)
@@ -81,9 +84,9 @@ class DetectionNode:
                 }
             
             self.ai_detector = AINerDetector(config=ai_config)
-            print("✅ AINerDetector chargé.")
+            logger.info("AINerDetector chargé.")
         except Exception as e:
-            print(f"❌ Erreur AINerDetector: {e}")
+            logger.error(f"Erreur AINerDetector: {e}")
             self.ai_detector = None
 
     def __call__(self, state: PipelineState) -> Dict[str, Any]:
@@ -91,7 +94,7 @@ class DetectionNode:
         Exécute la détection (Déterministe + IA) sur le texte.
         Peut exécuter en parallèle si configuré.
         """
-        print("--- Node: Detection (Hybrid) ---")
+        logger.info("--- Node: Detection (Hybrid) ---")
         
         # Config runtime (state)
         state_config = state.get("config", {})
@@ -105,7 +108,7 @@ class DetectionNode:
         node_enabled = state_config.get("enable_detection", yaml_det_config.get("enabled", True))
         
         if not node_enabled:
-            print("🚫 Detection Node désactivé.")
+            logger.info("Detection Node désactivé.")
             return {"entities": []}
 
         text = state["text"]
@@ -114,7 +117,7 @@ class DetectionNode:
         # Mode d'exécution: "parallel" ou "serial"
         # Priorité: State > YAML > Default "serial"
         exec_mode = state_config.get("detection_mode", yaml_det_config.get("execution_mode", "serial"))
-        print(f"🔍 Mode d'exécution: {exec_mode}")
+        logger.debug(f"Mode d'exécution: {exec_mode}")
         
         # Activation des sous-modules
         # Priorité: State > YAML > Default True
@@ -151,15 +154,15 @@ class DetectionNode:
         )
 
         if exec_mode == "parallel":
-            print("🚀 Lancement des détecteurs en parallèle...")
+            logger.debug("Lancement des détecteurs en parallèle...")
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = {}
                 if self.det_detector and enable_det:
-                    print("   -> Soumission DeterministicDetector")
+                    logger.debug("Soumission DeterministicDetector")
                     futures[executor.submit(self.det_detector.detect, text)] = "deterministic"
                 
                 if self.ai_detector and enable_ai:
-                    print("   -> Soumission AINerDetector")
+                    logger.debug("Soumission AINerDetector")
                     futures[executor.submit(
                         self.ai_detector.detect, text, ner_config_override or None
                     )] = "ai"
@@ -170,28 +173,28 @@ class DetectionNode:
                         res = future.result()
                         if source == "deterministic":
                             det_results = res
-                            print(f"   ✅ DeterministicDetector terminé: {len(res)} entités")
+                            logger.debug(f"DeterministicDetector terminé: {len(res)} entités")
                         else:
                             ai_results = res
-                            print(f"   ✅ AINerDetector terminé: {len(res)} entités")
+                            logger.debug(f"AINerDetector terminé: {len(res)} entités")
                     except Exception as e:
-                        print(f"❌ Erreur dans le thread {source}: {e}")
+                        logger.error(f"Erreur dans le thread {source}: {e}")
         else:
             # Série
-            print("🚀 Lancement des détecteurs en série...")
+            logger.debug("Lancement des détecteurs en série...")
             if self.det_detector and enable_det:
-                print("   -> Exécution DeterministicDetector...")
+                logger.debug("Exécution DeterministicDetector...")
                 det_results = self.det_detector.detect(text)
-                print(f"   ✅ DeterministicDetector terminé: {len(det_results)} entités")
+                logger.debug(f"DeterministicDetector terminé: {len(det_results)} entités")
             elif not enable_det:
-                print("   🚫 DeterministicDetector désactivé (config).")
+                logger.debug("DeterministicDetector désactivé (config).")
             
             if self.ai_detector and enable_ai:
-                print("   -> Exécution AINerDetector...")
+                logger.debug("Exécution AINerDetector...")
                 ai_results = self.ai_detector.detect(text, ner_config_override or None)
-                print(f"   ✅ AINerDetector terminé: {len(ai_results)} entités")
+                logger.debug(f"AINerDetector terminé: {len(ai_results)} entités")
             elif not enable_ai:
-                print("   🚫 AINerDetector désactivé (config).")
+                logger.debug("AINerDetector désactivé (config).")
 
         # Conversion + normalisation centralisée des types d'entités
         def _to_dict_normalized(ent) -> Dict[str, Any]:
@@ -224,6 +227,6 @@ class DetectionNode:
             strategy="priority_longest",
         )
 
-        print(f"Entités trouvées: {len(entities_found)} après fusion (Det: {len(det_results)}, AI: {len(ai_results)})")
+        logger.info(f"Entités trouvées: {len(entities_found)} après fusion (Det: {len(det_results)}, AI: {len(ai_results)})")
 
         return {"entities": entities_found}

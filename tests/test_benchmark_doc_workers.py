@@ -5,7 +5,7 @@ import sys
 import types
 from typing import Any, Dict, List
 
-from eval.pipegraph_eval_local import build_report, resolve_doc_workers
+from eval.core.pipeline import build_report, resolve_doc_workers
 
 
 def test_run_pipegraph_eval_passes_doc_workers(monkeypatch):
@@ -34,7 +34,7 @@ def test_run_pipegraph_eval_passes_doc_workers(monkeypatch):
         captured["max_workers"] = kwargs.get("max_workers")
         return []
 
-    monkeypatch.setattr("eval.pipegraph_eval_local.build_report", fake_build_report)
+    monkeypatch.setattr("eval.core.pipeline.build_report", fake_build_report)
 
     pipegraph_service.run_pipegraph_eval(
         dataset_kind="tab",
@@ -72,7 +72,7 @@ def test_build_ratbench_report_passes_doc_workers(monkeypatch):
 
 def test_resolve_doc_workers_auto_openrouter(monkeypatch):
     monkeypatch.setattr(
-        "eval.pipegraph_eval_local._load_pipegraph_config_safe",
+        "eval.core.pipeline._load_pipegraph_config_safe",
         lambda: {
             "llm": {"provider": "openrouter"},
             "pipeline": {"nodes": {"detection": {"ai_ner": {"gliner": {"use_gpu": False}}}}},
@@ -85,7 +85,7 @@ def test_resolve_doc_workers_auto_openrouter(monkeypatch):
 
 def test_resolve_doc_workers_auto_local_provider(monkeypatch):
     monkeypatch.setattr(
-        "eval.pipegraph_eval_local._load_pipegraph_config_safe",
+        "eval.core.pipeline._load_pipegraph_config_safe",
         lambda: {"llm": {"provider": "ollama"}},
     )
 
@@ -94,7 +94,7 @@ def test_resolve_doc_workers_auto_local_provider(monkeypatch):
 
 def test_resolve_doc_workers_auto_openrouter_gpu_caps_to_two(monkeypatch):
     monkeypatch.setattr(
-        "eval.pipegraph_eval_local._load_pipegraph_config_safe",
+        "eval.core.pipeline._load_pipegraph_config_safe",
         lambda: {
             "llm": {"provider": "openrouter"},
             "pipeline": {"nodes": {"detection": {"ai_ner": {"gliner": {"use_gpu": True}}}}},

@@ -1,0 +1,13 @@
+{
+  "_doc": "Ablation: full_llm sans paraphrase ciblee. L'audit reste actif (score mesure), boucle RUPTA off.",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": true,
+  "enable_anonymization": true,
+  "detection_mode": "parallel",
+  "llm_detection": true,
+  "llm_verification": true,
+  "llm_audit": true,
+  "llm_paraphrase": false,
+  "rupta_enabled": false
+}

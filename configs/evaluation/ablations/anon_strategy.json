@@ -1,0 +1,76 @@
+{
+  "_doc": "Comparaison des strategies d'anonymisation (pseudo/generalize/mask/redact/politique mixte). Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "strategy_pseudo",
+      "_description": "Pseudonymisation cohérente (défaut production)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "anon_strategy": "pseudo"
+      }
+    },
+    {
+      "name": "strategy_generalize",
+      "_description": "Généralisation (remplacement par [TYPE])",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "anon_strategy": "generalize"
+      }
+    },
+    {
+      "name": "strategy_mask",
+      "_description": "Masquage partiel adapté au type",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "anon_strategy": "mask"
+      }
+    },
+    {
+      "name": "strategy_redact",
+      "_description": "Rédaction complète [TYPE_REDACTED]",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "anon_strategy": "redact"
+      }
+    },
+    {
+      "name": "strategy_policy_mixed",
+      "_description": "Politique mixte par type (PERSON→pseudo, LOC→generalize, PHONE→mask, IBAN→redact)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "anon_strategy": "pseudo",
+        "anon_policy": {
+          "PERSON": "pseudo",
+          "PER": "pseudo",
+          "LOC": "generalize",
+          "LOCATION": "generalize",
+          "GPE": "generalize",
+          "DATE": "generalize",
+          "PHONE": "mask",
+          "EMAIL": "mask",
+          "IBAN": "redact"
+        }
+      }
+    }
+  ]
+}

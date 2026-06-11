@@ -1,0 +1,31 @@
+{
+  "_doc": "Serie vs parallele pour la detection. Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "mode_serial",
+      "_description": "Exécution série (déterministe, puis NER)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "detection_mode": "serial"
+      }
+    },
+    {
+      "name": "mode_parallel",
+      "_description": "Exécution parallèle (déterministe et NER en simultané)",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "detection_mode": "parallel"
+      }
+    }
+  ]
+}

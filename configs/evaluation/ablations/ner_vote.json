@@ -1,0 +1,109 @@
+{
+  "_doc": "Balayage du seuil de vote consensus multi-modele. Exporte de eval/run_ablation.py.",
+  "ablations": [
+    {
+      "name": "min_vote_1_0",
+      "_description": "Seuil de vote NER minimum: 1.0",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 1.0
+      }
+    },
+    {
+      "name": "min_vote_1_1",
+      "_description": "Seuil de vote NER minimum: 1.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 1.1
+      }
+    },
+    {
+      "name": "min_vote_1_25",
+      "_description": "Seuil de vote NER minimum: 1.25",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 1.25
+      }
+    },
+    {
+      "name": "min_vote_1_5",
+      "_description": "Seuil de vote NER minimum: 1.5",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 1.5
+      }
+    },
+    {
+      "name": "min_vote_1_75",
+      "_description": "Seuil de vote NER minimum: 1.75",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 1.75
+      }
+    },
+    {
+      "name": "min_vote_2_0",
+      "_description": "Seuil de vote NER minimum: 2.0",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 2.0
+      }
+    },
+    {
+      "name": "min_vote_2_1",
+      "_description": "Seuil de vote NER minimum: 2.1",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 2.1
+      }
+    },
+    {
+      "name": "min_vote_2_25",
+      "_description": "Seuil de vote NER minimum: 2.25",
+      "overrides": {
+        "enable_detection": true,
+        "enable_deterministic": true,
+        "enable_ai": true,
+        "enable_anonymization": true,
+        "disable_llm": true,
+        "gliner_preset": "best",
+        "ner_min_vote": 2.25
+      }
+    }
+  ]
+}

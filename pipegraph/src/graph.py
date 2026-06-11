@@ -32,7 +32,6 @@ from src.nodes.llm.llm_review_node import LLMReviewNode
 from src.nodes.llm.llm_verification_node import LLMVerificationNode
 from src.nodes.llm.llm_audit_node import LLMAuditNode
 from src.nodes.llm.llm_paraphrase_node import LLMParaphraseNode
-from src.nodes.llm.llm_verification_node import LLMVerificationNode
 
 if TYPE_CHECKING:
     from langgraph.graph.graph import CompiledGraph
@@ -44,17 +43,31 @@ logger = logging.getLogger("PipeGraph")
 # RUPTA conditional router
 # ---------------------------------------------------------------------------
 
+_ROUTER_CONFIG_CACHE: dict = {}
+
+
+def _load_router_config() -> dict:
+    """Read config.json once per mtime (the router runs on every audit loop)."""
+    config_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../config.json")
+    )
+    mtime = os.path.getmtime(config_path)
+    cached = _ROUTER_CONFIG_CACHE.get(config_path)
+    if cached and cached[0] == mtime:
+        return cached[1]
+    with open(config_path, "r", encoding="utf-8") as f:
+        cfg = json.load(f)
+    _ROUTER_CONFIG_CACHE[config_path] = (mtime, cfg)
+    return cfg
+
+
 def _rupta_router(state: PipelineState) -> str:
     """
     Called after llm_audit.
     Returns "paraphrase" to trigger the RUPTA rewrite loop, or "end" to finish.
     """
     try:
-        config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../config.json")
-        )
-        with open(config_path, "r", encoding="utf-8") as f:
-            cfg = json.load(f)
+        cfg = _load_router_config()
         rupta_cfg = cfg.get("rupta", {})
         features = cfg.get("features", {})
     except Exception as e:

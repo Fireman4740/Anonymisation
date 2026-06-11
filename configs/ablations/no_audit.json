@@ -1,0 +1,13 @@
+{
+  "_doc": "Ablation: full_llm sans audit adversarial. La boucle RUPTA depend de l'audit, donc desactivee aussi.",
+  "enable_detection": true,
+  "enable_deterministic": true,
+  "enable_ai": true,
+  "enable_anonymization": true,
+  "detection_mode": "parallel",
+  "llm_detection": true,
+  "llm_verification": true,
+  "llm_audit": false,
+  "llm_paraphrase": false,
+  "rupta_enabled": false
+}

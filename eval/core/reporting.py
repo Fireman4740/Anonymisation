@@ -5,19 +5,10 @@ import os
 from typing import Any, Dict, List, Mapping, Optional, Tuple  # noqa: F401
 
 from eval.core.config import normalize_runtime_config
+from eval.core.metrics import fbeta
 from eval.run_store import utc_now_iso
 
 DocumentReport = List[Dict[str, Any]]
-
-
-def _f2(precision: float, recall: float, beta: float = 2.0) -> float:
-    if precision <= 0.0 and recall <= 0.0:
-        return 0.0
-    b2 = beta * beta
-    denom = (b2 * precision) + recall
-    if denom <= 0.0:
-        return 0.0
-    return (1.0 + b2) * precision * recall / denom
 
 
 def aggregate_document_metrics(report: DocumentReport) -> Dict[str, Any]:
@@ -67,7 +58,7 @@ def aggregate_document_metrics(report: DocumentReport) -> Dict[str, Any]:
         if (exact_recall_tp + exact_recall_fn) > 0
         else 0.0
     )
-    micro_f2 = _f2(micro_precision, micro_recall, beta=2.0)
+    micro_f2 = fbeta(micro_precision, micro_recall, beta=2.0)
 
     bleu_scores = [float(doc["bleu_score"]) for doc in report if "bleu_score" in doc]
     macro_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else None
