@@ -8,6 +8,7 @@ from atlas_anno.annotation.preannotator import run_preannotation_command
 from atlas_anno.attacks.llm_attacker import run_llm_attack_command
 from atlas_anno.attacks.pairs import run_build_attack_pairs_command
 from atlas_anno.attacks.structured import run_structured_attack_command
+from atlas_anno.dashboard.app import run_dashboard_command
 from atlas_anno.diagnostics import run_inspect_llm_runs_command
 from atlas_anno.evaluation.aggregate import (
     run_eval_privacy_command,
@@ -116,6 +117,10 @@ def _build_parser() -> argparse.ArgumentParser:
     inspect_runs = subparsers.add_parser("inspect-llm-runs")
     inspect_runs.add_argument("--limit", type=int, default=20)
 
+    dashboard = subparsers.add_parser("dashboard")
+    dashboard.add_argument("--batch", default="pilot_100")
+    dashboard.add_argument("--strategy", default="masking")
+
     return parser
 
 
@@ -160,6 +165,7 @@ def main(argv: list[str] | None = None) -> int:
         "import-review-pack": lambda: import_label_studio_review_pack(args.batch, args.input),
         "export-parquet": lambda: run_export_parquet_command(args.batch),
         "inspect-llm-runs": lambda: run_inspect_llm_runs_command(args.limit),
+        "dashboard": lambda: run_dashboard_command(batch=args.batch, strategy=args.strategy),
     }
     handlers[args.command]()
     return 0

@@ -21,7 +21,7 @@ Configurables via `.env` :
 
 Utiliser deux environnements conda séparés :
 
-- `ano` pour `Atlas_anno`
+- `anno` pour `Atlas_anno`
 - `label-studio` pour le serveur Label Studio local
 
 Cela évite les conflits `numpy/scipy` entre Atlas et Label Studio.
@@ -31,7 +31,7 @@ Cela évite les conflits `numpy/scipy` entre Atlas et Label Studio.
 Copier `.env.example` vers `.env` :
 
 ```bash
-cp /mnt/f/IA/Anonymisation/Atlas_anno/.env.example /mnt/f/IA/Anonymisation/Atlas_anno/.env
+cp .env.example .env
 ```
 
 Variables utiles :
@@ -52,8 +52,23 @@ Variables utiles :
 Activation :
 
 ```bash
-source ~/miniconda3/etc/profile.d/conda.sh && conda activate ano
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate anno
+cd /Users/mathiscarlesso/Documents/AI/Anonymisation/Atlas_anno
+python -m pip install --no-build-isolation -e .
 ```
+
+Option complète si tu veux les dépendances facultatives aussi :
+
+```bash
+python -m pip install --no-build-isolation -e ".[full,dev]"
+```
+
+Notes macOS :
+
+- `atlas` ne sera disponible qu'après cette installation editable.
+- Si `zsh` ne trouve toujours pas `atlas`, relancer `hash -r` ou ouvrir un nouveau shell.
+- Sans `Faker`, Atlas utilise maintenant un fallback interne pour générer des identités réalistes de base.
 
 ### 2. Environnement Label Studio local
 
@@ -70,12 +85,13 @@ python -m pip install label-studio
 
 ## Pipeline complète de création du dataset
 
-Toutes les commandes s'exécutent dans le répertoire `Atlas_anno` avec l'environnement `ano`.
+Toutes les commandes s'exécutent dans le répertoire `Atlas_anno` avec l'environnement `anno`.
 
 ```bash
 # Activation (à faire une seule fois par session)
-source ~/miniconda3/etc/profile.d/conda.sh && conda activate ano
-cd /mnt/f/IA/Anonymisation/Atlas_anno
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate anno
+cd /Users/mathiscarlesso/Documents/AI/Anonymisation/Atlas_anno
 ```
 
 ### Étape 1 — Générer le dataset
@@ -182,8 +198,8 @@ atlas export-review-pack --target label-studio --batch pilot_100 --selection all
 ### Pipeline complète en une seule commande
 
 ```bash
-source ~/miniconda3/etc/profile.d/conda.sh && conda activate ano && \
-cd /mnt/f/IA/Anonymisation/Atlas_anno && \
+source ~/miniconda3/etc/profile.d/conda.sh && conda activate anno && \
+cd /Users/mathiscarlesso/Documents/AI/Anonymisation/Atlas_anno && \
 atlas generate-dataset --documents 100 --llm-mode primary-fallback --reasoning-workers 6 --creative-workers 4 --no-resume --no-cache && \
 atlas validate-dataset && \
 atlas build-attack-pairs && \
