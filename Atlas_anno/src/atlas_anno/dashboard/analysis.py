@@ -346,6 +346,10 @@ def _reid_tables(
             pair = pairs_by_id.get(pair_id, {})
             target = pair_targets.get(pair_id)
             ranked_ids = [candidate.get("person_id") for candidate in row.get("top_k") or []]
+            best_person_id = row.get("best_person_id")
+            # Sans cible connue, aucune attaque ne peut être comptée comme réussie
+            # (sinon None == None gonflerait faussement le risque de ré-identification).
+            has_target = target is not None
             rows.append(
                 {
                     "attacker_type": attack_type,
@@ -354,10 +358,10 @@ def _reid_tables(
                     "difficulty": metadata.get("difficulty") or pair.get("difficulty"),
                     "aux_level": metadata.get("aux_level") or (pair.get("aux_knowledge") or {}).get("level"),
                     "candidate_pool_size": row.get("candidate_pool_size"),
-                    "best_person_id": row.get("best_person_id"),
+                    "best_person_id": best_person_id,
                     "target_person_id": target,
-                    "top1_success": row.get("best_person_id") == target,
-                    "target_in_top3": target in ranked_ids[:3],
+                    "top1_success": has_target and best_person_id == target,
+                    "target_in_top3": has_target and target in ranked_ids[:3],
                     "confidence": _to_float(row.get("confidence")),
                 }
             )
@@ -399,7 +403,7 @@ def _document_rows(
         target = pairs_by_id.get(pair_id, {}).get("target_person_id")
         doc_id = str(attack.get("doc_id"))
         attack_count_by_doc[doc_id] += 1
-        attack_success_by_doc[doc_id] += int(attack.get("best_person_id") == target)
+        attack_success_by_doc[doc_id] += int(target is not None and attack.get("best_person_id") == target)
 
     rows = []
     for doc_id, doc in docs_by_id.items():

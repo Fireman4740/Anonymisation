@@ -292,6 +292,59 @@ atlas import-review-pack --target label-studio --batch pilot_100 \
 
 ---
 
+## Tableau de bord d'analyse
+
+Le tableau de bord est une interface Streamlit qui permet d'auditer un lot généré sous plusieurs angles : qualité du dataset, diversité linguistique, anonymisation, ré-identification, inspection document par document et logs LLM. Il est **en lecture seule** : il lit les artefacts déjà produits dans `data/` (donc il faut avoir lancé la pipeline avant).
+
+### Prérequis
+
+Installe les dépendances optionnelles du tableau de bord :
+
+```bash
+python -m pip install --no-build-isolation -e ".[dashboard]"
+```
+
+L'extra `[full]` les inclut aussi. Il faut au minimum avoir généré le dataset et les rapports (`atlas build-report`) pour que les indicateurs s'affichent.
+
+### Lancer le tableau de bord
+
+Commande recommandée :
+
+```bash
+atlas dashboard --batch pilot_100 --strategy masking
+```
+
+- `--batch` : le lot à analyser (défaut `pilot_100`)
+- `--strategy` : la stratégie d'anonymisation à inspecter (défaut `masking` ; autres valeurs `generalization`, `rewrite_balanced`)
+
+Streamlit ouvre l'interface dans le navigateur (par défaut `http://127.0.0.1:8501`).
+
+Pour déboguer directement sans passer par la commande `atlas` :
+
+```bash
+python -m streamlit run src/atlas_anno/dashboard/app.py -- --batch pilot_100 --strategy masking
+```
+
+### Lire les indicateurs
+
+Chaque indicateur est aussi expliqué directement dans l'interface (info-bulles et guide de lecture déroulant). Résumé :
+
+| Indicateur | Signification | Sens de lecture |
+| --- | --- | --- |
+| Confidentialité (privacy) | Part de l'information identifiante neutralisée par l'anonymisation | ↑ plus haut = mieux |
+| Utilité (utility) | Utilité / lisibilité du texte préservée après anonymisation | ↑ plus haut = mieux |
+| ReID top-1 | Taux de ré-identification réussie au 1er rang par l'attaquant | ↓ plus bas = mieux (c'est un risque) |
+| Span F1 | Qualité de détection des entités à anonymiser (vs annotations) | ↑ plus haut = mieux |
+| self-BLEU | Similarité moyenne entre documents (chevauchement de n-grammes) | ↓ plus bas = plus divers (alerte « collapse » si > 0.90) |
+| distinct-2 | Proportion de bigrammes uniques dans le corpus | ↑ plus haut = plus divers (faible si < 0.15) |
+| duplicate_rate | Part de documents quasi-dupliqués (MinHash, Jaccard ≥ 0.80) | ↓ plus bas = mieux (échec si > 2 %) |
+| cell_coverage | Couverture des cellules factorielles (domaine × difficulté × registre × objectif) | ↑ plus haut = mieux (faible si < 0.60) |
+| cell_entropy | Équilibre de la répartition entre cellules (entropie normalisée 0–1) | ↑ plus haut = plus équilibré |
+
+Un bon système d'anonymisation maximise **confidentialité ET utilité** tout en gardant un **ReID top-1 bas**.
+
+---
+
 ## Diagnostic
 
 Afficher les derniers runs LLM :
