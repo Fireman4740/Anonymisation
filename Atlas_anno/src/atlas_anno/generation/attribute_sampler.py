@@ -5,7 +5,10 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
-from faker import Faker
+try:
+    from faker import Faker as _Faker
+except ImportError:
+    _Faker = None
 
 from atlas_anno.io import load_yaml, project_file
 from atlas_anno.schemas import ContextualCue
@@ -15,6 +18,82 @@ DISTRIBUTION_PHONE_PATH = "configs/distributions/phone_prefixes_fr.yaml"
 DISTRIBUTION_CUES_PATH = "configs/distributions/contextual_cues_fr.yaml"
 
 REFERENCE_YEAR = 2026
+
+_FALLBACK_FIRST_NAMES_FEMALE = [
+    "Camille",
+    "Julie",
+    "Nadia",
+    "Sarah",
+    "Claire",
+    "Ines",
+    "Manon",
+    "Sophie",
+    "Lea",
+    "Morgane",
+    "Amina",
+    "Lucie",
+]
+_FALLBACK_FIRST_NAMES_MALE = [
+    "Lucas",
+    "Thomas",
+    "Karim",
+    "Hugo",
+    "Nicolas",
+    "Yanis",
+    "Alexandre",
+    "Mehdi",
+    "Julien",
+    "Romain",
+    "Samir",
+    "Antoine",
+]
+_FALLBACK_LAST_NAMES = [
+    "Martin",
+    "Bernard",
+    "Dubois",
+    "Thomas",
+    "Robert",
+    "Richard",
+    "Petit",
+    "Garcia",
+    "Moreau",
+    "Simon",
+    "Laurent",
+    "Michel",
+]
+_FALLBACK_STREET_TYPES = ["rue", "avenue", "boulevard", "impasse", "allée"]
+_FALLBACK_STREET_NAMES = [
+    "des Lilas",
+    "Victor Hugo",
+    "de la République",
+    "Jean Jaurès",
+    "des Acacias",
+    "du Stade",
+]
+
+
+class _FallbackFaker:
+    def __init__(self, locale: str = "fr_FR") -> None:
+        self._rng = random.Random()
+        self._locale = locale
+
+    def seed_instance(self, seed: int) -> None:
+        self._rng.seed(seed)
+
+    def first_name_female(self) -> str:
+        return self._rng.choice(_FALLBACK_FIRST_NAMES_FEMALE)
+
+    def first_name_male(self) -> str:
+        return self._rng.choice(_FALLBACK_FIRST_NAMES_MALE)
+
+    def last_name(self) -> str:
+        return self._rng.choice(_FALLBACK_LAST_NAMES)
+
+    def street_address(self) -> str:
+        number = self._rng.randint(1, 199)
+        street_type = self._rng.choice(_FALLBACK_STREET_TYPES)
+        street_name = self._rng.choice(_FALLBACK_STREET_NAMES)
+        return f"{number} {street_type} {street_name}"
 
 
 def load_insee_marginals() -> Dict[str, Any]:
@@ -213,7 +292,7 @@ class IdentitySampler:
 
     def __init__(self, seed: int, locale: str = "fr_FR", phone_prefixes: Dict[str, Any] | None = None) -> None:
         self._base_seed = seed
-        self._faker = Faker(locale)
+        self._faker = _Faker(locale) if _Faker is not None else _FallbackFaker(locale)
         self._phone_prefixes = phone_prefixes or load_phone_prefixes()
 
     def _derived_seed(self, index: int) -> int:

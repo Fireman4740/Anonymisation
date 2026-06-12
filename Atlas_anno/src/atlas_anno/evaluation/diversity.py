@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import random
 import re
 from collections import Counter
@@ -208,16 +209,26 @@ def find_near_duplicates(
 def embedding_metrics(texts: Sequence[str], *, sample: int = 300, seed: int = 17) -> Dict[str, Any]:
     """Dispersion cosinus + Vendi Score si sentence-transformers/numpy sont
     disponibles ; sinon skip gracieux (l'interpréteur de test ne les a pas)."""
+    if os.environ.get("ATLAS_ENABLE_EMBEDDINGS", "").lower() not in {"1", "true", "yes"}:
+        return {"skipped": True, "reason": "désactivé par défaut (définir ATLAS_ENABLE_EMBEDDINGS=1)"}
     try:
         import numpy as np  # type: ignore
         from sentence_transformers import SentenceTransformer  # type: ignore
     except ImportError as exc:
         return {"skipped": True, "reason": f"dépendance absente: {exc.name}"}
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
     subset = list(texts)
     if len(subset) > sample:
         subset = random.Random(seed).sample(subset, sample)
-    model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
-    embeddings = model.encode(subset, normalize_embeddings=True)
+    try:
+        model = SentenceTransformer(
+            "paraphrase-multilingual-MiniLM-L12-v2",
+            local_files_only=True,
+        )
+        embeddings = model.encode(subset, normalize_embeddings=True)
+    except Exception as exc:
+        return {"skipped": True, "reason": f"modèle indisponible hors ligne: {exc}"}
     similarity = embeddings @ embeddings.T
     n = similarity.shape[0]
     off_diagonal = (similarity.sum() - n) / (n * (n - 1)) if n > 1 else 0.0
